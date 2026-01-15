@@ -55,5 +55,7 @@ npm run lint:fix     # 린트 자동 수정
 - TypeScript 5.9+ + Obsidian API (Plugin, Modal, Notice, Setting), fetch (built-in) (006-beginner-support)
 
 ## Recent Changes
+- 006-beginner-support: Quartz 리포지토리 자동 생성 및 배포 가이드 (CreateRepoModal, DeployGuideModal, RepositoryCreatorService)
 - 004-advanced-quartz-config: Quartz 고급 설정 관리 (pageTitle, baseUrl, locale, analytics 등)
+- 005-non-functional-requirements: 오프라인 감지, 대용량 파일 경고
 - 001-quartz-publish: Added TypeScript 5.9+ + Obsidian API, fetch (built-in)
