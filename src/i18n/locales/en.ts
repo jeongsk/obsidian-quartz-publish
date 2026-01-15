@@ -491,4 +491,17 @@ export default {
 	'deployGuide.step6.title': 'Visit Your Site',
 	'deployGuide.step6.desc': 'After deployment completes (usually 2-3 minutes), your Quartz site will be live! Click below to visit your new digital garden.',
 	'deployGuide.step6.action': 'Open Your Site',
+
+	// Publishing Section
+	'publishing.heading': 'Publishing',
+	'publishing.explicitPublish.name': 'Selective Publishing',
+	'publishing.explicitPublish.desc': 'When enabled, only notes with "publish: true" in frontmatter will be published. When disabled, all notes except drafts will be published.',
+	'publishing.ignorePatterns.name': 'Ignore Patterns',
+	'publishing.ignorePatterns.desc': 'File/folder patterns to exclude from publishing (glob format)',
+	'publishing.ignorePatterns.placeholder': 'e.g., private/*, **/*.draft.md',
+	'publishing.ignorePatterns.add': 'Add',
+	'publishing.ignorePatterns.empty': 'No patterns configured',
+	'publishing.ignorePatterns.duplicate': 'Pattern already exists',
+	'publishing.ignorePatterns.invalid': 'Invalid pattern',
+	'publishing.ignorePatterns.remove': 'Remove pattern',
 } as const;

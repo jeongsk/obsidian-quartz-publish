@@ -7,6 +7,7 @@
  */
 
 import { Setting } from 'obsidian';
+import { t } from '../../i18n';
 import type { QuartzSiteConfig } from '../../types';
 import { validateGlobPattern } from '../../utils/glob-validator';
 
@@ -54,7 +55,7 @@ export class PublishingSection {
 	 */
 	private render(): void {
 		// 섹션 헤더 (T063)
-		new Setting(this.containerEl).setName('Publishing').setHeading();
+		new Setting(this.containerEl).setName(t('publishing.heading')).setHeading();
 
 		// ExplicitPublish 토글 (T059)
 		this.renderExplicitPublishToggle();
@@ -68,10 +69,8 @@ export class PublishingSection {
 	 */
 	private renderExplicitPublishToggle(): void {
 		new Setting(this.containerEl)
-			.setName('Selective Publishing')
-			.setDesc(
-				'활성화하면 프론트매터에 "publish: true"가 있는 노트만 발행합니다. 비활성화하면 초안(draft)을 제외한 모든 노트가 발행됩니다.'
-			)
+			.setName(t('publishing.explicitPublish.name'))
+			.setDesc(t('publishing.explicitPublish.desc'))
 			.addToggle((toggle) => {
 				this.explicitPublishToggleEl = toggle.toggleEl.querySelector('input');
 				toggle
@@ -87,8 +86,8 @@ export class PublishingSection {
 	 */
 	private renderIgnorePatternsInput(): void {
 		new Setting(this.containerEl)
-			.setName('Ignore Patterns')
-			.setDesc('발행에서 제외할 파일/폴더 패턴 (glob 형식)');
+			.setName(t('publishing.ignorePatterns.name'))
+			.setDesc(t('publishing.ignorePatterns.desc'));
 
 		// 패턴 목록 컨테이너
 		this.patternsContainerEl = this.containerEl.createDiv({
@@ -104,10 +103,10 @@ export class PublishingSection {
 
 		const inputEl = addPatternContainer.createEl('input', {
 			type: 'text',
-			placeholder: 'e.g., private/*, **/*.draft.md',
+			placeholder: t('publishing.ignorePatterns.placeholder'),
 			cls: 'qp:flex-1',
 			attr: {
-				'aria-label': 'New ignore pattern',
+				'aria-label': t('publishing.ignorePatterns.name'),
 				'aria-describedby': 'pattern-error',
 			},
 		});
@@ -122,9 +121,9 @@ export class PublishingSection {
 		});
 
 		const addBtn = addPatternContainer.createEl('button', {
-			text: 'Add',
+			text: t('publishing.ignorePatterns.add'),
 			attr: {
-				'aria-label': 'Add new ignore pattern',
+				'aria-label': t('publishing.ignorePatterns.add'),
 			},
 		});
 
@@ -135,13 +134,13 @@ export class PublishingSection {
 			// 유효성 검사
 			const validation = validateGlobPattern(newPattern);
 			if (!validation.valid) {
-				errorEl.textContent = validation.error || 'Invalid pattern';
+				errorEl.textContent = validation.error || t('publishing.ignorePatterns.invalid');
 				return;
 			}
 
 			// 중복 검사
 			if (this.patterns.includes(newPattern)) {
-				errorEl.textContent = 'Pattern already exists';
+				errorEl.textContent = t('publishing.ignorePatterns.duplicate');
 				return;
 			}
 
@@ -170,7 +169,7 @@ export class PublishingSection {
 
 		if (this.patterns.length === 0) {
 			this.patternsContainerEl.createEl('p', {
-				text: 'No patterns configured',
+				text: t('publishing.ignorePatterns.empty'),
 				cls: 'qp:text-obs-text-muted qp:text-sm',
 			});
 		} else {
@@ -187,7 +186,7 @@ export class PublishingSection {
 
 				const removeBtn = patternEl.createEl('button', {
 					cls: 'qp:text-obs-text-error',
-					attr: { 'aria-label': 'Remove pattern' },
+					attr: { 'aria-label': t('publishing.ignorePatterns.remove') },
 				});
 				removeBtn.textContent = '×';
 

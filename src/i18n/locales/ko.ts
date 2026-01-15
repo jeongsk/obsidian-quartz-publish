@@ -495,6 +495,19 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'deployGuide.step6.title': '사이트 방문',
 	'deployGuide.step6.desc': '배포가 완료되면(보통 2-3분) Quartz 사이트가 라이브됩니다! 아래 버튼을 클릭하여 새로운 디지털 가든을 방문하세요.',
 	'deployGuide.step6.action': '내 사이트 열기',
+
+	// Publishing Section
+	'publishing.heading': '발행',
+	'publishing.explicitPublish.name': '선택적 발행',
+	'publishing.explicitPublish.desc': '활성화하면 프론트매터에 "publish: true"가 있는 노트만 발행합니다. 비활성화하면 초안(draft)을 제외한 모든 노트가 발행됩니다.',
+	'publishing.ignorePatterns.name': '제외 패턴',
+	'publishing.ignorePatterns.desc': '발행에서 제외할 파일/폴더 패턴 (glob 형식)',
+	'publishing.ignorePatterns.placeholder': '예: private/*, **/*.draft.md',
+	'publishing.ignorePatterns.add': '추가',
+	'publishing.ignorePatterns.empty': '설정된 패턴 없음',
+	'publishing.ignorePatterns.duplicate': '이미 존재하는 패턴입니다',
+	'publishing.ignorePatterns.invalid': '잘못된 패턴입니다',
+	'publishing.ignorePatterns.remove': '패턴 삭제',
 };
 
 export default ko;
