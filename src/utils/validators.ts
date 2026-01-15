@@ -131,9 +131,10 @@ export function validateLocale(value: string): ValidationResult {
 // ============================================================================
 
 /**
- * Google Analytics Tag ID 패턴 (G-로 시작하는 10-12자)
+ * Google Analytics Tag ID 패턴 (G-로 시작하는 7-12자)
+ * 예: G-ABC1234, G-XXXXXXXXXX
  */
-const GA_TAG_PATTERN = /^G-[A-Z0-9]{10,12}$/i;
+const GA_TAG_PATTERN = /^G-[A-Z0-9]{7,12}$/i;
 
 /**
  * UUID 패턴 (Umami websiteId용)

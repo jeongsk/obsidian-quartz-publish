@@ -112,6 +112,7 @@ export class ConflictModal extends Modal {
 		buttonSetting.addButton((button) =>
 			button.setButtonText('취소').onClick(() => {
 				this.resolvePromise?.('cancel');
+				this.resolvePromise = null;
 				this.close();
 			})
 		);
@@ -123,6 +124,7 @@ export class ConflictModal extends Modal {
 				.setWarning()
 				.onClick(() => {
 					this.resolvePromise?.('force_overwrite');
+					this.resolvePromise = null;
 					this.close();
 				})
 		);
@@ -134,6 +136,7 @@ export class ConflictModal extends Modal {
 				.setCta()
 				.onClick(() => {
 					this.resolvePromise?.('reload');
+					this.resolvePromise = null;
 					this.close();
 				})
 		);

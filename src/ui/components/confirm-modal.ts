@@ -81,6 +81,7 @@ export class ConfirmModal extends Modal {
 				.setButtonText(this.options.cancelText ?? '취소')
 				.onClick(() => {
 					this.resolvePromise?.(false);
+					this.resolvePromise = null;
 					this.close();
 				})
 		);
@@ -91,6 +92,7 @@ export class ConfirmModal extends Modal {
 				.setButtonText(this.options.confirmText ?? '확인')
 				.onClick(() => {
 					this.resolvePromise?.(true);
+					this.resolvePromise = null;
 					this.close();
 				});
 

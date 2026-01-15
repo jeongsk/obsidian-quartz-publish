@@ -330,6 +330,13 @@ export class QuartzConfigService {
 		this.cachedConfig = null;
 	}
 
+	/**
+	 * 캐시된 SHA 반환
+	 */
+	getCachedSha(): string | null {
+		return this.cachedConfig?.sha ?? null;
+	}
+
 	// ============================================================================
 	// Extended Config Parsing (T015-T016)
 	// ============================================================================
@@ -363,7 +370,8 @@ export class QuartzConfigService {
 	 */
 	private parseEnableSPA(content: string): boolean {
 		const match = content.match(/enableSPA\s*:\s*(true|false)/);
-		return match?.[1] === 'true';
+		if (!match) return DEFAULT_QUARTZ_SITE_CONFIG.enableSPA;
+		return match[1] === 'true';
 	}
 
 	/**
@@ -371,7 +379,8 @@ export class QuartzConfigService {
 	 */
 	private parseEnablePopovers(content: string): boolean {
 		const match = content.match(/enablePopovers\s*:\s*(true|false)/);
-		return match?.[1] === 'true';
+		if (!match) return DEFAULT_QUARTZ_SITE_CONFIG.enablePopovers;
+		return match[1] === 'true';
 	}
 
 	/**

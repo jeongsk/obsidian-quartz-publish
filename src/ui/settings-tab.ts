@@ -507,7 +507,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// PendingChangesManager 초기화
 		const siteConfig = this.quartzConfigService.toQuartzSiteConfig(extendedConfig);
-		const sha = this.quartzConfigService['cachedConfig']?.sha ?? '';
+		const sha = this.quartzConfigService.getCachedSha() ?? '';
 
 		this.pendingChangesManager = new PendingChangesManager();
 		this.pendingChangesManager.initialize(siteConfig, sha);
@@ -714,9 +714,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const currentConfig = this.pendingChangesManager.getCurrentConfig();
 			const commitMessage = this.pendingChangesManager.generateCommitMessage();
 
+			// 강제 덮어쓰기 시에는 최신 remoteSha를 사용해야 함
+			const shaToUse = remoteSha ?? originalSha;
 			const result = await this.quartzConfigService.saveConfig(
 				currentConfig,
-				remoteSha ?? originalSha, // 강제 덮어쓰기 시 최신 SHA 사용
+				shaToUse,
 				commitMessage
 			);
 
