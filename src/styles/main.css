@@ -38,7 +38,6 @@
 	--color-obs-text-warning: var(--text-warning);
 	--color-obs-text-accent: var(--text-accent);
 	--color-obs-text-accent-hover: var(--text-accent-hover);
-	--color-obs-text-accent-hover: var(--color-base-00);
 
 	/* Interactive colors */
 	--color-obs-interactive-normal: var(--interactive-normal);

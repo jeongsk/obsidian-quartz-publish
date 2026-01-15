@@ -5,6 +5,7 @@
  */
 
 import { App, Modal, Setting } from 'obsidian';
+import { t } from '../../i18n';
 
 /**
  * ConfirmModal 옵션
@@ -34,8 +35,8 @@ export class ConfirmModal extends Modal {
 	constructor(app: App, options: ConfirmModalOptions) {
 		super(app);
 		this.options = {
-			confirmText: '확인',
-			cancelText: '취소',
+			confirmText: t('modal.confirm.ok'),
+			cancelText: t('modal.confirm.cancel'),
 			confirmCta: true,
 			isDangerous: false,
 			...options,
@@ -74,7 +75,7 @@ export class ConfirmModal extends Modal {
 		// 취소 버튼
 		buttonSetting.addButton((button) =>
 			button
-				.setButtonText(this.options.cancelText ?? '취소')
+				.setButtonText(this.options.cancelText ?? t('modal.confirm.cancel'))
 				.onClick(() => {
 					this.resolvePromise?.(false);
 					this.resolvePromise = null;
@@ -85,7 +86,7 @@ export class ConfirmModal extends Modal {
 		// 확인 버튼
 		buttonSetting.addButton((button) => {
 			button
-				.setButtonText(this.options.confirmText ?? '확인')
+				.setButtonText(this.options.confirmText ?? t('modal.confirm.ok'))
 				.onClick(() => {
 					this.resolvePromise?.(true);
 					this.resolvePromise = null;
