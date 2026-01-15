@@ -77,7 +77,7 @@ Obsidian 노트를 [Quartz](https://quartz.jzhao.xyz/) 블로그에 직접 발�
 title: 노트 제목
 draft: false
 publish: true
-slug: custom-url-path
+path: custom-url-path
 ---
 ```
 
