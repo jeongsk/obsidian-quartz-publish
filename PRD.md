@@ -101,7 +101,7 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 
 ## 구현 현황
 
-> 마지막 업데이트: 2026-01-13
+> 마지막 업데이트: 2026-01-14
 
 ### 전체 진행률
 
@@ -109,7 +109,7 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 |-------|------|--------|------|
 | Phase 1 | MVP (핵심 기능) | 100% | ✅ 완료 |
 | Phase 2 | 노트 관리 | 100% | ✅ 완료 |
-| Phase 3 | Quartz 설정 관리 | 0% | ❌ 미착수 |
+| Phase 3 | Quartz 설정 관리 | 100% | ✅ 완료 |
 | Phase 4 | 초보자 지원 | 0% | ❌ 미착수 |
 | 비기능 | 비기능 요구사항 | 50% | ⚠️ 일부 |
 
@@ -146,12 +146,14 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 - [x] 선택 노트 일괄 삭제 UI
 - [x] 전체 동기화 기능
 
-### Phase 3: Quartz 설정 관리 상세 현황 ❌
+### Phase 3: Quartz 설정 관리 상세 현황 ✅
 
-- [ ] ExplicitPublish 토글
-- [ ] 제외 패턴 설정
-- [ ] URL 전략 변경
-- [ ] Quartz 업그레이드 기능
+- [x] ExplicitPublish 토글 (`src/ui/settings-tab.ts`)
+- [x] 제외 패턴 설정 (`src/services/quartz-config.ts`)
+- [x] URL 전략 변경 (`src/services/quartz-config.ts`)
+- [x] Quartz 업그레이드 기능 (`src/services/quartz-upgrade.ts`)
+- [x] 브랜치 자동 감지 (Test Connection 시)
+- [x] 상세 에러 메시지 표시
 
 ### Phase 4: 초보자 지원 상세 현황 ❌
 
@@ -177,7 +179,11 @@ src/
 │   ├── github.ts              # GitHub API 서비스
 │   ├── transformer.ts         # 콘텐츠 변환 서비스
 │   ├── publish.ts             # 발행 서비스
-│   └── status.ts              # 발행 상태 계산 서비스
+│   ├── status.ts              # 발행 상태 계산 서비스
+│   ├── quartz-config.ts       # Quartz 설정 파싱/수정 서비스
+│   └── quartz-upgrade.ts      # Quartz 업그레이드 서비스
+├── utils/
+│   └── glob-validator.ts      # glob 패턴 유효성 검사
 ├── ui/
 │   ├── settings-tab.ts        # 설정 탭 UI
 │   └── dashboard-modal.ts     # 발행 대시보드 모달
@@ -190,7 +196,11 @@ tests/
 ├── setup.ts                   # 테스트 설정
 └── unit/
     ├── services/
-    │   └── status.test.ts     # StatusService 테스트 (16개)
+    │   ├── status.test.ts           # StatusService 테스트
+    │   ├── quartz-config.test.ts    # QuartzConfigService 테스트
+    │   └── quartz-upgrade.test.ts   # QuartzUpgradeService 테스트
+    ├── utils/
+    │   └── glob-validator.test.ts   # glob-validator 테스트
     └── ui/
-        └── dashboard-modal.test.ts  # DashboardModal 테스트 (21개)
+        └── dashboard-modal.test.ts  # DashboardModal 테스트
 ```
