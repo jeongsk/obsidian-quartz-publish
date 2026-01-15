@@ -93,13 +93,13 @@ export class PublishingSection {
 		// 헤더 (제목)
 		containerEl.createEl('div', {
 			text: t('publishing.ignorePatterns.name'),
-			cls: 'qp:font-medium qp:text-obs-text-normal',
+			cls: 'setting-item-name',
 		});
 
 		// 설명
 		containerEl.createEl('div', {
 			text: t('publishing.ignorePatterns.desc'),
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:mt-1 qp:mb-3',
+			cls: 'setting-item-description qp:mb-3',
 		});
 
 		// 패턴 목록 컨테이너
@@ -122,7 +122,7 @@ export class PublishingSection {
 			for (let i = 0; i < this.patterns.length; i++) {
 				const pattern = this.patterns[i];
 				const patternEl = this.patternsContainerEl.createDiv({
-					cls: 'quartz-publish-pattern-item qp:flex qp:items-center qp:gap-2 qp:mb-1',
+					cls: 'quartz-publish-pattern-item qp:text-sm qp:flex qp:items-center qp:gap-2 qp:mb-1',
 				});
 
 				patternEl.createEl('code', {
