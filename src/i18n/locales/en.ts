@@ -504,4 +504,12 @@ export default {
 	'publishing.ignorePatterns.duplicate': 'Pattern already exists',
 	'publishing.ignorePatterns.invalid': 'Invalid pattern',
 	'publishing.ignorePatterns.remove': 'Remove pattern',
+
+	// Conflict Modal - Option descriptions
+	'modal.conflict.reload.title': 'Reload and reapply',
+	'modal.conflict.reload.desc': 'Load the latest settings and apply your changes again. (Recommended)',
+	'modal.conflict.overwrite.title': 'Force overwrite',
+	'modal.conflict.overwrite.desc': 'Ignore remote changes and overwrite with current settings.',
+	'modal.conflict.cancel.title': 'Cancel',
+	'modal.conflict.cancel.desc': 'Cancel saving and keep the current state.',
 } as const;

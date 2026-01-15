@@ -508,6 +508,14 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'publishing.ignorePatterns.duplicate': '이미 존재하는 패턴입니다',
 	'publishing.ignorePatterns.invalid': '잘못된 패턴입니다',
 	'publishing.ignorePatterns.remove': '패턴 삭제',
+
+	// Conflict Modal - Option descriptions
+	'modal.conflict.reload.title': '새로고침 후 재적용',
+	'modal.conflict.reload.desc': '최신 설정을 불러온 후 변경사항을 다시 적용합니다. (권장)',
+	'modal.conflict.overwrite.title': '강제 덮어쓰기',
+	'modal.conflict.overwrite.desc': '원격 변경사항을 무시하고 현재 설정으로 덮어씁니다.',
+	'modal.conflict.cancel.title': '취소',
+	'modal.conflict.cancel.desc': '저장을 취소하고 현재 상태를 유지합니다.',
 };
 
 export default ko;

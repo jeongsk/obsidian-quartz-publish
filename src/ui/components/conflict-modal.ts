@@ -78,9 +78,9 @@ export class ConflictModal extends Modal {
 		const reloadOption = optionsEl.createDiv({
 			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:mb-2 qp:bg-obs-bg-secondary',
 		});
-		reloadOption.createEl('strong', { text: '새로고침 후 재적용' });
+		reloadOption.createEl('strong', { text: t('modal.conflict.reload.title') });
 		reloadOption.createEl('p', {
-			text: '최신 설정을 불러온 후 변경사항을 다시 적용합니다. (권장)',
+			text: t('modal.conflict.reload.desc'),
 			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
 		});
 
@@ -88,9 +88,9 @@ export class ConflictModal extends Modal {
 		const forceOption = optionsEl.createDiv({
 			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:mb-2 qp:bg-obs-bg-secondary',
 		});
-		forceOption.createEl('strong', { text: '강제 덮어쓰기' });
+		forceOption.createEl('strong', { text: t('modal.conflict.overwrite.title') });
 		forceOption.createEl('p', {
-			text: '원격 변경사항을 무시하고 현재 설정으로 덮어씁니다.',
+			text: t('modal.conflict.overwrite.desc'),
 			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
 		});
 
@@ -98,9 +98,9 @@ export class ConflictModal extends Modal {
 		const cancelOption = optionsEl.createDiv({
 			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:bg-obs-bg-secondary',
 		});
-		cancelOption.createEl('strong', { text: '취소' });
+		cancelOption.createEl('strong', { text: t('modal.conflict.cancel.title') });
 		cancelOption.createEl('p', {
-			text: '저장을 취소하고 현재 상태를 유지합니다.',
+			text: t('modal.conflict.cancel.desc'),
 			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
 		});
 
