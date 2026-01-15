@@ -2,6 +2,7 @@ import { Setting, type App, type Vault } from 'obsidian';
 import type { PublishFilterSettings } from '../../types';
 import { t } from '../../i18n';
 import { NoteSuggestModal } from '../components/note-suggest-modal';
+import { FolderSuggestModal } from '../components/folder-suggest-modal';
 
 export type PublishFilterChangeCallback = <K extends keyof PublishFilterSettings>(
 	field: K,
@@ -142,6 +143,16 @@ export class PublishFilterSection {
 				this.rootFolderInput = text.inputEl;
 				text.setPlaceholder(t('settings.filter.rootFolderPlaceholder'));
 				text.setValue(this.options.config.rootFolder);
+
+				// 입력 필드 클릭 시 폴더 선택 모달 열기
+				text.inputEl.addEventListener('click', () => {
+					new FolderSuggestModal(this.options.app, (path) => {
+						text.setValue(path);
+						this.handleRootFolderChange(path);
+					}).open();
+				});
+
+				// 직접 입력도 허용
 				text.onChange((value) => {
 					this.handleRootFolderChange(value);
 				});
