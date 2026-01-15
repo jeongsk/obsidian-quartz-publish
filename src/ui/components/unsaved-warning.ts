@@ -5,6 +5,7 @@
  */
 
 import { setIcon } from 'obsidian';
+import { t } from '../../i18n';
 
 /**
  * UnsavedWarning 옵션
@@ -49,7 +50,7 @@ export class UnsavedWarning {
 		setIcon(iconEl, 'alert-triangle');
 
 		messageWrapper.createSpan({
-			text: '저장되지 않은 변경사항이 있습니다',
+			text: t('common.unsavedChanges'),
 			cls: 'qp:text-sm qp:font-medium',
 		});
 
@@ -61,7 +62,7 @@ export class UnsavedWarning {
 		// 취소(변경사항 버리기) 버튼
 		if (this.options.onDiscard) {
 			const discardBtn = actionsWrapper.createEl('button', {
-				text: '변경사항 취소',
+				text: t('common.discardChanges'),
 				cls: 'qp:text-xs',
 			});
 			discardBtn.addEventListener('click', () => {
