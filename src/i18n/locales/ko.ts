@@ -1,0 +1,232 @@
+import type en from './en';
+
+type TranslationKeys = keyof typeof en;
+
+const ko: { [K in TranslationKeys]?: string } = {
+	// Settings - GitHub
+	'settings.github.title': 'GitHub 연결',
+	'settings.github.token': 'GitHub 토큰',
+	'settings.github.tokenDesc': 'repo 권한이 있는 Personal Access Token',
+	'settings.github.tokenLink': '토큰 생성',
+	'settings.github.repoUrl': '저장소 URL',
+	'settings.github.repoUrlDesc': 'Quartz 저장소 URL (예: https://github.com/user/quartz)',
+	'settings.github.branch': '브랜치',
+	'settings.github.branchDesc': '발행할 브랜치 (연결 테스트 시 자동 감지)',
+	'settings.github.testConnection': '연결 테스트',
+	'settings.github.testConnectionDesc': 'GitHub 연결 및 Quartz 저장소 확인',
+	'settings.github.createRepo': 'Quartz 저장소 생성',
+	'settings.github.newToQuartz': 'Quartz가 처음이신가요?',
+	'settings.github.newToQuartzDesc': '템플릿으로 새 Quartz 저장소 생성',
+
+	// Settings - Auto Date
+	'settings.autoDate.title': '자동 날짜 필드',
+	'settings.autoDate.desc': '발행 시 프론트매터에 날짜 필드를 자동으로 추가합니다. 기존 필드는 유지됩니다.',
+	'settings.autoDate.created': '생성일 추가',
+	'settings.autoDate.createdDesc': '파일 생성일 추가 (형식: YYYY-MM-DD)',
+	'settings.autoDate.modified': '수정일 추가',
+	'settings.autoDate.modifiedDesc': '파일 수정일 추가 (형식: YYYY-MM-DD)',
+	'settings.autoDate.published': '발행일 추가',
+	'settings.autoDate.publishedDesc': '현재 날짜를 발행일로 추가 (형식: YYYY-MM-DD)',
+
+	// Settings - Quartz
+	'settings.quartz.title': 'Quartz 설정',
+	'settings.quartz.load': 'Quartz 설정 불러오기',
+	'settings.quartz.loadDesc': 'quartz.config.ts에서 설정 가져오기',
+	'settings.quartz.loading': 'Quartz 설정 불러오는 중...',
+	'settings.quartz.connectFirst': 'Quartz 설정을 구성하려면 먼저 GitHub에 연결하세요.',
+	'settings.quartz.retry': '다시 시도',
+	'settings.quartz.loadFailed': '설정 불러오기 실패: {{message}}',
+
+	// Settings - Site Info
+	'settings.siteInfo.title': '사이트 정보',
+	'settings.siteInfo.pageTitle': '페이지 제목',
+	'settings.siteInfo.pageTitleDesc': '사이트 제목 (브라우저 탭, 헤더 등에 표시)',
+	'settings.siteInfo.pageTitlePlaceholder': '나의 디지털 정원',
+	'settings.siteInfo.baseUrl': '기본 URL',
+	'settings.siteInfo.baseUrlDesc': '사이트 도메인 (프로토콜 제외, 예: example.com 또는 username.github.io)',
+	'settings.siteInfo.baseUrlPlaceholder': 'quartz.jzhao.xyz',
+	'settings.siteInfo.locale': '로케일',
+	'settings.siteInfo.localeDesc': '사이트의 기본 언어 및 지역 설정',
+
+	// Settings - Behavior
+	'settings.behavior.title': '동작',
+	'settings.behavior.enableSPA': 'SPA 활성화',
+	'settings.behavior.enableSPADesc': '단일 페이지 애플리케이션 모드 활성화',
+	'settings.behavior.enablePopovers': '팝오버 활성화',
+	'settings.behavior.enablePopoversDesc': '링크 미리보기 팝오버 활성화',
+	'settings.behavior.defaultDateType': '기본 날짜 유형',
+	'settings.behavior.defaultDateTypeDesc': '표시할 기본 날짜 유형',
+
+	// Settings - Analytics
+	'settings.analytics.title': '분석',
+	'settings.analytics.provider': '제공자',
+	'settings.analytics.providerDesc': '분석 서비스 제공자',
+	'settings.analytics.none': '없음',
+
+	// Settings - Publishing
+	'settings.publishing.title': '발행',
+	'settings.publishing.explicitPublish': '명시적 발행',
+	'settings.publishing.explicitPublishDesc': '명시적 발행 플래그가 있는 노트만 발행',
+	'settings.publishing.ignorePatterns': '무시 패턴',
+	'settings.publishing.ignorePatternsDesc': '발행 시 무시할 Glob 패턴',
+	'settings.publishing.urlStrategy': 'URL 전략',
+	'settings.publishing.urlStrategyDesc': '발행된 노트의 URL 생성 전략',
+
+	// Settings - Apply
+	'settings.apply.button': '변경 사항 적용',
+	'settings.apply.refresh': '새로고침',
+	'settings.apply.unsavedWarning': '저장되지 않은 변경 사항이 있습니다',
+	'settings.apply.discard': '취소',
+
+	// Dashboard
+	'dashboard.title': '발행 대시보드',
+	'dashboard.tab.new': '새 노트',
+	'dashboard.tab.modified': '수정됨',
+	'dashboard.tab.deleted': '삭제됨',
+	'dashboard.tab.synced': '동기화됨',
+	'dashboard.action.publish': '발행',
+	'dashboard.action.delete': '삭제',
+	'dashboard.action.syncAll': '모두 동기화',
+	'dashboard.action.close': '닫기',
+	'dashboard.action.refresh': '새로고침',
+	'dashboard.selectAll': '전체 선택 ({{count}})',
+	'dashboard.selected': '{{count}}개 선택됨',
+	'dashboard.status.loading': '상태 불러오는 중...',
+	'dashboard.status.offline': '오프라인',
+	'dashboard.empty.new': '발행할 새 노트가 없습니다.',
+	'dashboard.empty.modified': '수정된 노트가 없습니다.',
+	'dashboard.empty.deleted': '삭제할 노트가 없습니다.',
+	'dashboard.empty.synced': '동기화된 노트가 없습니다.',
+
+	// Notices
+	'notice.publish.start': '{{filename}} 발행 중...',
+	'notice.publish.success': '발행 완료: {{filename}} → {{path}}',
+	'notice.publish.failed': '발행 실패: {{filename}} ({{error}})',
+	'notice.publish.error': '발행 오류: {{message}}',
+	'notice.batch.success': '{{count}}개 노트가 발행되었습니다.',
+	'notice.batch.partial': '발행: {{succeeded}}개 성공, {{failed}}개 실패',
+	'notice.delete.success': '{{count}}개 노트가 삭제되었습니다.',
+	'notice.delete.partial': '삭제: {{succeeded}}개 성공, {{failed}}개 실패',
+	'notice.sync.success': '{{count}}개 항목이 동기화되었습니다.',
+	'notice.sync.noChanges': '동기화할 변경 사항이 없습니다.',
+	'notice.connection.success': '연결 성공!',
+	'notice.connection.failed': '연결 실패: {{message}}',
+	'notice.network.offline': '인터넷 연결을 확인해 주세요. 발행하려면 네트워크 연결이 필요합니다.',
+	'notice.settings.saved': '설정이 저장되었습니다',
+	'notice.settings.discarded': '변경 사항이 취소되었습니다',
+	'notice.settings.validationFailed': '유효성 검사 실패: {{error}}',
+	'notice.settings.reloaded': '설정이 다시 로드되었습니다. 변경 사항을 다시 적용해 주세요.',
+	'notice.noActiveFile': '활성화된 마크다운 파일이 없습니다',
+	'notice.configureFirst': '먼저 GitHub 설정을 구성해 주세요',
+
+	// Commands
+	'command.publishNote': '현재 노트를 Quartz에 발행',
+	'command.openDashboard': '발행 대시보드 열기',
+
+	// Menus
+	'menu.publishToQuartz': 'Quartz에 발행',
+
+	// Modals - Confirm
+	'modal.confirm.title': '확인',
+	'modal.confirm.ok': '확인',
+	'modal.confirm.cancel': '취소',
+	'modal.delete.title': '삭제 확인',
+	'modal.delete.message': 'GitHub에서 {{count}}개 노트를 삭제하시겠습니까?',
+	'modal.sync.title': '동기화 확인',
+	'modal.sync.message': '새 노트 {{newCount}}개, 수정된 노트 {{modifiedCount}}개를 발행하고 {{deleteCount}}개를 삭제합니다. 계속하시겠습니까?',
+	'modal.apply.title': '설정 적용',
+	'modal.apply.message': '다음 설정이 변경됩니다:\n{{summary}}\n\nGitHub에 변경 사항을 저장하시겠습니까?',
+	'modal.apply.confirm': '적용',
+
+	// Modals - Conflict
+	'modal.conflict.title': '설정 충돌 감지',
+	'modal.conflict.message': 'GitHub의 설정이 수정되었습니다. 어떻게 하시겠습니까?',
+	'modal.conflict.reload': '다시 불러오기',
+	'modal.conflict.overwrite': '강제 덮어쓰기',
+
+	// Modals - Large File
+	'modal.largeFile.title': '대용량 파일 경고',
+	'modal.largeFile.message': '{{count}}개 파일이 {{size}}를 초과합니다. 대용량 파일은 발행에 문제가 발생할 수 있습니다.',
+	'modal.largeFile.continue': '계속 진행',
+
+	// Modals - Create Repo
+	'modal.createRepo.title': 'Quartz 저장소 생성',
+	'modal.createRepo.name': '저장소 이름',
+	'modal.createRepo.nameDesc': 'Quartz 저장소 이름을 입력하세요 (기본값: "quartz")',
+	'modal.createRepo.visibility': '공개 설정',
+	'modal.createRepo.visibilityDesc': '공개 저장소는 GitHub Pages에서 무료로 호스팅할 수 있습니다',
+	'modal.createRepo.public': '공개',
+	'modal.createRepo.private': '비공개',
+	'modal.createRepo.privateWarning': '비공개 저장소는 GitHub Pages 호스팅에 GitHub Pro가 필요합니다.',
+	'modal.createRepo.create': '생성',
+	'modal.createRepo.creating': '생성 중...',
+	'modal.createRepo.creatingProgress': '템플릿에서 저장소 생성 중...',
+	'modal.createRepo.success': '저장소가 생성되었습니다!',
+	'modal.createRepo.viewGuide': '배포 가이드 보기',
+
+	// Errors
+	'error.github.invalidToken': '유효하지 않거나 만료된 GitHub 토큰입니다',
+	'error.github.notFound': '저장소를 찾을 수 없거나 접근 권한이 없습니다',
+	'error.github.notQuartz': '이 저장소는 Quartz 사이트가 아닙니다 (quartz.config.ts를 찾을 수 없음)',
+	'error.github.rateLimit': 'GitHub API 요청 한도를 초과했습니다. 나중에 다시 시도해 주세요.',
+	'error.github.network': '네트워크 오류입니다. 인터넷 연결을 확인해 주세요.',
+	'error.unknown': '알 수 없는 오류가 발생했습니다',
+	'error.validation.pageTitle': '페이지 제목은 필수입니다',
+	'error.validation.baseUrl': '잘못된 URL 형식입니다',
+	'error.loadFailed': '불러오기 실패: {{message}}',
+	'error.parseFailed': 'quartz.config.ts 파싱에 실패했습니다',
+	'error.saveFailed': '저장 실패: {{message}}',
+	'error.configNotFound': '"{{branch}}" 브랜치에서 quartz.config.ts를 찾을 수 없습니다',
+	'error.tokenRequired': 'GitHub 토큰을 입력해 주세요',
+	'error.repoUrlRequired': '저장소 URL을 입력해 주세요',
+
+	// Error messages - Formatted
+	'error.formatted.network': '네트워크 연결 오류',
+	'error.formatted.networkMessage': '서버에 연결할 수 없습니다.',
+	'error.formatted.networkSuggestion': '인터넷 연결을 확인하고 다시 시도해 주세요.',
+	'error.formatted.rateLimit': 'GitHub API 제한',
+	'error.formatted.rateLimitMessage': 'GitHub API 요청 한도에 도달했습니다.',
+	'error.formatted.rateLimitSuggestion': '나중에 다시 시도해 주세요. (보통 1시간 후 초기화됩니다)',
+	'error.formatted.auth': '인증 오류',
+	'error.formatted.authMessage': 'GitHub 인증에 실패했습니다.',
+	'error.formatted.authSuggestion': '설정에서 GitHub 토큰을 확인해 주세요.',
+	'error.formatted.notFound': '저장소를 찾을 수 없음',
+	'error.formatted.notFoundMessage': '지정된 GitHub 저장소를 찾을 수 없습니다.',
+	'error.formatted.notFoundSuggestion': '저장소 설정을 확인해 주세요.',
+	'error.formatted.default': '오류가 발생했습니다',
+	'error.formatted.defaultSuggestion': '문제가 계속되면 플러그인을 다시 로드해 주세요.',
+	'error.formatted.retry': '다시 시도',
+
+	// Upgrade
+	'upgrade.title': 'Quartz 버전',
+	'upgrade.checkPrompt': '업데이트 확인 및 Quartz 코어 파일 업그레이드',
+	'upgrade.checkButton': '업데이트 확인',
+	'upgrade.checking': '업데이트 확인 중...',
+	'upgrade.versionInfo': '버전 정보',
+	'upgrade.current': '현재',
+	'upgrade.latest': '최신',
+	'upgrade.upToDate': '최신 버전을 사용 중입니다',
+	'upgrade.updateAvailable': '업데이트 가능: {{current}} → {{latest}}',
+	'upgrade.updateBadge': '업데이트',
+	'upgrade.upToDateBadge': '최신 버전',
+	'upgrade.upgradeButton': '업그레이드',
+	'upgrade.checkAgain': '다시 확인',
+	'upgrade.starting': '업그레이드 시작 중...',
+	'upgrade.downloading': '파일 다운로드 중...',
+	'upgrade.applying': '변경 사항 적용 중...',
+	'upgrade.completed': '업그레이드 완료!',
+	'upgrade.failed': '업그레이드 실패',
+	'upgrade.cancel': '취소',
+	'upgrade.cancelling': '취소 중...',
+	'upgrade.filesUpdated': '{{count}}개 파일 업데이트됨',
+	'upgrade.successMessage': '{{version}}으로 업그레이드되었습니다',
+	'upgrade.failedMessage': '업그레이드 실패: {{error}}',
+	'upgrade.notInitialized': '업그레이드 서비스가 초기화되지 않았습니다',
+	'upgrade.checkFailed': '업데이트 확인 실패: {{message}}',
+
+	// Connection Status
+	'connection.connected': '{{owner}}/{{name}}에 연결됨 (브랜치: {{branch}})',
+	'connection.connecting': '연결 테스트 중...',
+};
+
+export default ko;

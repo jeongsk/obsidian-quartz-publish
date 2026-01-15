@@ -18,6 +18,7 @@ import type { NetworkService } from '../services/network';
 import { FileValidatorService } from '../services/file-validator';
 import { LargeFileWarningModal } from './large-file-warning-modal';
 import { MAX_FILE_SIZE } from '../types';
+import { t } from '../i18n';
 
 /**
  * 진행 상황 정보
@@ -222,7 +223,7 @@ export class DashboardModal extends Modal {
 
 		// 네트워크 연결 확인
 		if (this.isOffline) {
-			new Notice('인터넷 연결을 확인해주세요. 발행하려면 네트워크 연결이 필요합니다.');
+			new Notice(t('notice.network.offline'));
 			return;
 		}
 
@@ -253,10 +254,10 @@ export class DashboardModal extends Modal {
 			// 결과 표시
 			if (result.failed > 0) {
 				new Notice(
-					`발행 완료: ${result.succeeded}개 성공, ${result.failed}개 실패`
+					t('notice.batch.partial', { succeeded: result.succeeded, failed: result.failed })
 				);
 			} else {
-				new Notice(`${result.succeeded}개 노트가 발행되었습니다.`);
+				new Notice(t('notice.batch.success', { count: result.succeeded }));
 			}
 
 			// 상태 새로고침
@@ -264,8 +265,8 @@ export class DashboardModal extends Modal {
 			await this.loadStatus();
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : 'Unknown error';
-			new Notice(`발행 오류: ${message}`);
+				error instanceof Error ? error.message : t('error.unknown');
+			new Notice(t('notice.publish.error', { message }));
 		} finally {
 			this.state.isOperating = false;
 			this.render();
@@ -280,7 +281,7 @@ export class DashboardModal extends Modal {
 
 		// 네트워크 연결 확인
 		if (this.isOffline) {
-			new Notice('인터넷 연결을 확인해주세요. 삭제하려면 네트워크 연결이 필요합니다.');
+			new Notice(t('notice.network.offline'));
 			return;
 		}
 
@@ -293,10 +294,10 @@ export class DashboardModal extends Modal {
 
 		// 확인 모달 표시
 		const confirmed = await new ConfirmModal(this.app, {
-			title: '삭제 확인',
-			message: `${selectedFiles.length}개의 노트를 GitHub에서 삭제하시겠습니까?`,
-			confirmText: '삭제',
-			cancelText: '취소',
+			title: t('modal.delete.title'),
+			message: t('modal.delete.message', { count: selectedFiles.length }),
+			confirmText: t('dashboard.action.delete'),
+			cancelText: t('modal.confirm.cancel'),
 			isDangerous: true,
 		}).waitForConfirmation();
 
@@ -312,9 +313,9 @@ export class DashboardModal extends Modal {
 			const failed = results.filter((r) => !r.success).length;
 
 			if (failed > 0) {
-				new Notice(`삭제 완료: ${succeeded}개 성공, ${failed}개 실패`);
+				new Notice(t('notice.delete.partial', { succeeded, failed }));
 			} else {
-				new Notice(`${succeeded}개 노트가 삭제되었습니다.`);
+				new Notice(t('notice.delete.success', { count: succeeded }));
 			}
 
 			// 상태 새로고침
@@ -322,8 +323,8 @@ export class DashboardModal extends Modal {
 			await this.loadStatus();
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : 'Unknown error';
-			new Notice(`삭제 오류: ${message}`);
+				error instanceof Error ? error.message : t('error.unknown');
+			new Notice(t('notice.publish.error', { message }));
 		} finally {
 			this.state.isOperating = false;
 			this.render();
@@ -339,7 +340,7 @@ export class DashboardModal extends Modal {
 
 		// 네트워크 연결 확인
 		if (this.isOffline) {
-			new Notice('인터넷 연결을 확인해주세요. 동기화하려면 네트워크 연결이 필요합니다.');
+			new Notice(t('notice.network.offline'));
 			return;
 		}
 
@@ -350,7 +351,7 @@ export class DashboardModal extends Modal {
 
 		// 작업할 내용이 없으면 리턴
 		if (toPublish.length === 0 && toDelete.length === 0) {
-			new Notice('동기화할 변경사항이 없습니다.');
+			new Notice(t('notice.sync.noChanges'));
 			return;
 		}
 
@@ -371,10 +372,10 @@ export class DashboardModal extends Modal {
 		// 삭제가 포함된 경우 확인 모달 표시
 		if (toDelete.length > 0) {
 			const confirmed = await new ConfirmModal(this.app, {
-				title: '전체 동기화 확인',
-				message: `신규 ${newNotes.length}개, 수정 ${modified.length}개 발행 및 ${toDelete.length}개 삭제를 진행하시겠습니까?`,
-				confirmText: '동기화',
-				cancelText: '취소',
+				title: t('modal.sync.title'),
+				message: t('modal.sync.message', { newCount: newNotes.length, modifiedCount: modified.length, deleteCount: toDelete.length }),
+				confirmText: t('dashboard.action.syncAll'),
+				cancelText: t('modal.confirm.cancel'),
 				isDangerous: true,
 			}).waitForConfirmation();
 
@@ -412,10 +413,10 @@ export class DashboardModal extends Modal {
 
 			if (totalFailed > 0) {
 				new Notice(
-					`동기화 완료: ${totalSucceeded}개 성공, ${totalFailed}개 실패`
+					t('notice.batch.partial', { succeeded: totalSucceeded, failed: totalFailed })
 				);
 			} else {
-				new Notice(`${totalSucceeded}개 항목이 동기화되었습니다.`);
+				new Notice(t('notice.sync.success', { count: totalSucceeded }));
 			}
 
 			// 상태 새로고침
@@ -423,8 +424,8 @@ export class DashboardModal extends Modal {
 			await this.loadStatus();
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : 'Unknown error';
-			new Notice(`동기화 오류: ${message}`);
+				error instanceof Error ? error.message : t('error.unknown');
+			new Notice(t('notice.publish.error', { message }));
 		} finally {
 			this.state.isOperating = false;
 			this.render();
@@ -466,7 +467,7 @@ export class DashboardModal extends Modal {
 			'.quartz-publish-loading-text'
 		);
 		if (progressText) {
-			progressText.textContent = `상태 확인 중... ${this.progressInfo.current}/${this.progressInfo.total}`;
+			progressText.textContent = `${t('dashboard.status.loading')} ${this.progressInfo.current}/${this.progressInfo.total}`;
 		}
 	}
 
@@ -512,7 +513,7 @@ export class DashboardModal extends Modal {
 		loadingEl.createDiv({ cls: 'quartz-publish-loading-spinner' });
 		loadingEl.createDiv({
 			cls: 'quartz-publish-loading-text',
-			text: '상태 확인 중...',
+			text: t('dashboard.status.loading'),
 		});
 
 		// 프로그레스 바
@@ -543,9 +544,9 @@ export class DashboardModal extends Modal {
 			error.includes('Failed to fetch')
 		) {
 			return {
-				title: '네트워크 연결 오류',
-				message: '서버에 연결할 수 없습니다.',
-				suggestion: '인터넷 연결을 확인하고 다시 시도해주세요.',
+				title: t('error.formatted.network'),
+				message: t('error.formatted.networkMessage'),
+				suggestion: t('error.formatted.networkSuggestion'),
 			};
 		}
 
@@ -556,10 +557,9 @@ export class DashboardModal extends Modal {
 			error.includes('API rate limit exceeded')
 		) {
 			return {
-				title: 'GitHub API 제한',
-				message: 'GitHub API 요청 한도에 도달했습니다.',
-				suggestion:
-					'잠시 후 다시 시도해주세요. (일반적으로 1시간 후 초기화)',
+				title: t('error.formatted.rateLimit'),
+				message: t('error.formatted.rateLimitMessage'),
+				suggestion: t('error.formatted.rateLimitSuggestion'),
 			};
 		}
 
@@ -570,26 +570,26 @@ export class DashboardModal extends Modal {
 			error.includes('Bad credentials')
 		) {
 			return {
-				title: '인증 오류',
-				message: 'GitHub 인증에 실패했습니다.',
-				suggestion: '설정에서 GitHub 토큰을 확인해주세요.',
+				title: t('error.formatted.auth'),
+				message: t('error.formatted.authMessage'),
+				suggestion: t('error.formatted.authSuggestion'),
 			};
 		}
 
 		// 권한 오류
 		if (error.includes('404') || error.includes('Not Found')) {
 			return {
-				title: '저장소를 찾을 수 없음',
-				message: '지정된 GitHub 저장소를 찾을 수 없습니다.',
-				suggestion: '설정에서 저장소 정보를 확인해주세요.',
+				title: t('error.formatted.notFound'),
+				message: t('error.formatted.notFoundMessage'),
+				suggestion: t('error.formatted.notFoundSuggestion'),
 			};
 		}
 
 		// 기본 오류
 		return {
-			title: '오류가 발생했습니다',
+			title: t('error.formatted.default'),
 			message: error,
-			suggestion: '문제가 지속되면 플러그인을 다시 로드해주세요.',
+			suggestion: t('error.formatted.defaultSuggestion'),
 		};
 	}
 
@@ -622,9 +622,9 @@ export class DashboardModal extends Modal {
 
 		// 다시 시도 버튼
 		const buttonEl = errorEl.createEl('button', {
-			text: '다시 시도',
+			text: t('error.formatted.retry'),
 			cls: 'mod-cta qp:mt-4',
-			attr: { 'aria-label': '상태 다시 로드하기' },
+			attr: { 'aria-label': t('error.formatted.retry') },
 		});
 		buttonEl.addEventListener('click', () => this.loadStatus());
 	}
@@ -644,7 +644,7 @@ export class DashboardModal extends Modal {
 		});
 
 		titleContainer.createEl('h2', {
-			text: 'Publish Dashboard',
+			text: t('dashboard.title'),
 			cls: 'quartz-publish-dashboard-title',
 		});
 
@@ -655,16 +655,16 @@ export class DashboardModal extends Modal {
 				attr: {
 					role: 'status',
 					'aria-live': 'polite',
-					'aria-label': '오프라인 상태입니다. 발행 기능을 사용하려면 인터넷 연결이 필요합니다.',
+					'aria-label': t('notice.network.offline'),
 				},
 			});
 			offlineIndicator.createSpan({ text: '●', cls: 'qp:text-[8px]' });
-			offlineIndicator.createSpan({ text: '오프라인' });
+			offlineIndicator.createSpan({ text: t('dashboard.status.offline') });
 		}
 
 		// 새로고침 버튼
 		const refreshBtn = headerEl.createEl('button', {
-			text: '새로고침',
+			text: t('dashboard.action.refresh'),
 			cls: 'qp:text-sm',
 		});
 		refreshBtn.addEventListener('click', () => this.refresh());
@@ -786,14 +786,14 @@ export class DashboardModal extends Modal {
 			const checkboxEl = headerEl.createEl('input', {
 				attr: {
 					type: 'checkbox',
-					'aria-label': `전체 ${notes.length}개 노트 선택`,
+					'aria-label': t('dashboard.selectAll', { count: notes.length }),
 				},
 			}) as HTMLInputElement;
 			checkboxEl.checked = allSelected;
 			checkboxEl.addEventListener('change', () => this.toggleSelectAll());
 
 			headerEl.createSpan({
-				text: `전체 선택 (${notes.length}개)`,
+				text: t('dashboard.selectAll', { count: notes.length }),
 				attr: { id: 'select-all-label' },
 			});
 		}
@@ -817,15 +817,15 @@ export class DashboardModal extends Modal {
 	private getEmptyMessage(): string {
 		switch (this.state.activeTab) {
 			case 'new':
-				return '신규 발행할 노트가 없습니다.';
+				return t('dashboard.empty.new');
 			case 'modified':
-				return '수정된 노트가 없습니다.';
+				return t('dashboard.empty.modified');
 			case 'deleted':
-				return '삭제할 노트가 없습니다.';
+				return t('dashboard.empty.deleted');
 			case 'synced':
-				return '동기화된 노트가 없습니다.';
+				return t('dashboard.empty.synced');
 			default:
-				return '노트가 없습니다.';
+				return t('dashboard.empty.new');
 		}
 	}
 
@@ -893,7 +893,7 @@ export class DashboardModal extends Modal {
 		const selectedCount = this.state.selectedPaths.size;
 		if (selectedCount > 0) {
 			leftEl.createSpan({
-				text: `${selectedCount}개 선택됨`,
+				text: t('dashboard.selected', { count: selectedCount }),
 				cls: 'qp:text-sm qp:text-obs-text-muted',
 				attr: { 'aria-live': 'polite' },
 			});
@@ -901,8 +901,8 @@ export class DashboardModal extends Modal {
 
 		// 닫기 버튼
 		const closeBtn = rightEl.createEl('button', {
-			text: '닫기',
-			attr: { 'aria-label': '대시보드 닫기' },
+			text: t('dashboard.action.close'),
+			attr: { 'aria-label': t('dashboard.action.close') },
 		});
 		closeBtn.addEventListener('click', () => this.close());
 
@@ -910,11 +910,11 @@ export class DashboardModal extends Modal {
 		const hasPendingChanges = this.hasPendingChanges();
 		const pendingCount = this.getPendingChangesCount();
 		const syncAllBtn = rightEl.createEl('button', {
-			text: '전체 동기화',
+			text: t('dashboard.action.syncAll'),
 			attr: {
 				'aria-label': hasPendingChanges
-					? `전체 동기화: ${pendingCount}개 변경사항`
-					: '동기화할 변경사항 없음',
+					? `${t('dashboard.action.syncAll')}: ${pendingCount}`
+					: t('notice.sync.noChanges'),
 			},
 		});
 		syncAllBtn.disabled = !hasPendingChanges || this.state.isOperating;
@@ -923,13 +923,13 @@ export class DashboardModal extends Modal {
 		// 발행/삭제 버튼 (탭에 따라 다름)
 		if (this.state.activeTab === 'deleted') {
 			const deleteBtn = rightEl.createEl('button', {
-				text: '삭제',
+				text: t('dashboard.action.delete'),
 				cls: 'mod-warning',
 				attr: {
 					'aria-label':
 						selectedCount > 0
-							? `선택한 ${selectedCount}개 노트 삭제`
-							: '삭제할 노트를 선택하세요',
+							? `${t('dashboard.action.delete')}: ${selectedCount}`
+							: t('dashboard.action.delete'),
 				},
 			});
 			deleteBtn.disabled = selectedCount === 0 || this.state.isOperating;
@@ -939,13 +939,13 @@ export class DashboardModal extends Modal {
 			this.state.activeTab === 'modified'
 		) {
 			const publishBtn = rightEl.createEl('button', {
-				text: '발행',
+				text: t('dashboard.action.publish'),
 				cls: 'mod-cta',
 				attr: {
 					'aria-label':
 						selectedCount > 0
-							? `선택한 ${selectedCount}개 노트 발행`
-							: '발행할 노트를 선택하세요',
+							? `${t('dashboard.action.publish')}: ${selectedCount}`
+							: t('dashboard.action.publish'),
 				},
 			});
 			publishBtn.disabled = selectedCount === 0 || this.state.isOperating;
@@ -998,8 +998,8 @@ export class ConfirmModal extends Modal {
 		super(app);
 		this.title = options.title;
 		this.message = options.message;
-		this.confirmText = options.confirmText ?? '확인';
-		this.cancelText = options.cancelText ?? '취소';
+		this.confirmText = options.confirmText ?? t('modal.confirm.ok');
+		this.cancelText = options.cancelText ?? t('modal.confirm.cancel');
 		this.isDangerous = options.isDangerous ?? false;
 	}
 

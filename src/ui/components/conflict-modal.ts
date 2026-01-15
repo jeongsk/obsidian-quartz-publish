@@ -7,6 +7,7 @@
 import { App, Modal, Setting } from 'obsidian';
 import { setIcon } from 'obsidian';
 import type { ConflictResolution } from '../../types';
+import { t } from '../../i18n';
 
 /**
  * ConflictModal 옵션
@@ -57,15 +58,13 @@ export class ConflictModal extends Modal {
 		setIcon(iconEl, 'alert-triangle');
 
 		headerEl.createEl('h2', {
-			text: '설정 충돌 감지',
+			text: t('modal.conflict.title'),
 			cls: 'qp:m-0',
 		});
 
 		// 설명 메시지
 		contentEl.createEl('p', {
-			text:
-				this.options.message ||
-				'원격 저장소의 설정 파일이 변경되었습니다. 어떻게 처리하시겠습니까?',
+			text: this.options.message || t('modal.conflict.message'),
 			cls: 'quartz-publish-conflict-modal-message qp:mb-4 qp:text-obs-text-muted',
 		});
 
@@ -110,7 +109,7 @@ export class ConflictModal extends Modal {
 
 		// 취소 버튼
 		buttonSetting.addButton((button) =>
-			button.setButtonText('취소').onClick(() => {
+			button.setButtonText(t('modal.confirm.cancel')).onClick(() => {
 				this.resolvePromise?.('cancel');
 				this.resolvePromise = null;
 				this.close();
@@ -120,7 +119,7 @@ export class ConflictModal extends Modal {
 		// 강제 덮어쓰기 버튼
 		buttonSetting.addButton((button) =>
 			button
-				.setButtonText('강제 덮어쓰기')
+				.setButtonText(t('modal.conflict.overwrite'))
 				.setWarning()
 				.onClick(() => {
 					this.resolvePromise?.('force_overwrite');
@@ -132,7 +131,7 @@ export class ConflictModal extends Modal {
 		// 새로고침 버튼 (권장)
 		buttonSetting.addButton((button) =>
 			button
-				.setButtonText('새로고침 후 재적용')
+				.setButtonText(t('modal.conflict.reload'))
 				.setCta()
 				.onClick(() => {
 					this.resolvePromise?.('reload');

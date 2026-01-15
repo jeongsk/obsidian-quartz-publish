@@ -25,6 +25,7 @@ import { ConfirmModal } from './components/confirm-modal';
 import { ConflictModal } from './components/conflict-modal';
 import { CreateRepoModal } from './create-repo-modal';
 import { DeployGuideModal } from './deploy-guide-modal';
+import { t } from '../i18n';
 
 /**
  * 플러그인 설정 탭
@@ -103,19 +104,17 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 * GitHub 연동 섹션 생성
 	 */
 	private createGitHubSection(containerEl: HTMLElement): void {
-		new Setting(containerEl).setName('GitHub Connection').setHeading();
+		new Setting(containerEl).setName(t('settings.github.title')).setHeading();
 
 		// GitHub Token 입력
 		new Setting(containerEl)
-			.setName('GitHub Token')
+			.setName(t('settings.github.token'))
 			.setDesc(
 				createFragment((el) => {
-					el.appendText('Personal Access Token with ');
-					el.createEl('code', { text: 'repo' });
-					el.appendText(' scope. ');
+					el.appendText(t('settings.github.tokenDesc') + ' ');
 					el.createEl('a', {
 						href: 'https://github.com/settings/tokens/new?scopes=repo',
-						text: 'Create token',
+						text: t('settings.github.tokenLink'),
 					});
 				})
 			)
@@ -139,8 +138,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// Repository URL 입력
 		new Setting(containerEl)
-			.setName('Repository URL')
-			.setDesc('Your Quartz repository URL (e.g., https://github.com/user/quartz)')
+			.setName(t('settings.github.repoUrl'))
+			.setDesc(t('settings.github.repoUrlDesc'))
 			.addText((text) =>
 				text
 					.setPlaceholder('https://github.com/user/quartz')
@@ -154,11 +153,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		if (!this.plugin.settings.repoUrl && this.plugin.settings.githubToken) {
 			new Setting(containerEl)
-				.setName('New to Quartz?')
-				.setDesc('Create a new Quartz repository from template')
+				.setName(t('settings.github.newToQuartz'))
+				.setDesc(t('settings.github.newToQuartzDesc'))
 				.addButton((button) =>
 					button
-						.setButtonText('Create Quartz Repository')
+						.setButtonText(t('settings.github.createRepo'))
 						.setCta()
 						.onClick(() => {
 							this.openCreateRepoModal();
@@ -168,8 +167,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 브랜치 설정
 		new Setting(containerEl)
-			.setName('Branch')
-			.setDesc('Target branch for publishing (auto-detected on connection test)')
+			.setName(t('settings.github.branch'))
+			.setDesc(t('settings.github.branchDesc'))
 			.addText((text) => {
 				this.branchInputComponent = text;
 				text
@@ -183,11 +182,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 연결 테스트 버튼
 		const testConnectionSetting = new Setting(containerEl)
-			.setName('Test Connection')
-			.setDesc('Verify GitHub connection and Quartz repository')
+			.setName(t('settings.github.testConnection'))
+			.setDesc(t('settings.github.testConnectionDesc'))
 			.addButton((button) =>
 				button
-					.setButtonText('Test Connection')
+					.setButtonText(t('settings.github.testConnection'))
 					.setCta()
 					.onClick(async () => {
 						await this.testConnection();
@@ -204,18 +203,16 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 * 날짜 자동 추가 섹션 생성
 	 */
 	private createAutoDateSection(containerEl: HTMLElement): void {
-		new Setting(containerEl).setName('Auto Date Fields').setHeading();
+		new Setting(containerEl).setName(t('settings.autoDate.title')).setHeading();
 
 		new Setting(containerEl)
-			.setName('Automatic date fields')
-			.setDesc(
-				'Automatically add date fields to frontmatter when publishing. Existing fields are preserved.'
-			);
+			.setName(t('settings.autoDate.title'))
+			.setDesc(t('settings.autoDate.desc'));
 
 		// Created 날짜 토글
 		new Setting(containerEl)
-			.setName('Add created date')
-			.setDesc('Add file creation date (format: YYYY-MM-DD)')
+			.setName(t('settings.autoDate.created'))
+			.setDesc(t('settings.autoDate.createdDesc'))
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.autoDateSettings?.enableCreated ?? DEFAULT_AUTO_DATE_SETTINGS.enableCreated)
@@ -230,8 +227,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// Modified 날짜 토글
 		new Setting(containerEl)
-			.setName('Add modified date')
-			.setDesc('Add file modification date (format: YYYY-MM-DD)')
+			.setName(t('settings.autoDate.modified'))
+			.setDesc(t('settings.autoDate.modifiedDesc'))
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.autoDateSettings?.enableModified ?? DEFAULT_AUTO_DATE_SETTINGS.enableModified)
@@ -246,8 +243,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// Published 날짜 토글
 		new Setting(containerEl)
-			.setName('Add published date')
-			.setDesc('Add current date as published date (format: YYYY-MM-DD)')
+			.setName(t('settings.autoDate.published'))
+			.setDesc(t('settings.autoDate.publishedDesc'))
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.autoDateSettings?.enablePublished ?? DEFAULT_AUTO_DATE_SETTINGS.enablePublished)
@@ -271,16 +268,16 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 입력값 검증
 		if (!githubToken) {
-			this.showConnectionStatus('error', 'Please enter your GitHub token');
+			this.showConnectionStatus('error', t('error.tokenRequired'));
 			return;
 		}
 
 		if (!repoUrl) {
-			this.showConnectionStatus('error', 'Please enter your repository URL');
+			this.showConnectionStatus('error', t('error.repoUrlRequired'));
 			return;
 		}
 
-		this.showConnectionStatus('connecting', 'Testing connection...');
+		this.showConnectionStatus('connecting', t('connection.connecting'));
 
 		try {
 			const github = new GitHubService(githubToken, repoUrl, defaultBranch);
@@ -300,17 +297,17 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 				this.showConnectionStatus(
 					'connected',
-					`Connected to ${result.repository.owner}/${result.repository.name} (branch: ${detectedBranch})`
+					t('connection.connected', { owner: result.repository.owner, name: result.repository.name, branch: detectedBranch })
 				);
-				new Notice('Connection successful!');
+				new Notice(t('notice.connection.success'));
 			} else if (result.error) {
 				this.showConnectionStatus('error', this.getErrorMessage(result.error.type));
-				new Notice(`Connection failed: ${result.error.message}`);
+				new Notice(t('notice.connection.failed', { message: result.error.message }));
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
+			const message = error instanceof Error ? error.message : t('error.unknown');
 			this.showConnectionStatus('error', message);
-			new Notice(`Connection failed: ${message}`);
+			new Notice(t('notice.connection.failed', { message }));
 		}
 	}
 
@@ -353,17 +350,17 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	private getErrorMessage(errorType: string): string {
 		switch (errorType) {
 			case 'invalid_token':
-				return 'Invalid or expired GitHub token';
+				return t('error.github.invalidToken');
 			case 'not_found':
-				return 'Repository not found or no access permission';
+				return t('error.github.notFound');
 			case 'not_quartz':
-				return 'This repository is not a Quartz site (quartz.config.ts not found)';
+				return t('error.github.notQuartz');
 			case 'rate_limited':
-				return 'GitHub API rate limit exceeded. Please try again later.';
+				return t('error.github.rateLimit');
 			case 'network_error':
-				return 'Network error. Please check your internet connection.';
+				return t('error.github.network');
 			default:
-				return 'An unknown error occurred';
+				return t('error.unknown');
 		}
 	}
 
@@ -375,7 +372,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 * Quartz 설정 섹션 생성
 	 */
 	private createQuartzSettingsSection(containerEl: HTMLElement): void {
-		new Setting(containerEl).setName('Quartz Configuration').setHeading();
+		new Setting(containerEl).setName(t('settings.quartz.title')).setHeading();
 
 		// 설정 컨테이너 (동적 로딩용)
 		this.quartzSettingsContainerEl = containerEl.createDiv({
@@ -397,7 +394,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const { githubToken, repoUrl } = this.plugin.settings;
 		if (!githubToken || !repoUrl) {
 			this.quartzSettingsContainerEl.createEl('p', {
-				text: 'Connect to GitHub first to configure Quartz settings.',
+				text: t('settings.quartz.connectFirst'),
 				cls: 'qp:text-obs-text-muted qp:text-sm',
 			});
 			return;
@@ -405,10 +402,10 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 설정 로드 버튼
 		new Setting(this.quartzSettingsContainerEl)
-			.setName('Load Quartz Settings')
-			.setDesc('Fetch settings from quartz.config.ts')
+			.setName(t('settings.quartz.load'))
+			.setDesc(t('settings.quartz.loadDesc'))
 			.addButton((button) =>
-				button.setButtonText('Load').onClick(async () => {
+				button.setButtonText(t('settings.quartz.load')).onClick(async () => {
 					await this.loadQuartzSettings();
 				})
 			);
@@ -422,14 +419,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
 		if (!githubToken || !repoUrl) {
-			new Notice('Please connect to GitHub first');
+			new Notice(t('settings.quartz.connectFirst'));
 			return;
 		}
 
 		this.isQuartzSettingsLoading = true;
 		this.quartzSettingsContainerEl.empty();
 		this.quartzSettingsContainerEl.createEl('p', {
-			text: 'Loading Quartz settings...',
+			text: t('settings.quartz.loading'),
 			cls: 'qp:text-obs-text-muted qp:text-sm',
 		});
 
@@ -458,26 +455,26 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			const configFile = await this.quartzConfigService.fetchQuartzConfig();
 			if (!configFile) {
-				throw new Error(`quartz.config.ts not found in branch "${defaultBranch}"`);
+				throw new Error(t('error.configNotFound', { branch: defaultBranch }));
 			}
 
 			const parsed = this.quartzConfigService.parseConfig(configFile.content);
 			if (!parsed) {
-				throw new Error('Failed to parse quartz.config.ts');
+				throw new Error(t('error.parseFailed'));
 			}
 
 			this.renderQuartzSettings(parsed);
 		} catch (error) {
 			this.quartzSettingsContainerEl.empty();
-			const message = error instanceof Error ? error.message : 'Unknown error';
+			const message = error instanceof Error ? error.message : t('error.unknown');
 			this.quartzSettingsContainerEl.createEl('p', {
-				text: `Failed to load settings: ${message}`,
+				text: t('settings.quartz.loadFailed', { message }),
 				cls: 'qp:text-obs-text-error qp:text-sm',
 			});
 
 			// 재시도 버튼
 			new Setting(this.quartzSettingsContainerEl).addButton((button) =>
-				button.setButtonText('Retry').onClick(async () => {
+				button.setButtonText(t('settings.quartz.retry')).onClick(async () => {
 					await this.loadQuartzSettings();
 				})
 			);
@@ -651,7 +648,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// UI 상태 업데이트
 		this.updateApplyFlowUI();
 
-		new Notice('변경사항이 취소되었습니다');
+		new Notice(t('notice.settings.discarded'));
 	}
 
 	/**
@@ -669,16 +666,16 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// 유효성 검사
 		const validation = this.siteInfoSection?.validate();
 		if (validation && !validation.valid) {
-			new Notice(`유효성 검사 실패: ${validation.errors[0]}`);
+			new Notice(t('notice.settings.validationFailed', { error: validation.errors[0] }));
 			return;
 		}
 
 		// 확인 모달 (T036-T037)
 		const confirmModal = new ConfirmModal(this.app, {
-			title: '설정 변경 적용',
-			message: `다음 설정이 변경됩니다:\n${this.pendingChangesManager.getChangeSummary()}\n\n변경사항을 GitHub에 저장하시겠습니까?`,
-			confirmText: '적용',
-			cancelText: '취소',
+			title: t('modal.apply.title'),
+			message: t('modal.apply.message', { summary: this.pendingChangesManager.getChangeSummary() }),
+			confirmText: t('modal.apply.confirm'),
+			cancelText: t('modal.confirm.cancel'),
 		});
 
 		const confirmed = await confirmModal.openAsync();
@@ -704,7 +701,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						// 새로고침 후 재시도
 						this.quartzConfigService.invalidateCache();
 						await this.loadQuartzSettings();
-						new Notice('설정을 다시 불러왔습니다. 변경사항을 다시 적용해주세요.');
+						new Notice(t('notice.settings.reloaded'));
 						return;
 
 					case 'force_overwrite':
@@ -735,15 +732,15 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				// 저장 성공
 				this.pendingChangesManager.markAsSaved(currentConfig, result.newSha ?? '');
 				this.updateApplyFlowUI();
-				new Notice('설정이 성공적으로 저장되었습니다');
+				new Notice(t('notice.settings.saved'));
 			} else {
 				// 저장 실패
-				new Notice(`저장 실패: ${result.errorMessage}`);
+				new Notice(t('error.saveFailed', { message: result.errorMessage ?? '' }));
 				this.applyButton?.setEnabled(true);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : '알 수 없는 오류';
-			new Notice(`저장 실패: ${message}`);
+			const message = error instanceof Error ? error.message : t('error.unknown');
+			new Notice(t('error.saveFailed', { message }));
 			this.applyButton?.setEnabled(true);
 		}
 	}
@@ -755,7 +752,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	private renderUpgradeSection(): void {
 		if (!this.quartzSettingsContainerEl) return;
 
-		new Setting(this.quartzSettingsContainerEl).setName('Quartz Version').setHeading();
+		new Setting(this.quartzSettingsContainerEl).setName(t('upgrade.title')).setHeading();
 
 		this.upgradeContainerEl = this.quartzSettingsContainerEl.createDiv({
 			cls: 'quartz-publish-version-card',
@@ -766,12 +763,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		});
 
 		promptContainer.createEl('p', {
-			text: 'Check for updates and upgrade Quartz core files',
+			text: t('upgrade.checkPrompt'),
 			cls: 'quartz-publish-version-check-prompt-text',
 		});
 
 		const checkButton = promptContainer.createEl('button', {
-			text: 'Check for Updates',
+			text: t('upgrade.checkButton'),
 			cls: 'mod-cta',
 		});
 		checkButton.addEventListener('click', async () => {
@@ -787,7 +784,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
 		if (!githubToken || !repoUrl) {
-			new Notice('Please connect to GitHub first');
+			new Notice(t('settings.quartz.connectFirst'));
 			return;
 		}
 
@@ -797,7 +794,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		});
 		loadingContainer.createDiv({ cls: 'quartz-publish-loading-spinner' });
 		loadingContainer.createEl('span', {
-			text: 'Checking for updates...',
+			text: t('upgrade.checking'),
 			cls: 'quartz-publish-version-loading-text',
 		});
 
@@ -809,18 +806,18 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			this.renderVersionInfo(versionInfo);
 		} catch (error) {
 			this.upgradeContainerEl.empty();
-			const message = error instanceof Error ? error.message : 'Unknown error';
+			const message = error instanceof Error ? error.message : t('error.unknown');
 
 			const errorContainer = this.upgradeContainerEl.createDiv({
 				cls: 'quartz-publish-version-error',
 			});
 			errorContainer.createEl('p', {
-				text: `Failed to check updates: ${message}`,
+				text: t('upgrade.checkFailed', { message }),
 				cls: 'quartz-publish-version-error-text',
 			});
 
 			const retryButton = errorContainer.createEl('button', {
-				text: 'Retry',
+				text: t('settings.quartz.retry'),
 			});
 			retryButton.addEventListener('click', async () => {
 				await this.checkForUpdates();
@@ -840,28 +837,28 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			cls: 'quartz-publish-version-card-header',
 		});
 		headerEl.createEl('span', {
-			text: 'Version Info',
+			text: t('upgrade.versionInfo'),
 			cls: 'quartz-publish-version-card-title',
 		});
 
 		const badgeEl = headerEl.createEl('span', {
 			cls: `quartz-publish-version-badge ${versionInfo.hasUpdate ? 'quartz-publish-version-badge--warning' : 'quartz-publish-version-badge--success'}`,
 		});
-		badgeEl.textContent = versionInfo.hasUpdate ? '⚠ Update' : '✓ Up to date';
+		badgeEl.textContent = versionInfo.hasUpdate ? t('upgrade.updateBadge') : t('upgrade.upToDateBadge');
 
 		const gridEl = this.upgradeContainerEl.createDiv({
 			cls: 'quartz-publish-version-grid',
 		});
 
 		const currentItem = gridEl.createDiv({ cls: 'quartz-publish-version-item' });
-		currentItem.createEl('span', { text: 'Current', cls: 'quartz-publish-version-label' });
+		currentItem.createEl('span', { text: t('upgrade.current'), cls: 'quartz-publish-version-label' });
 		currentItem.createEl('span', {
 			text: versionInfo.current ?? 'Unknown',
 			cls: 'quartz-publish-version-value',
 		});
 
 		const latestItem = gridEl.createDiv({ cls: 'quartz-publish-version-item' });
-		latestItem.createEl('span', { text: 'Latest', cls: 'quartz-publish-version-label' });
+		latestItem.createEl('span', { text: t('upgrade.latest'), cls: 'quartz-publish-version-label' });
 		latestItem.createEl('span', {
 			text: versionInfo.latest ?? 'Unknown',
 			cls: 'quartz-publish-version-value',
@@ -877,7 +874,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				cls: 'quartz-publish-version-status-icon',
 			});
 			statusEl.createEl('span', {
-				text: `Update available: ${versionInfo.current} → ${versionInfo.latest}`,
+				text: t('upgrade.updateAvailable', { current: versionInfo.current ?? '', latest: versionInfo.latest ?? '' }),
 				cls: 'quartz-publish-version-status-text',
 			});
 		} else {
@@ -886,7 +883,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				cls: 'quartz-publish-version-status-icon',
 			});
 			statusEl.createEl('span', {
-				text: 'You are using the latest version',
+				text: t('upgrade.upToDate'),
 				cls: 'quartz-publish-version-status-text',
 			});
 		}
@@ -896,7 +893,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		});
 
 		const checkAgainButton = footerEl.createEl('button', {
-			text: 'Check Again',
+			text: t('upgrade.checkAgain'),
 		});
 		checkAgainButton.addEventListener('click', async () => {
 			await this.checkForUpdates();
@@ -904,7 +901,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		if (versionInfo.hasUpdate) {
 			const upgradeButton = footerEl.createEl('button', {
-				text: 'Upgrade',
+				text: t('upgrade.upgradeButton'),
 				cls: 'mod-cta',
 			});
 			upgradeButton.addEventListener('click', async () => {
@@ -918,7 +915,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 */
 	private async performUpgrade(): Promise<void> {
 		if (!this.upgradeContainerEl || !this.quartzUpgradeService) {
-			new Notice('Upgrade service not initialized');
+			new Notice(t('upgrade.notInitialized'));
 			return;
 		}
 
@@ -930,7 +927,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		});
 
 		const statusEl = progressContainer.createEl('p', {
-			text: 'Starting upgrade...',
+			text: t('upgrade.starting'),
 			cls: 'qp:font-medium',
 		});
 
@@ -957,20 +954,20 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const cancelSetting = new Setting(progressContainer);
 
 		cancelSetting.addButton((button) =>
-			button.setButtonText('Cancel').onClick(() => {
+			button.setButtonText(t('upgrade.cancel')).onClick(() => {
 				this.quartzUpgradeService?.abort();
-				statusEl.textContent = 'Cancelling...';
+				statusEl.textContent = t('upgrade.cancelling');
 			})
 		);
 
 		// 업그레이드 실행
 		const onProgress = (progress: QuartzUpgradeProgress) => {
 			const statusTexts: Record<string, string> = {
-				checking: 'Checking version...',
-				downloading: 'Downloading files...',
-				applying: 'Applying changes...',
-				completed: 'Upgrade completed!',
-				error: 'Upgrade failed',
+				checking: t('upgrade.checking'),
+				downloading: t('upgrade.downloading'),
+				applying: t('upgrade.applying'),
+				completed: t('upgrade.completed'),
+				error: t('upgrade.failed'),
 			};
 
 			statusEl.textContent = statusTexts[progress.status] || progress.status;
@@ -999,33 +996,33 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			cancelSetting.settingEl.remove();
 
 			if (result.success) {
-				statusEl.textContent = `Successfully upgraded to ${result.version}`;
+				statusEl.textContent = t('upgrade.successMessage', { version: result.version ?? '' });
 				statusEl.className = 'qp:text-obs-text-success qp:font-medium';
 				progressBar.setCssProps({ '--progress-width': '100%' });
-				detailEl.textContent = `${result.filesUpdated} files updated`;
+				detailEl.textContent = t('upgrade.filesUpdated', { count: result.filesUpdated ?? 0 });
 
-				new Notice(`Quartz upgraded to ${result.version}`);
+				new Notice(t('upgrade.successMessage', { version: result.version ?? '' }));
 			} else {
-				statusEl.textContent = 'Upgrade failed';
+				statusEl.textContent = t('upgrade.failed');
 				statusEl.className = 'qp:text-obs-text-error qp:font-medium';
-				detailEl.textContent = result.error || 'Unknown error';
+				detailEl.textContent = result.error || t('error.unknown');
 
-				new Notice(`Upgrade failed: ${result.error}`);
+				new Notice(t('upgrade.failedMessage', { error: result.error ?? '' }));
 			}
 		} catch (error) {
 			cancelSetting.settingEl.remove();
 
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			statusEl.textContent = 'Upgrade failed';
+			const message = error instanceof Error ? error.message : t('error.unknown');
+			statusEl.textContent = t('upgrade.failed');
 			statusEl.className = 'qp:text-obs-text-error qp:font-medium';
 			detailEl.textContent = message;
 
-			new Notice(`Upgrade failed: ${message}`);
+			new Notice(t('upgrade.failedMessage', { error: message }));
 		}
 
 		// 다시 확인 버튼
 		new Setting(progressContainer).addButton((button) =>
-			button.setButtonText('Check Again').onClick(async () => {
+			button.setButtonText(t('upgrade.checkAgain')).onClick(async () => {
 				await this.checkForUpdates();
 			})
 		);

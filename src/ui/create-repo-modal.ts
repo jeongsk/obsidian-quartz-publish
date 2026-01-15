@@ -3,6 +3,7 @@ import type { App } from 'obsidian';
 import { RepositoryCreatorService } from '../services/repository-creator';
 import type { CreatedRepository } from '../types';
 import { DEFAULT_REPO_NAME } from '../types';
+import { t } from '../i18n';
 
 type ModalState = 'idle' | 'validating' | 'creating' | 'success' | 'error';
 
@@ -58,7 +59,7 @@ export class CreateRepoModal extends Modal {
 		const { contentEl } = this;
 
 		contentEl.createEl('h2', { 
-			text: 'Create Quartz Repository',
+			text: t('modal.createRepo.title'),
 			cls: 'qp:text-lg qp:font-semibold qp:mb-4',
 		});
 
@@ -72,8 +73,8 @@ export class CreateRepoModal extends Modal {
 		const isDisabled = this.state === 'validating' || this.state === 'creating';
 
 		new Setting(contentEl)
-			.setName('Repository Name')
-			.setDesc(`Enter a name for your Quartz repository (default: "${DEFAULT_REPO_NAME}")`)
+			.setName(t('modal.createRepo.name'))
+			.setDesc(t('modal.createRepo.nameDesc'))
 			.addText((text) => {
 				text
 					.setPlaceholder(DEFAULT_REPO_NAME)
@@ -87,12 +88,12 @@ export class CreateRepoModal extends Modal {
 			});
 
 		new Setting(contentEl)
-			.setName('Visibility')
-			.setDesc('Public repositories can be hosted free on GitHub Pages')
+			.setName(t('modal.createRepo.visibility'))
+			.setDesc(t('modal.createRepo.visibilityDesc'))
 			.addDropdown((dropdown) => {
 				dropdown
-					.addOption('public', 'Public')
-					.addOption('private', 'Private')
+					.addOption('public', t('modal.createRepo.public'))
+					.addOption('private', t('modal.createRepo.private'))
 					.setValue(this.visibility)
 					.setDisabled(isDisabled)
 					.onChange((value) => {
@@ -105,7 +106,7 @@ export class CreateRepoModal extends Modal {
 				cls: 'qp:bg-yellow-50 qp:border qp:border-yellow-200 qp:text-yellow-800 qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:text-sm',
 			});
 			warningEl.createSpan({ 
-				text: '⚠️ Private repositories require GitHub Pro for GitHub Pages hosting.' 
+				text: '⚠️ ' + t('modal.createRepo.privateWarning')
 			});
 		}
 
@@ -114,14 +115,14 @@ export class CreateRepoModal extends Modal {
 		});
 
 		const cancelBtn = buttonContainer.createEl('button', {
-			text: 'Cancel',
+			text: t('modal.confirm.cancel'),
 			cls: 'qp:px-4 qp:py-2',
 		});
 		cancelBtn.addEventListener('click', () => this.close());
 		cancelBtn.disabled = isDisabled;
 
 		const createBtn = buttonContainer.createEl('button', {
-			text: this.state === 'creating' ? 'Creating...' : 'Create',
+			text: this.state === 'creating' ? t('modal.createRepo.creating') : t('modal.createRepo.create'),
 			cls: 'mod-cta qp:px-4 qp:py-2',
 		});
 		createBtn.addEventListener('click', () => this.handleCreate());
@@ -131,7 +132,7 @@ export class CreateRepoModal extends Modal {
 			const progressEl = contentEl.createDiv({
 				cls: 'qp:mt-4 qp:text-center qp:text-sm qp:text-gray-500',
 			});
-			progressEl.createSpan({ text: 'Creating repository from Quartz template...' });
+			progressEl.createSpan({ text: t('modal.createRepo.creatingProgress') });
 		}
 	}
 
@@ -139,7 +140,7 @@ export class CreateRepoModal extends Modal {
 		const { contentEl } = this;
 
 		contentEl.createEl('h2', {
-			text: '✅ Repository Created!',
+			text: '✅ ' + t('modal.createRepo.success'),
 			cls: 'qp:text-lg qp:font-semibold qp:mb-4 qp:text-green-600',
 		});
 
@@ -166,14 +167,14 @@ export class CreateRepoModal extends Modal {
 		});
 
 		const closeBtn = buttonContainer.createEl('button', {
-			text: 'Close',
+			text: t('dashboard.action.close'),
 			cls: 'qp:px-4 qp:py-2',
 		});
 		closeBtn.addEventListener('click', () => this.close());
 
 		if (this.options.onShowDeployGuide) {
 			const guideBtn = buttonContainer.createEl('button', {
-				text: 'View Deploy Guide',
+				text: t('modal.createRepo.viewGuide'),
 				cls: 'mod-cta qp:px-4 qp:py-2',
 			});
 			guideBtn.addEventListener('click', () => {

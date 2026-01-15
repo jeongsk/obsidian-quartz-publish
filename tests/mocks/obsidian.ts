@@ -527,3 +527,11 @@ export function sanitizeHTMLToDom(html: string): DocumentFragment {
 	template.innerHTML = html;
 	return template.content;
 }
+
+// ============================================================================
+// Moment Mock
+// ============================================================================
+
+export const moment = {
+	locale: () => 'en',
+};

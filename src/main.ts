@@ -6,6 +6,7 @@ import { PublishService } from './services/publish';
 import { StatusService } from './services/status';
 import { NetworkService } from './services/network';
 import { DashboardModal } from './ui/dashboard-modal';
+import { initI18n, t } from './i18n';
 
 /**
  * Quartz Publish Plugin
@@ -19,6 +20,7 @@ export default class QuartzPublishPlugin extends Plugin {
 	private networkService!: NetworkService;
 
 	async onload(): Promise<void> {
+		initI18n();
 		await this.loadSettings();
 
 		// NetworkService 초기화
@@ -39,7 +41,7 @@ export default class QuartzPublishPlugin extends Plugin {
 		// 커맨드 등록: 현재 노트 발행
 		this.addCommand({
 			id: 'publish-current-note',
-			name: 'Publish current note to Quartz',
+			name: t('command.publishNote'),
 			checkCallback: (checking: boolean) => {
 				const file = this.app.workspace.getActiveFile();
 				if (file && file.extension === 'md') {
@@ -55,24 +57,24 @@ export default class QuartzPublishPlugin extends Plugin {
 		// 커맨드 등록: 대시보드 열기
 		this.addCommand({
 			id: 'open-publish-dashboard',
-			name: 'Open Publish Dashboard',
+			name: t('command.openDashboard'),
 			callback: () => {
 				this.openDashboard();
 			},
 		});
 
 		// 리본 아이콘 등록: 대시보드 열기
-		this.addRibbonIcon('layout-dashboard', 'Open Publish Dashboard', () => {
+		this.addRibbonIcon('layout-dashboard', t('command.openDashboard'), () => {
 			this.openDashboard();
 		});
 
 		// 리본 아이콘 등록: 현재 노트 발행
-		this.addRibbonIcon('upload', 'Publish current note to Quartz', () => {
+		this.addRibbonIcon('upload', t('command.publishNote'), () => {
 			const file = this.app.workspace.getActiveFile();
 			if (file && file.extension === 'md') {
 				this.publishNote(file);
 			} else {
-				new Notice('No markdown file is active');
+				new Notice(t('notice.noActiveFile'));
 			}
 		});
 
@@ -81,7 +83,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			this.app.workspace.on('file-menu', (menu, file) => {
 				if (file instanceof TFile && file.extension === 'md') {
 					menu.addItem((item) => {
-						item.setTitle('Publish to Quartz')
+						item.setTitle(t('menu.publishToQuartz'))
 							.setIcon('upload')
 							.onClick(() => this.publishNote(file));
 					});
@@ -147,17 +149,17 @@ export default class QuartzPublishPlugin extends Plugin {
 	async publishNote(file: TFile): Promise<void> {
 		// 네트워크 연결 확인
 		if (!this.networkService.isOnline()) {
-			new Notice('인터넷 연결을 확인해주세요. 발행하려면 네트워크 연결이 필요합니다.');
+			new Notice(t('notice.network.offline'));
 			return;
 		}
 
 		// 설정 확인
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
-			new Notice('Please configure GitHub settings first');
+			new Notice(t('notice.configureFirst'));
 			return;
 		}
 
-		new Notice(`Publishing ${file.basename}...`);
+		new Notice(t('notice.publish.start', { filename: file.basename }));
 
 		try {
 			const publishService = new PublishService(
@@ -172,13 +174,13 @@ export default class QuartzPublishPlugin extends Plugin {
 			const result = await publishService.publishNote(file);
 
 			if (result.success) {
-				new Notice(`Published: ${file.basename} → ${result.remotePath}`);
+				new Notice(t('notice.publish.success', { filename: file.basename, path: result.remotePath ?? '' }));
 			} else {
-				new Notice(`Failed to publish: ${file.basename} (${result.error})`);
+				new Notice(t('notice.publish.failed', { filename: file.basename, error: result.error ?? '' }));
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			new Notice(`Publish error: ${message}`);
+			const message = error instanceof Error ? error.message : t('error.unknown');
+			new Notice(t('notice.publish.error', { message }));
 			console.error('[QuartzPublish] Publish error:', error);
 		}
 	}
@@ -208,7 +210,7 @@ export default class QuartzPublishPlugin extends Plugin {
 		};
 
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
-			new Notice('Please configure GitHub settings first');
+			new Notice(t('notice.configureFirst'));
 			return results;
 		}
 
@@ -231,7 +233,7 @@ export default class QuartzPublishPlugin extends Plugin {
 		const results: UnpublishResult[] = [];
 
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
-			new Notice('Please configure GitHub settings first');
+			new Notice(t('notice.configureFirst'));
 			return results;
 		}
 

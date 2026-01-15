@@ -7,6 +7,7 @@
 import { App, Modal } from 'obsidian';
 import type { LargeFileInfo } from '../types';
 import { FileValidatorService } from '../services/file-validator';
+import { t } from '../i18n';
 
 /**
  * 대용량 파일 경고 모달 옵션
@@ -96,13 +97,14 @@ export class LargeFileWarningModal extends Modal {
 
 		// 제목
 		const titleContainer = headerEl.createDiv({ cls: 'qp:flex-1' });
+		const maxSizeFormatted = FileValidatorService.formatFileSize(this.options.maxFileSize);
 		titleContainer.createEl('h3', {
-			text: '대용량 파일 경고',
+			text: t('modal.largeFile.title'),
 			cls: 'qp:m-0 qp:text-lg qp:font-semibold',
 			attr: { id: 'large-file-warning-title' },
 		});
 		titleContainer.createDiv({
-			text: `${this.options.largeFiles.length}개의 대용량 파일이 발견되었습니다`,
+			text: t('modal.largeFile.message', { count: this.options.largeFiles.length, size: maxSizeFormatted }),
 			cls: 'qp:text-sm qp:text-obs-text-muted qp:mt-1',
 		});
 	}
@@ -185,9 +187,9 @@ export class LargeFileWarningModal extends Modal {
 
 		// 취소 버튼
 		const cancelBtn = actionsEl.createEl('button', {
-			text: '취소',
+			text: t('modal.confirm.cancel'),
 			attr: {
-				'aria-label': '발행 취소',
+				'aria-label': t('modal.confirm.cancel'),
 			},
 		});
 		cancelBtn.addEventListener('click', () => {
@@ -197,10 +199,10 @@ export class LargeFileWarningModal extends Modal {
 
 		// 계속 버튼
 		const continueBtn = actionsEl.createEl('button', {
-			text: '계속 발행',
+			text: t('modal.largeFile.continue'),
 			cls: 'mod-warning',
 			attr: {
-				'aria-label': '대용량 파일 포함하여 계속 발행',
+				'aria-label': t('modal.largeFile.continue'),
 			},
 		});
 		continueBtn.addEventListener('click', () => {
