@@ -176,6 +176,9 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 src/
 ├── main.ts                    # 플러그인 메인 클래스
 ├── types.ts                   # 타입 정의
+├── constants/
+│   ├── analytics.ts           # 애널리틱스 제공자 상수
+│   └── locales.ts             # 로케일 상수
 ├── services/
 │   ├── github.ts              # GitHub API 서비스
 │   ├── repository-creator.ts  # 리포지토리 생성 서비스 (Phase 4)
@@ -185,15 +188,27 @@ src/
 │   ├── quartz-config.ts       # Quartz 설정 파싱/수정 서비스
 │   ├── quartz-upgrade.ts      # Quartz 업그레이드 서비스
 │   ├── network.ts             # 네트워크 상태 감지 서비스
-│   └── file-validator.ts      # 파일 크기 검증 서비스
+│   ├── file-validator.ts      # 파일 크기 검증 서비스
+│   └── pending-changes.ts     # 미저장 변경사항 관리 서비스
 ├── utils/
-│   └── glob-validator.ts      # glob 패턴 유효성 검사
+│   ├── glob-validator.ts      # glob 패턴 유효성 검사
+│   └── validators.ts          # 공통 유효성 검사 유틸
 ├── ui/
 │   ├── settings-tab.ts        # 설정 탭 UI
 │   ├── create-repo-modal.ts   # 리포지토리 생성 모달 (Phase 4)
-│   ├── deploy-guide-modal.ts    # 배포 가이드 모달 (Phase 4)
+│   ├── deploy-guide-modal.ts  # 배포 가이드 모달 (Phase 4)
 │   ├── dashboard-modal.ts     # 발행 대시보드 모달
-│   └── large-file-warning-modal.ts  # 대용량 파일 경고 모달
+│   ├── large-file-warning-modal.ts  # 대용량 파일 경고 모달
+│   ├── components/
+│   │   ├── apply-button.ts    # 설정 적용 버튼 컴포넌트
+│   │   ├── confirm-modal.ts   # 확인 모달 컴포넌트
+│   │   ├── conflict-modal.ts  # 충돌 처리 모달 컴포넌트
+│   │   └── unsaved-warning.ts # 미저장 경고 컴포넌트
+│   └── sections/
+│       ├── publishing-section.ts   # 발행 설정 섹션
+│       ├── behavior-section.ts     # 동작 설정 섹션
+│       ├── site-info-section.ts    # 사이트 정보 섹션
+│       └── analytics-section.ts    # 애널리틱스 설정 섹션
 └── styles/
     └── main.css               # TailwindCSS 스타일
 
@@ -205,7 +220,10 @@ tests/
     ├── services/
     │   ├── status.test.ts           # StatusService 테스트
     │   ├── quartz-config.test.ts    # QuartzConfigService 테스트
-    │   └── quartz-upgrade.test.ts   # QuartzUpgradeService 테스트
+    │   ├── quartz-upgrade.test.ts   # QuartzUpgradeService 테스트
+    │   ├── repository-creator.test.ts # RepositoryCreatorService 테스트
+    │   ├── file-validator.test.ts   # FileValidator 테스트
+    │   └── network.test.ts          # NetworkService 테스트
     ├── utils/
     │   └── glob-validator.test.ts   # glob-validator 테스트
     └── ui/
