@@ -130,6 +130,8 @@
 .quartz-publish-tab--active {
 	color: var(--text-accent);
 	border-bottom-color: var(--interactive-accent);
+	background-color: var(--background-modifier-hover);
+	font-weight: 600;
 }
 
 .quartz-publish-tab-badge {
@@ -737,8 +739,9 @@ button.mod-warning:hover {
 }
 
 button.mod-warning:disabled {
-	opacity: 0.5;
+	opacity: 0.6;
 	cursor: not-allowed;
+	filter: grayscale(30%);
 }
 
 /* Animation */
