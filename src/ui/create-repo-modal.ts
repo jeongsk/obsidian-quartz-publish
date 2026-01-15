@@ -85,6 +85,10 @@ export class CreateRepoModal extends Modal {
 						this.clearError();
 					});
 				text.inputEl.addClass('qp:w-full');
+				// 모달 열릴 때 첫 번째 입력 필드에 포커스
+				if (this.state === 'idle') {
+					setTimeout(() => text.inputEl.focus(), 50);
+				}
 			});
 
 		new Setting(contentEl)

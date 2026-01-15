@@ -1077,6 +1077,11 @@ export class ConfirmModal extends Modal {
 			this.resolvePromise?.(true);
 			this.close();
 		});
+
+		// 위험한 작업일 경우 취소 버튼에, 그렇지 않으면 확인 버튼에 포커스
+		setTimeout(() => {
+			(this.isDangerous ? cancelBtn : confirmBtn).focus();
+		}, 50);
 	}
 
 	onClose(): void {

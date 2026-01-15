@@ -153,6 +153,8 @@ export class FrontmatterEditorModal extends Modal {
 						this.updateValidation();
 					});
 				text.inputEl.style.width = '100%';
+				// 모달 열릴 때 첫 번째 입력 필드에 포커스
+				setTimeout(() => text.inputEl.focus(), 50);
 			});
 
 		// Description
