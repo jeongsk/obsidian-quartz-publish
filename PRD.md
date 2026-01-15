@@ -110,7 +110,7 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 | Phase 1 | MVP (핵심 기능) | 100% | ✅ 완료 |
 | Phase 2 | 노트 관리 | 100% | ✅ 완료 |
 | Phase 3 | Quartz 설정 관리 | 100% | ✅ 완료 |
-| Phase 4 | 초보자 지원 | 0% | ❌ 미착수 |
+| Phase 4 | 초보자 지원 | 100% | ✅ 완료 |
 | 비기능 | 비기능 요구사항 | 100% | ✅ 완료 |
 
 ### Phase 1: MVP 상세 현황 ✅
@@ -155,10 +155,11 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 - [x] 브랜치 자동 감지 (Test Connection 시)
 - [x] 상세 에러 메시지 표시
 
-### Phase 4: 초보자 지원 상세 현황 ❌
+### Phase 4: 초보자 지원 상세 현황 ✅
 
-- [ ] 자동 리포지토리 생성
-- [ ] 배포 가이드 제공
+- [x] 자동 리포지토리 생성 (`src/services/repository-creator.ts`, `src/ui/create-repo-modal.ts`)
+- [x] 배포 가이드 제공 (`src/ui/deploy-guide-modal.ts`)
+- [x] 설정 화면에서 "Create Quartz Repository" 버튼 표시 (`src/ui/settings-tab.ts`)
 
 ### 비기능 요구사항 상세 현황 ✅
 
@@ -177,6 +178,7 @@ src/
 ├── types.ts                   # 타입 정의
 ├── services/
 │   ├── github.ts              # GitHub API 서비스
+│   ├── repository-creator.ts  # 리포지토리 생성 서비스 (Phase 4)
 │   ├── transformer.ts         # 콘텐츠 변환 서비스
 │   ├── publish.ts             # 발행 서비스
 │   ├── status.ts              # 발행 상태 계산 서비스
@@ -188,6 +190,8 @@ src/
 │   └── glob-validator.ts      # glob 패턴 유효성 검사
 ├── ui/
 │   ├── settings-tab.ts        # 설정 탭 UI
+│   ├── create-repo-modal.ts   # 리포지토리 생성 모달 (Phase 4)
+│   ├── deploy-guide-modal.ts    # 배포 가이드 모달 (Phase 4)
 │   ├── dashboard-modal.ts     # 발행 대시보드 모달
 │   └── large-file-warning-modal.ts  # 대용량 파일 경고 모달
 └── styles/
