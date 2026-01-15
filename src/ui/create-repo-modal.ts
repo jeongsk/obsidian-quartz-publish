@@ -38,9 +38,13 @@ export class CreateRepoModal extends Modal {
 	}
 
 	private render() {
-		const { contentEl } = this;
+		const { contentEl, modalEl } = this;
 		contentEl.empty();
-		contentEl.addClass('qp:p-4', 'qp:min-w-[400px]');
+		contentEl.addClass('qp:p-4');
+
+		// 반응형 너비 설정
+		modalEl.style.minWidth = 'min(400px, 90vw)';
+		modalEl.style.maxWidth = 'min(500px, 95vw)';
 
 		switch (this.state) {
 			case 'idle':
@@ -118,7 +122,7 @@ export class CreateRepoModal extends Modal {
 		}
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4',
+			cls: 'qp:flex qp:flex-wrap qp:justify-end qp:gap-2 qp:mt-4',
 		});
 
 		const cancelBtn = buttonContainer.createEl('button', {
@@ -153,24 +157,24 @@ export class CreateRepoModal extends Modal {
 
 		if (this.createdRepository) {
 			const infoEl = contentEl.createDiv({
-				cls: 'qp:bg-obs-bg-modifier-success qp:border qp:border-obs-text-success qp:px-4 qp:py-3 qp:rounded qp:mb-4',
+				cls: 'qp:bg-obs-bg-modifier-success qp:border qp:border-obs-text-success qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:overflow-hidden',
 			});
 
 			infoEl.createEl('p', {
 				text: `Repository: ${this.createdRepository.fullName}`,
-				cls: 'qp:font-medium',
+				cls: 'qp:font-medium qp:truncate',
 			});
 
 			const linkEl = infoEl.createEl('a', {
 				text: this.createdRepository.htmlUrl,
 				href: this.createdRepository.htmlUrl,
-				cls: 'qp:text-obs-text-accent qp:underline qp:text-sm',
+				cls: 'qp:text-obs-text-accent qp:underline qp:text-sm qp:block qp:truncate',
 			});
 			linkEl.setAttr('target', '_blank');
 		}
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4',
+			cls: 'qp:flex qp:flex-wrap qp:justify-end qp:gap-2 qp:mt-4',
 		});
 
 		const closeBtn = buttonContainer.createEl('button', {
