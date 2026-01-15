@@ -11,7 +11,10 @@ import type {
 	PublishRecord,
 	NoteStatus,
 	StatusOverview,
+	PublishFilterSettings,
 } from '../types';
+import { DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
+import { PublishFilterService } from './publish-filter';
 
 /**
  * 상태 계산 진행 콜백
@@ -25,6 +28,7 @@ export interface StatusServiceOptions {
 	vault: Vault;
 	metadataCache: MetadataCache;
 	getPublishRecords: () => Record<string, PublishRecord>;
+	getFilterSettings?: () => PublishFilterSettings;
 	contentPath: string;
 	staticPath: string;
 }
@@ -40,8 +44,8 @@ export class StatusService {
 	private getPublishRecords: () => Record<string, PublishRecord>;
 	private contentPath: string;
 	private staticPath: string;
+	private publishFilter: PublishFilterService;
 
-	/** 청크 단위 처리 크기 */
 	private static readonly CHUNK_SIZE = 20;
 
 	constructor(options: StatusServiceOptions) {
@@ -50,6 +54,11 @@ export class StatusService {
 		this.getPublishRecords = options.getPublishRecords;
 		this.contentPath = options.contentPath;
 		this.staticPath = options.staticPath;
+
+		this.publishFilter = new PublishFilterService({
+			metadataCache: options.metadataCache,
+			getSettings: options.getFilterSettings ?? (() => DEFAULT_PUBLISH_FILTER_SETTINGS),
+		});
 	}
 
 	/**
@@ -222,7 +231,13 @@ export class StatusService {
 
 		return markdownFiles.filter(file => {
 			const cache = this.metadataCache.getFileCache(file);
-			return cache?.frontmatter?.publish === true;
+			const hasPublishFlag = cache?.frontmatter?.publish === true;
+
+			if (!hasPublishFlag) {
+				return false;
+			}
+
+			return this.publishFilter.shouldPublish(file);
 		});
 	}
 

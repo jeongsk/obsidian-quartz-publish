@@ -1,6 +1,6 @@
 import { Plugin, TFile, Notice } from 'obsidian';
 import type { PluginSettings, PluginData, PublishRecord, BatchPublishResult, UnpublishResult } from './types';
-import { DEFAULT_SETTINGS } from './types';
+import { DEFAULT_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from './types';
 import { QuartzPublishSettingTab } from './ui/settings-tab';
 import { PublishService } from './services/publish';
 import { StatusService } from './services/status';
@@ -31,6 +31,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			vault: this.app.vault,
 			metadataCache: this.app.metadataCache,
 			getPublishRecords: () => this.publishRecords,
+			getFilterSettings: () => this.settings.publishFilterSettings ?? DEFAULT_PUBLISH_FILTER_SETTINGS,
 			contentPath: this.settings.contentPath,
 			staticPath: this.settings.staticPath,
 		});

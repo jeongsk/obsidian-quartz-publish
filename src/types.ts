@@ -7,6 +7,65 @@
 import type { TFile } from 'obsidian';
 
 // ============================================================================
+// Publish Filter Settings (Phase 8)
+// ============================================================================
+
+/**
+ * 발행 필터링 설정
+ */
+export interface PublishFilterSettings {
+	/**
+	 * 포함할 폴더 목록
+	 * - 빈 배열이면 전체 vault가 발행 대상
+	 * - 값이 있으면 해당 폴더들만 발행 대상
+	 * @example ["Blog", "Notes/Public"]
+	 */
+	includeFolders: string[];
+
+	/**
+	 * 제외할 폴더 목록
+	 * - 포함 폴더 내에 있더라도 제외됨 (제외 규칙 우선)
+	 * @example ["Private", "Templates", "Archive"]
+	 */
+	excludeFolders: string[];
+
+	/**
+	 * 제외할 태그 목록
+	 * - `#` 접두사 없이 저장
+	 * - 해당 태그가 있는 노트는 발행에서 제외
+	 * @example ["private", "wip", "draft"]
+	 */
+	excludeTags: string[];
+
+	/**
+	 * 발행 루트로 사용할 폴더
+	 * - 빈 문자열이면 vault 루트 기준
+	 * - 설정 시 해당 폴더 기준으로 경로 재계산
+	 * @example "Blog" -> "Blog/posts/hello.md" becomes "posts/hello.md"
+	 */
+	rootFolder: string;
+
+	/**
+	 * 홈 페이지로 사용할 노트 경로
+	 * - 빈 문자열이면 홈 페이지 미설정
+	 * - 설정 시 해당 노트가 content/index.md로 업로드됨
+	 * @example "Home.md" 또는 "Blog/Welcome.md"
+	 */
+	homePagePath: string;
+}
+
+/**
+ * 기본 발행 필터링 설정값
+ */
+export const DEFAULT_PUBLISH_FILTER_SETTINGS: PublishFilterSettings = {
+	includeFolders: [],
+	excludeFolders: [],
+	excludeTags: [],
+	rootFolder: '',
+	homePagePath: '',
+};
+
+// ============================================================================
 // Auto Date Settings
 // ============================================================================
 
@@ -53,6 +112,8 @@ export interface PluginSettings {
 	quartzSettings?: QuartzSettings;
 	/** 날짜 자동 추가 설정 */
 	autoDateSettings?: AutoDateSettings;
+	/** 발행 필터링 설정 (Phase 8) */
+	publishFilterSettings?: PublishFilterSettings;
 }
 
 /**
@@ -65,6 +126,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	contentPath: 'content',
 	staticPath: 'static',
 	autoDateSettings: DEFAULT_AUTO_DATE_SETTINGS,
+	publishFilterSettings: DEFAULT_PUBLISH_FILTER_SETTINGS,
 };
 
 // ============================================================================

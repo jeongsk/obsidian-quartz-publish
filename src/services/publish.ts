@@ -15,11 +15,12 @@ import type {
 	AttachmentRecord,
 	PublishError,
 } from '../types';
-import { MAX_FILE_SIZE, DEFAULT_AUTO_DATE_SETTINGS } from '../types';
+import { MAX_FILE_SIZE, DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
 import type { LargeFileInfo, FileValidationResult } from '../types';
 import { GitHubService } from './github';
 import { ContentTransformer } from './transformer';
 import { FileValidatorService } from './file-validator';
+import { PublishFilterService } from './publish-filter';
 
 /**
  * 발행 서비스 클래스
@@ -31,6 +32,7 @@ export class PublishService {
 	private github: GitHubService;
 	private transformer: ContentTransformer;
 	private fileValidator: FileValidatorService;
+	private publishFilter: PublishFilterService;
 	private publishRecords: Record<string, PublishRecord>;
 	private onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>;
 	private onRecordRemove: (localPath: string) => Promise<void>;
@@ -65,6 +67,11 @@ export class PublishService {
 		);
 
 		this.fileValidator = new FileValidatorService();
+
+		this.publishFilter = new PublishFilterService({
+			metadataCache,
+			getSettings: () => this.settings.publishFilterSettings ?? DEFAULT_PUBLISH_FILTER_SETTINGS,
+		});
 	}
 
 	/**
@@ -92,11 +99,28 @@ export class PublishService {
 		return this.fileValidator.getMaxFileSize();
 	}
 
-	/**
-	 * 단일 노트 발행
-	 */
+	shouldPublish(file: TFile): boolean {
+		return this.publishFilter.shouldPublish(file);
+	}
+
+	getFilteredPublishPath(file: TFile): string {
+		return this.publishFilter.getPublishPath(file);
+	}
+
+	getRemotePath(file: TFile, frontmatter: Record<string, unknown>): string {
+		if (this.publishFilter.isHomePage(file)) {
+			return `${this.settings.contentPath}/index.md`;
+		}
+
+		if (typeof frontmatter.path === 'string' && frontmatter.path.trim()) {
+			return this.transformer.getRemotePath(file, frontmatter);
+		}
+
+		const filteredPath = this.publishFilter.getPublishPath(file);
+		return `${this.settings.contentPath}/${filteredPath}`;
+	}
+
 	async publishNote(file: TFile): Promise<PublishResult> {
-		// 중복 발행 방지
 		if (this.isPublishing) {
 			return {
 				success: false,
@@ -105,10 +129,17 @@ export class PublishService {
 			};
 		}
 
+		if (!this.shouldPublish(file)) {
+			return {
+				success: false,
+				file,
+				error: 'no_publish_flag',
+			};
+		}
+
 		this.isPublishing = true;
 
 		try {
-			// 1. 파일 내용 읽기
 			let content = await this.vault.read(file);
 
 			// 2. 프론트매터 파싱
@@ -134,8 +165,7 @@ export class PublishService {
 			// 6. 콘텐츠 변환
 			const transformed = this.transformer.transform(content, file, publishedNotes);
 
-			// 7. 원격 경로 결정
-			const remotePath = this.transformer.getRemotePath(file, frontmatter);
+			const remotePath = this.getRemotePath(file, frontmatter);
 
 			// 8. 기존 파일 SHA 확인
 			const existingFile = await this.github.getFile(remotePath);
