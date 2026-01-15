@@ -407,17 +407,15 @@ export class RemoteFileManagerModal extends Modal {
 				cls: 'qp:text-sm',
 			});
 
-			// 전체 선택/해제 링크
-			const toggleLink = selectionInfoEl.createEl('a', {
+			// 전체 선택/해제 버튼
+			const toggleButton = selectionInfoEl.createEl('button', {
 				text:
 					selectedCount === this.state.filteredFiles.length
 						? t('modal.remoteFiles.deselectAll')
 						: t('modal.remoteFiles.selectAll'),
-				cls: 'qp:text-sm',
-				href: '#',
+				cls: 'qp:text-sm qp:text-obs-text-accent qp:bg-transparent qp:border-none qp:cursor-pointer qp:underline hover:qp:text-obs-text-accent-hover',
 			});
-			toggleLink.addEventListener('click', (e) => {
-				e.preventDefault();
+			toggleButton.addEventListener('click', () => {
 				this.toggleSelectAll();
 			});
 		}
