@@ -14,6 +14,10 @@ import type {
 	NoteStatus,
 } from '../types';
 import { TAB_LABELS } from '../types';
+import type { NetworkService } from '../services/network';
+import { FileValidatorService } from '../services/file-validator';
+import { LargeFileWarningModal } from './large-file-warning-modal';
+import { MAX_FILE_SIZE } from '../types';
 
 /**
  * 진행 상황 정보
@@ -49,6 +53,8 @@ export interface DashboardModalOptions {
 	onLoadStatus: (
 		onProgress?: (processed: number, total: number) => void
 	) => Promise<StatusOverview>;
+	/** 네트워크 서비스 (오프라인 감지용) */
+	networkService?: NetworkService;
 }
 
 /**
@@ -65,6 +71,9 @@ export class DashboardModal extends Modal {
 	private options: DashboardModalOptions;
 	private state: DashboardState;
 	private progressInfo: ProgressInfo | null = null;
+	private networkStatusUnsubscribe: (() => void) | null = null;
+	private isOffline: boolean = false;
+	private fileValidator: FileValidatorService;
 
 	constructor(app: App, options: DashboardModalOptions) {
 		super(app);
@@ -77,6 +86,18 @@ export class DashboardModal extends Modal {
 			isOperating: false,
 			error: null,
 		};
+
+		// 네트워크 상태 초기화 및 리스너 등록
+		if (options.networkService) {
+			this.isOffline = !options.networkService.isOnline();
+			this.networkStatusUnsubscribe = options.networkService.onStatusChange((status) => {
+				this.isOffline = status === 'offline';
+				this.render();
+			});
+		}
+
+		// 파일 검증 서비스 초기화
+		this.fileValidator = new FileValidatorService();
 	}
 
 	/**
@@ -98,6 +119,12 @@ export class DashboardModal extends Modal {
 	onClose(): void {
 		const { contentEl } = this;
 		contentEl.empty();
+
+		// 네트워크 상태 리스너 정리
+		if (this.networkStatusUnsubscribe) {
+			this.networkStatusUnsubscribe();
+			this.networkStatusUnsubscribe = null;
+		}
 	}
 
 	/**
@@ -193,12 +220,29 @@ export class DashboardModal extends Modal {
 	private async publishSelected(): Promise<void> {
 		if (this.state.selectedPaths.size === 0) return;
 
+		// 네트워크 연결 확인
+		if (this.isOffline) {
+			new Notice('인터넷 연결을 확인해주세요. 발행하려면 네트워크 연결이 필요합니다.');
+			return;
+		}
+
 		const currentNotes = this.getCurrentTabNotes();
 		const selectedFiles = currentNotes
 			.filter((note) => this.state.selectedPaths.has(note.file.path))
 			.map((note) => note.file);
 
 		if (selectedFiles.length === 0) return;
+
+		// 대용량 파일 검사
+		const largeFiles = this.fileValidator.findLargeFiles(selectedFiles);
+		if (largeFiles.length > 0) {
+			const confirmed = await new LargeFileWarningModal(this.app, {
+				largeFiles,
+				maxFileSize: MAX_FILE_SIZE,
+			}).waitForConfirmation();
+
+			if (!confirmed) return;
+		}
 
 		this.state.isOperating = true;
 		this.render();
@@ -233,6 +277,12 @@ export class DashboardModal extends Modal {
 	 */
 	private async deleteSelected(): Promise<void> {
 		if (this.state.selectedPaths.size === 0) return;
+
+		// 네트워크 연결 확인
+		if (this.isOffline) {
+			new Notice('인터넷 연결을 확인해주세요. 삭제하려면 네트워크 연결이 필요합니다.');
+			return;
+		}
 
 		const currentNotes = this.getCurrentTabNotes();
 		const selectedFiles = currentNotes
@@ -287,6 +337,12 @@ export class DashboardModal extends Modal {
 	private async syncAll(): Promise<void> {
 		if (!this.state.statusOverview) return;
 
+		// 네트워크 연결 확인
+		if (this.isOffline) {
+			new Notice('인터넷 연결을 확인해주세요. 동기화하려면 네트워크 연결이 필요합니다.');
+			return;
+		}
+
 		const { new: newNotes, modified, deleted } = this.state.statusOverview;
 
 		const toPublish = [...newNotes, ...modified];
@@ -296,6 +352,20 @@ export class DashboardModal extends Modal {
 		if (toPublish.length === 0 && toDelete.length === 0) {
 			new Notice('동기화할 변경사항이 없습니다.');
 			return;
+		}
+
+		// 대용량 파일 검사 (발행할 파일만)
+		if (toPublish.length > 0) {
+			const publishFiles = toPublish.map((note) => note.file);
+			const largeFiles = this.fileValidator.findLargeFiles(publishFiles);
+			if (largeFiles.length > 0) {
+				const confirmed = await new LargeFileWarningModal(this.app, {
+					largeFiles,
+					maxFileSize: MAX_FILE_SIZE,
+				}).waitForConfirmation();
+
+				if (!confirmed) return;
+			}
 		}
 
 		// 삭제가 포함된 경우 확인 모달 표시
@@ -568,10 +638,29 @@ export class DashboardModal extends Modal {
 			cls: 'quartz-publish-dashboard-header',
 		});
 
-		headerEl.createEl('h2', {
+		// 제목과 오프라인 표시기를 포함하는 컨테이너
+		const titleContainer = headerEl.createDiv({
+			cls: 'qp:flex qp:items-center qp:gap-2',
+		});
+
+		titleContainer.createEl('h2', {
 			text: 'Publish Dashboard',
 			cls: 'quartz-publish-dashboard-title',
 		});
+
+		// 오프라인 상태 표시기
+		if (this.isOffline) {
+			const offlineIndicator = titleContainer.createSpan({
+				cls: 'qp:inline-flex qp:items-center qp:gap-1 qp:px-2 qp:py-1 qp:text-xs qp:font-medium qp:rounded-full qp:bg-obs-bg-modifier-error qp:text-obs-text-error',
+				attr: {
+					role: 'status',
+					'aria-live': 'polite',
+					'aria-label': '오프라인 상태입니다. 발행 기능을 사용하려면 인터넷 연결이 필요합니다.',
+				},
+			});
+			offlineIndicator.createSpan({ text: '●', cls: 'qp:text-[8px]' });
+			offlineIndicator.createSpan({ text: '오프라인' });
+		}
 
 		// 새로고침 버튼
 		const refreshBtn = headerEl.createEl('button', {
