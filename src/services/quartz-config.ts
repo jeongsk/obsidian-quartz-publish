@@ -8,10 +8,12 @@ import type { GitHubService } from './github';
 import {
 	DEFAULT_QUARTZ_SITE_CONFIG,
 	DEFAULT_COMMENTS_CONFIG,
+	DEFAULT_TYPOGRAPHY_CONFIG,
 	type QuartzConfigFile,
 	type QuartzSiteConfig,
 	type AnalyticsConfig,
 	type CommentsConfig,
+	type TypographyConfig,
 	type GiscusConfig,
 	type ConfigUpdateResult,
 } from '../types';
@@ -48,6 +50,8 @@ export interface ExtendedParsedConfig extends ParsedQuartzConfig {
 	analytics: AnalyticsConfig;
 	/** 댓글 설정 */
 	comments: CommentsConfig;
+	/** 타이포그래피 설정 */
+	typography: TypographyConfig;
 }
 
 /**
@@ -433,6 +437,39 @@ export class QuartzConfigService {
 		return { provider: 'giscus', options: giscusConfig };
 	}
 
+	private parseTypography(content: string): TypographyConfig {
+		const typographyMatch = content.match(/typography\s*:\s*\{([^}]*)\}/s);
+		if (!typographyMatch) {
+			return DEFAULT_TYPOGRAPHY_CONFIG;
+		}
+
+		const typographyBlock = typographyMatch[1];
+		const header = this.extractStringValue(typographyBlock, 'header');
+		const body = this.extractStringValue(typographyBlock, 'body');
+		const code = this.extractStringValue(typographyBlock, 'code');
+
+		return {
+			header: header ?? DEFAULT_TYPOGRAPHY_CONFIG.header,
+			body: body ?? DEFAULT_TYPOGRAPHY_CONFIG.body,
+			code: code ?? DEFAULT_TYPOGRAPHY_CONFIG.code,
+		};
+	}
+
+	private updateTypography(content: string, typography: TypographyConfig): string {
+		const typographyStr = `typography: {
+        header: "${typography.header}",
+        body: "${typography.body}",
+        code: "${typography.code}",
+      }`;
+
+		const typographyPattern = /typography\s*:\s*\{[^}]*\}/s;
+		if (typographyPattern.test(content)) {
+			return content.replace(typographyPattern, typographyStr);
+		}
+
+		return content;
+	}
+
 	private extractStringValue(block: string, key: string): string | undefined {
 		const match = block.match(new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`));
 		return match?.[1];
@@ -524,6 +561,7 @@ export class QuartzConfigService {
 			defaultDateType: this.parseDefaultDateType(content),
 			analytics: this.parseAnalytics(content),
 			comments: this.parseComments(content),
+			typography: this.parseTypography(content),
 		};
 	}
 
@@ -542,6 +580,7 @@ export class QuartzConfigService {
 			comments: parsed.comments,
 			explicitPublish: parsed.explicitPublish,
 			ignorePatterns: parsed.ignorePatterns,
+			typography: parsed.typography,
 		};
 	}
 
@@ -589,6 +628,9 @@ export class QuartzConfigService {
 
 		// comments 업데이트
 		content = this.updateComments(content, config.comments);
+
+		// typography 업데이트
+		content = this.updateTypography(content, config.typography);
 
 		// 기존 설정 업데이트 (ExplicitPublish)
 		const explicitResult = this.setExplicitPublish(

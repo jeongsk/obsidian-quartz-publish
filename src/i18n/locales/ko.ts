@@ -113,6 +113,16 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.comments.errors.categoryRequired': '카테고리 이름이 필요합니다',
 	'settings.comments.errors.categoryIdRequired': '카테고리 ID가 필요합니다',
 
+	// Settings - Typography
+	'settings.typography.title': '타이포그래피',
+	'settings.typography.header': '헤더 폰트',
+	'settings.typography.headerDesc': '문서 제목 및 헤더에 사용되는 폰트',
+	'settings.typography.body': '본문 폰트',
+	'settings.typography.bodyDesc': '본문 텍스트에 사용되는 폰트',
+	'settings.typography.code': '코드 폰트',
+	'settings.typography.codeDesc': '코드 블록에 사용되는 폰트',
+	'settings.typography.change': '변경',
+
 	// Settings - Publishing
 	'settings.publishing.title': '발행',
 	'settings.publishing.explicitPublish': '명시적 발행',
@@ -240,6 +250,9 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.frontmatter.cssDesc': '페이지에 적용할 CSS 클래스',
 	'modal.frontmatter.save': '저장 후 발행',
 	'modal.frontmatter.validationSuccess': '모든 검증을 통과했습니다',
+
+	// Modals - Font Picker
+	'modal.fontPicker.placeholder': '폰트 검색... (예: Roboto, Noto Sans)',
 
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Quartz 저장소 생성',

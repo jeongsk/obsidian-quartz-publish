@@ -19,6 +19,7 @@ import { SiteInfoSection } from './sections/site-info-section';
 import { BehaviorSection } from './sections/behavior-section';
 import { AnalyticsSection } from './sections/analytics-section';
 import { CommentsSection } from './sections/comments-section';
+import { TypographySection } from './sections/typography-section';
 import { PublishingSection } from './sections/publishing-section';
 import { PublishFilterSection } from './sections/publish-filter-section';
 import { ApplyButton } from './components/apply-button';
@@ -58,6 +59,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	private behaviorSection: BehaviorSection | null = null;
 	private analyticsSection: AnalyticsSection | null = null;
 	private commentsSection: CommentsSection | null = null;
+	private typographySection: TypographySection | null = null;
 
 	// Phase 8: Publishing Section (T058-T063)
 	private publishingSection: PublishingSection | null = null;
@@ -94,6 +96,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.behaviorSection = null;
 		this.analyticsSection = null;
 		this.commentsSection = null;
+		this.typographySection = null;
 		this.publishingSection = null;
 		this.publishFilterSection = null;
 		this.applyButton = null;
@@ -853,6 +856,27 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			},
 		});
 
+		// Typography Section 렌더링 (Phase 10)
+		this.typographySection = new TypographySection(this.advancedConfigContainerEl, {
+			app: this.app,
+			config: extendedConfig.typography,
+			onChange: (field, value) => {
+				// field is 'header' | 'body' | 'code'
+				// We need to update the whole typography object in pendingChangesManager
+				// But handleAdvancedConfigChange expects keyof QuartzSiteConfig
+				
+				// Get current typography state from pendingChangesManager to merge
+				const currentConfig = this.pendingChangesManager?.getCurrentConfig();
+				if (currentConfig) {
+					const newTypography = {
+						...currentConfig.typography,
+						[field]: value,
+					};
+					this.handleAdvancedConfigChange('typography', newTypography);
+				}
+			},
+		});
+
 		// Publishing Section 렌더링 (T058-T063)
 		this.publishingSection = new PublishingSection(this.advancedConfigContainerEl, {
 			config: {
@@ -933,6 +957,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.analyticsSection?.updateValues(originalConfig.analytics);
 
 		this.commentsSection?.updateValues(originalConfig.comments);
+
+		this.typographySection?.updateValues(originalConfig.typography);
 
 		this.publishingSection?.updateValues({
 			explicitPublish: originalConfig.explicitPublish,
