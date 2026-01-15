@@ -4,7 +4,7 @@
  * 원격 저장소의 발행된 파일을 관리하는 모달입니다.
  */
 
-import { App, Modal, Notice, Setting, debounce } from 'obsidian';
+import { App, Modal, Notice, Setting, debounce, setIcon } from 'obsidian';
 import type {
 	PublishedFile,
 	FileListState,
@@ -196,7 +196,8 @@ export class RemoteFileManagerModal extends Modal {
 		const loadingEl = container.createDiv({
 			cls: 'qp:flex qp:flex-col qp:items-center qp:justify-center qp:py-12',
 		});
-		loadingEl.createDiv({ cls: 'qp:animate-spin qp:text-2xl', text: '⏳' });
+		const loadingIcon = loadingEl.createDiv({ cls: 'qp:animate-spin', attr: { 'aria-hidden': 'true' } });
+		setIcon(loadingIcon, 'loader-2');
 		loadingEl.createDiv({
 			cls: 'qp:mt-2 qp:text-obs-text-muted',
 			text: t('modal.remoteFiles.loading'),
@@ -210,7 +211,8 @@ export class RemoteFileManagerModal extends Modal {
 		const errorEl = container.createDiv({
 			cls: 'qp:flex qp:flex-col qp:items-center qp:justify-center qp:py-12 qp:text-obs-text-error',
 		});
-		errorEl.createDiv({ cls: 'qp:text-2xl', text: '❌' });
+		const errorIcon = errorEl.createDiv({ attr: { 'aria-hidden': 'true' } });
+		setIcon(errorIcon, 'x-circle');
 		errorEl.createDiv({
 			cls: 'qp:mt-2',
 			text: this.state.error ?? t('error.remoteFiles.loadFailed'),
@@ -270,7 +272,8 @@ export class RemoteFileManagerModal extends Modal {
 			},
 		});
 
-		warningEl.createSpan({ text: '⚠️', cls: 'qp:text-lg' });
+		const warningIcon = warningEl.createSpan({ cls: 'qp:mr-1', attr: { 'aria-hidden': 'true' } });
+		setIcon(warningIcon, 'alert-triangle');
 		warningEl.createSpan({
 			text: `${t('modal.remoteFiles.duplicates')} - ${t('modal.remoteFiles.duplicateCount', { count: this.state.duplicateGroups.length })}`,
 		});
