@@ -7,7 +7,6 @@
  * 주의: Preflight(기본 스타일 리셋)를 제외하여 Obsidian 기존 스타일과 충돌 방지
  */
 
-@source "../../src/**/*.ts";
 @import "tailwindcss/theme.css" prefix(qp);
 @import "tailwindcss/utilities.css" prefix(qp);
 

@@ -236,6 +236,12 @@ export default {
 	'modal.largeFile.title': 'Large File Warning',
 	'modal.largeFile.message': '{{count}} files exceed {{size}}. Large files may cause publishing issues.',
 	'modal.largeFile.continue': 'Continue Anyway',
+	'modal.largeFile.listLabel': 'Large files list',
+	'modal.largeFile.fileSize': 'File size: {{size}}',
+	'modal.largeFile.maxSize': 'Recommended max file size: {{size}}',
+	'modal.largeFile.tip.uploadTime': 'Large files may take a long time to upload.',
+	'modal.largeFile.tip.githubLimit': 'GitHub has a 100MB limit per file.',
+	'modal.largeFile.tip.imageCompression': 'Consider compressing images or using external hosting.',
 
 	// Modals - Frontmatter Editor
 	'modal.frontmatter.title': 'Edit Frontmatter',

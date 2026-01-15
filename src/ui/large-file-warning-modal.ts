@@ -119,7 +119,7 @@ export class LargeFileWarningModal extends Modal {
 			cls: 'qp:max-h-48 qp:overflow-y-auto qp:border qp:border-obs-bg-modifier-border qp:rounded-md qp:mb-4',
 			attr: {
 				role: 'list',
-				'aria-label': '대용량 파일 목록',
+				'aria-label': t('modal.largeFile.listLabel'),
 			},
 		});
 
@@ -144,7 +144,7 @@ export class LargeFileWarningModal extends Modal {
 			itemEl.createSpan({
 				text: fileInfo.formattedSize,
 				cls: 'qp:ml-3 qp:text-sm qp:font-medium qp:text-obs-text-warning qp:flex-shrink-0',
-				attr: { 'aria-label': `파일 크기: ${fileInfo.formattedSize}` },
+				attr: { 'aria-label': t('modal.largeFile.fileSize', { size: fileInfo.formattedSize }) },
 			});
 		}
 	}
@@ -162,7 +162,7 @@ export class LargeFileWarningModal extends Modal {
 		});
 
 		guidanceEl.createDiv({
-			text: `권장 최대 파일 크기: ${maxSizeFormatted}`,
+			text: t('modal.largeFile.maxSize', { size: maxSizeFormatted }),
 			cls: 'qp:font-medium qp:mb-2',
 		});
 
@@ -170,9 +170,9 @@ export class LargeFileWarningModal extends Modal {
 			cls: 'qp:m-0 qp:pl-4 qp:text-sm qp:text-obs-text-muted',
 		});
 
-		listEl.createEl('li', { text: '대용량 파일은 업로드 시간이 오래 걸릴 수 있습니다.' });
-		listEl.createEl('li', { text: 'GitHub에는 파일당 100MB 제한이 있습니다.' });
-		listEl.createEl('li', { text: '이미지는 압축하거나 외부 호스팅을 고려해보세요.' });
+		listEl.createEl('li', { text: t('modal.largeFile.tip.uploadTime') });
+		listEl.createEl('li', { text: t('modal.largeFile.tip.githubLimit') });
+		listEl.createEl('li', { text: t('modal.largeFile.tip.imageCompression') });
 	}
 
 	/**

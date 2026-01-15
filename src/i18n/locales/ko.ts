@@ -240,6 +240,12 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.largeFile.title': '대용량 파일 경고',
 	'modal.largeFile.message': '{{count}}개 파일이 {{size}}를 초과합니다. 대용량 파일은 발행에 문제가 발생할 수 있습니다.',
 	'modal.largeFile.continue': '계속 진행',
+	'modal.largeFile.listLabel': '대용량 파일 목록',
+	'modal.largeFile.fileSize': '파일 크기: {{size}}',
+	'modal.largeFile.maxSize': '권장 최대 파일 크기: {{size}}',
+	'modal.largeFile.tip.uploadTime': '대용량 파일은 업로드 시간이 오래 걸릴 수 있습니다.',
+	'modal.largeFile.tip.githubLimit': 'GitHub에는 파일당 100MB 제한이 있습니다.',
+	'modal.largeFile.tip.imageCompression': '이미지는 압축하거나 외부 호스팅을 고려해보세요.',
 
 	// Modals - Frontmatter Editor
 	'modal.frontmatter.title': 'Frontmatter 편집',
