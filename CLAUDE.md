@@ -55,6 +55,7 @@ npm run lint:fix     # 린트 자동 수정
 - TypeScript 5.9+ + Obsidian API (Plugin, Modal, Notice, Setting), fetch (built-in) (006-beginner-support)
 - TypeScript 5.9+ + Obsidian API (`moment` 객체), esbuild (001-i18n)
 - N/A (번역 파일은 번들에 포함) (001-i18n)
+- TypeScript 5.9+ + Obsidian API + Obsidian API (Plugin, PluginSettingTab, Notice, Setting, TFile, Vault, MetadataCache) (008-publish-filter)
 
 ## Recent Changes
 - 006-beginner-support: Quartz 리포지토리 자동 생성 및 배포 가이드 (CreateRepoModal, DeployGuideModal, RepositoryCreatorService)
