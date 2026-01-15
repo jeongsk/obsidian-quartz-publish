@@ -4,7 +4,7 @@
  * 플러그인 설정 UI를 제공합니다.
  */
 
-import { App, PluginSettingTab, Setting, Notice, TextComponent } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice, TextComponent, setIcon } from 'obsidian';
 import type QuartzPublishPlugin from '../main';
 import { GitHubService } from '../services/github';
 import {
@@ -634,9 +634,17 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.connectionStatusEl.empty();
 
-		this.connectionStatusEl.createSpan({
-			cls: `quartz-publish-connection-dot quartz-publish-connection-dot--${status}`,
+		// 아이콘 컨테이너 (색상 + 아이콘으로 접근성 개선)
+		const iconContainer = this.connectionStatusEl.createSpan({
+			cls: `quartz-publish-connection-icon quartz-publish-connection-icon--${status}`,
+			attr: { 'aria-hidden': 'true' },
 		});
+
+		// 상태별 아이콘 설정
+		const iconName = status === 'connected' ? 'check-circle-2'
+			: status === 'error' ? 'x-circle'
+			: 'loader-2';
+		setIcon(iconContainer, iconName);
 
 		this.connectionStatusEl.createSpan({
 			text: message,

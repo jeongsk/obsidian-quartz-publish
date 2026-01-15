@@ -332,36 +332,37 @@
 	gap: 0.5rem;
 }
 
-.quartz-publish-connection-dot {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
+/* 연결 상태 아이콘 (색상 + 아이콘으로 접근성 개선) */
+.quartz-publish-connection-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.quartz-publish-connection-dot--connected {
-	background-color: var(--color-green);
+.quartz-publish-connection-icon svg {
+	width: 16px;
+	height: 16px;
 }
 
-.quartz-publish-connection-dot--disconnected {
-	background-color: var(--text-muted);
+.quartz-publish-connection-icon--connected {
+	color: var(--color-green);
 }
 
-.quartz-publish-connection-dot--error {
-	background-color: var(--color-red);
+.quartz-publish-connection-icon--error {
+	color: var(--color-red);
 }
 
-.quartz-publish-connection-dot--connecting {
-	background-color: var(--color-yellow);
-	animation: pulse 1.5s infinite;
+.quartz-publish-connection-icon--connecting {
+	color: var(--color-yellow);
+	animation: spin 1.5s linear infinite;
 }
 
-@keyframes pulse {
-	0%,
-	100% {
-		opacity: 1;
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
 	}
-	50% {
-		opacity: 0.5;
+	to {
+		transform: rotate(360deg);
 	}
 }
 
