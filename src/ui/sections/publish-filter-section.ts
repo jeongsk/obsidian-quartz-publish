@@ -1,7 +1,7 @@
-import { Setting } from 'obsidian';
-import type { Vault } from 'obsidian';
+import { Setting, type App, type Vault } from 'obsidian';
 import type { PublishFilterSettings } from '../../types';
 import { t } from '../../i18n';
+import { NoteSuggestModal } from '../components/note-suggest-modal';
 
 export type PublishFilterChangeCallback = <K extends keyof PublishFilterSettings>(
 	field: K,
@@ -10,6 +10,7 @@ export type PublishFilterChangeCallback = <K extends keyof PublishFilterSettings
 
 export interface PublishFilterSectionOptions {
 	config: PublishFilterSettings;
+	app: App;
 	vault: Vault;
 	onChange: PublishFilterChangeCallback;
 }
@@ -174,6 +175,16 @@ export class PublishFilterSection {
 				this.homePageInput = text.inputEl;
 				text.setPlaceholder(t('settings.filter.homePagePlaceholder'));
 				text.setValue(this.options.config.homePagePath);
+
+				// 입력 필드 클릭 시 노트 선택 모달 열기
+				text.inputEl.addEventListener('click', () => {
+					new NoteSuggestModal(this.options.app, (path) => {
+						text.setValue(path);
+						this.handleHomePageChange(path);
+					}).open();
+				});
+
+				// 직접 입력도 허용
 				text.onChange((value) => {
 					this.handleHomePageChange(value);
 				});
