@@ -509,7 +509,32 @@ export interface QuartzSiteConfig {
 	explicitPublish: boolean;
 	/** 발행 제외 패턴 목록 */
 	ignorePatterns: string[];
+
+	// === Typography (Phase 10 - Font Management) ===
+	/** 타이포그래피 설정 */
+	typography: TypographyConfig;
 }
+
+/**
+ * 타이포그래피 설정
+ */
+export interface TypographyConfig {
+	/** 헤더 폰트 */
+	header: string;
+	/** 본문 폰트 */
+	body: string;
+	/** 코드 폰트 */
+	code: string;
+}
+
+/**
+ * 기본 타이포그래피 설정값
+ */
+export const DEFAULT_TYPOGRAPHY_CONFIG: TypographyConfig = {
+	header: 'Schibsted Grotesk',
+	body: 'Source Sans Pro',
+	code: 'IBM Plex Mono',
+};
 
 /**
  * 기본 Quartz 사이트 설정값
@@ -525,6 +550,7 @@ export const DEFAULT_QUARTZ_SITE_CONFIG: QuartzSiteConfig = {
 	comments: { provider: 'null' },
 	explicitPublish: false,
 	ignorePatterns: ['private', 'templates'],
+	typography: DEFAULT_TYPOGRAPHY_CONFIG,
 };
 
 /**

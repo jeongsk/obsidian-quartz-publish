@@ -109,6 +109,16 @@ export default {
 	'settings.comments.errors.categoryRequired': 'Category name is required',
 	'settings.comments.errors.categoryIdRequired': 'Category ID is required',
 
+	// Settings - Typography
+	'settings.typography.title': 'Typography',
+	'settings.typography.header': 'Header Font',
+	'settings.typography.headerDesc': 'Font used for headers and titles',
+	'settings.typography.body': 'Body Font',
+	'settings.typography.bodyDesc': 'Font used for body text',
+	'settings.typography.code': 'Code Font',
+	'settings.typography.codeDesc': 'Font used for code blocks',
+	'settings.typography.change': 'Change',
+
 	// Settings - Publishing
 	'settings.publishing.title': 'Publishing',
 	'settings.publishing.explicitPublish': 'Explicit Publish',
@@ -236,6 +246,9 @@ export default {
 	'modal.frontmatter.cssDesc': 'CSS classes to apply to the page',
 	'modal.frontmatter.save': 'Save & Publish',
 	'modal.frontmatter.validationSuccess': 'All validations passed',
+
+	// Modals - Font Picker
+	'modal.fontPicker.placeholder': 'Search fonts... (e.g. Roboto, Noto Sans)',
 
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Create Quartz Repository',
