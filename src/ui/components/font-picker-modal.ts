@@ -65,7 +65,7 @@ export class FontPickerModal extends FuzzySuggestModal<GoogleFont> {
 
 			// 스크린리더용 숨김 텍스트
 			el.createSpan({
-				cls: 'qp:sr-only',
+				cls: 'sr-only',
 				text: t('modal.fontPicker.currentFont'),
 			});
 		}

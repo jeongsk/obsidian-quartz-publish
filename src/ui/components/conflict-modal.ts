@@ -49,59 +49,59 @@ export class ConflictModal extends Modal {
 
 		// 경고 아이콘 + 제목
 		const headerEl = contentEl.createDiv({
-			cls: 'quartz-publish-conflict-modal-header qp:flex qp:items-center qp:gap-2 qp:mb-4',
+			cls: 'quartz-publish-conflict-modal-header flex items-center gap-2 mb-4',
 		});
 
 		const iconEl = headerEl.createSpan({
-			cls: 'qp:text-obs-text-warning',
+			cls: 'text-obs-text-warning',
 			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconEl, 'alert-triangle');
 
 		headerEl.createEl('h2', {
 			text: t('modal.conflict.title'),
-			cls: 'qp:m-0',
+			cls: 'm-0',
 		});
 
 		// 설명 메시지
 		contentEl.createEl('p', {
 			text: this.options.message || t('modal.conflict.message'),
-			cls: 'quartz-publish-conflict-modal-message qp:mb-4 qp:text-obs-text-muted',
+			cls: 'quartz-publish-conflict-modal-message mb-4 text-obs-text-muted',
 		});
 
 		// 옵션 설명
 		const optionsEl = contentEl.createDiv({
-			cls: 'quartz-publish-conflict-modal-options qp:mb-4',
+			cls: 'quartz-publish-conflict-modal-options mb-4',
 		});
 
 		// 옵션 1: 새로고침
 		const reloadOption = optionsEl.createDiv({
-			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:mb-2 qp:bg-obs-bg-secondary',
+			cls: 'quartz-publish-conflict-option p-3 rounded mb-2 bg-obs-bg-secondary',
 		});
 		reloadOption.createEl('strong', { text: t('modal.conflict.reload.title') });
 		reloadOption.createEl('p', {
 			text: t('modal.conflict.reload.desc'),
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
+			cls: 'text-sm text-obs-text-muted m-0 mt-1',
 		});
 
 		// 옵션 2: 강제 덮어쓰기
 		const forceOption = optionsEl.createDiv({
-			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:mb-2 qp:bg-obs-bg-secondary',
+			cls: 'quartz-publish-conflict-option p-3 rounded mb-2 bg-obs-bg-secondary',
 		});
 		forceOption.createEl('strong', { text: t('modal.conflict.overwrite.title') });
 		forceOption.createEl('p', {
 			text: t('modal.conflict.overwrite.desc'),
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
+			cls: 'text-sm text-obs-text-muted m-0 mt-1',
 		});
 
 		// 옵션 3: 취소
 		const cancelOption = optionsEl.createDiv({
-			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:bg-obs-bg-secondary',
+			cls: 'quartz-publish-conflict-option p-3 rounded bg-obs-bg-secondary',
 		});
 		cancelOption.createEl('strong', { text: t('modal.conflict.cancel.title') });
 		cancelOption.createEl('p', {
 			text: t('modal.conflict.cancel.desc'),
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
+			cls: 'text-sm text-obs-text-muted m-0 mt-1',
 		});
 
 		// 버튼 영역

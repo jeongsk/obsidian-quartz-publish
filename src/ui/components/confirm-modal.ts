@@ -65,7 +65,7 @@ export class ConfirmModal extends Modal {
 		// 메시지
 		contentEl.createEl('p', {
 			text: this.options.message,
-			cls: 'quartz-publish-confirm-modal-message qp:mb-4',
+			cls: 'quartz-publish-confirm-modal-message mb-4',
 		});
 
 		// 버튼 영역

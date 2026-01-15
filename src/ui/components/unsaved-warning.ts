@@ -35,12 +35,12 @@ export class UnsavedWarning {
 	 */
 	private render(): void {
 		this.bannerEl = this.containerEl.createDiv({
-			cls: 'quartz-publish-unsaved-warning qp:hidden qp:p-3 qp:rounded qp:mb-4 qp:flex qp:items-center qp:justify-between qp:bg-obs-bg-modifier-warning',
+			cls: 'quartz-publish-unsaved-warning hidden p-3 rounded mb-4 flex items-center justify-between bg-obs-bg-modifier-warning',
 		});
 
 		// 경고 아이콘 + 메시지
 		const messageWrapper = this.bannerEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2',
+			cls: 'flex items-center gap-2',
 		});
 
 		const iconEl = messageWrapper.createSpan({
@@ -51,19 +51,19 @@ export class UnsavedWarning {
 
 		messageWrapper.createSpan({
 			text: t('common.unsavedChanges'),
-			cls: 'qp:text-sm qp:font-medium',
+			cls: 'text-sm font-medium',
 		});
 
 		// 버튼 영역
 		const actionsWrapper = this.bannerEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2',
+			cls: 'flex items-center gap-2',
 		});
 
 		// 취소(변경사항 버리기) 버튼
 		if (this.options.onDiscard) {
 			const discardBtn = actionsWrapper.createEl('button', {
 				text: t('common.discardChanges'),
-				cls: 'qp:text-xs',
+				cls: 'text-xs',
 			});
 			discardBtn.addEventListener('click', () => {
 				this.options.onDiscard?.();
@@ -76,7 +76,7 @@ export class UnsavedWarning {
 	 */
 	show(): void {
 		if (this.bannerEl && !this.visible) {
-			this.bannerEl.removeClass('qp:hidden');
+			this.bannerEl.removeClass('hidden');
 			this.visible = true;
 		}
 	}
@@ -86,7 +86,7 @@ export class UnsavedWarning {
 	 */
 	hide(): void {
 		if (this.bannerEl && this.visible) {
-			this.bannerEl.addClass('qp:hidden');
+			this.bannerEl.addClass('hidden');
 			this.visible = false;
 		}
 	}

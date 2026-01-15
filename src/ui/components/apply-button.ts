@@ -45,7 +45,7 @@ export class ApplyButton {
 
 	private render(): void {
 		const wrapper = this.containerEl.createDiv({
-			cls: 'quartz-publish-apply-button-wrapper qp:mt-4 qp:mb-6 qp:flex qp:justify-end qp:gap-2',
+			cls: 'quartz-publish-apply-button-wrapper mt-4 mb-6 flex justify-end gap-2',
 		});
 
 		if (this.options.onRefresh) {
@@ -64,7 +64,7 @@ export class ApplyButton {
 		});
 
 		const iconSpan = this.buttonEl.createSpan({
-			cls: 'quartz-publish-apply-button-icon qp:mr-2',
+			cls: 'quartz-publish-apply-button-icon mr-2',
 			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconSpan, 'upload-cloud');
@@ -127,7 +127,7 @@ export class ApplyButton {
 		this.buttonEl.empty();
 
 		const iconSpan = this.buttonEl.createSpan({
-			cls: 'quartz-publish-apply-button-icon qp:mr-2',
+			cls: 'quartz-publish-apply-button-icon mr-2',
 			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconSpan, icon);
@@ -139,7 +139,7 @@ export class ApplyButton {
 
 		// 로딩 상태일 때 아이콘 애니메이션
 		if (icon === 'loader') {
-			iconSpan.addClass('qp:animate-spin');
+			iconSpan.addClass('animate-spin');
 		}
 	}
 
