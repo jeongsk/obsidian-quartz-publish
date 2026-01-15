@@ -82,30 +82,30 @@ export class LargeFileWarningModal extends Modal {
 		const { contentEl } = this;
 
 		const headerEl = contentEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-3 qp:mb-4',
+			cls: 'flex items-center gap-3 mb-4',
 		});
 
 		// 경고 아이콘
 		const iconEl = headerEl.createDiv({
-			cls: 'qp:flex-shrink-0 qp:w-10 qp:h-10 qp:rounded-full qp:bg-obs-bg-modifier-warning qp:flex qp:items-center qp:justify-center',
+			cls: 'flex-shrink-0 w-10 h-10 rounded-full bg-obs-bg-modifier-warning flex items-center justify-center',
 			attr: { 'aria-hidden': 'true' },
 		});
 		iconEl.createSpan({
 			text: '⚠️',
-			cls: 'qp:text-xl',
+			cls: 'text-xl',
 		});
 
 		// 제목
-		const titleContainer = headerEl.createDiv({ cls: 'qp:flex-1' });
+		const titleContainer = headerEl.createDiv({ cls: 'flex-1' });
 		const maxSizeFormatted = FileValidatorService.formatFileSize(this.options.maxFileSize);
 		titleContainer.createEl('h3', {
 			text: t('modal.largeFile.title'),
-			cls: 'qp:m-0 qp:text-lg qp:font-semibold',
+			cls: 'm-0 text-lg font-semibold',
 			attr: { id: 'large-file-warning-title' },
 		});
 		titleContainer.createDiv({
 			text: t('modal.largeFile.message', { count: this.options.largeFiles.length, size: maxSizeFormatted }),
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:mt-1',
+			cls: 'text-sm text-obs-text-muted mt-1',
 		});
 	}
 
@@ -116,7 +116,7 @@ export class LargeFileWarningModal extends Modal {
 		const { contentEl } = this;
 
 		const listContainer = contentEl.createDiv({
-			cls: 'qp:max-h-48 qp:overflow-y-auto qp:border qp:border-obs-bg-modifier-border qp:rounded-md qp:mb-4',
+			cls: 'max-h-48 overflow-y-auto border border-obs-bg-modifier-border rounded-md mb-4',
 			attr: {
 				role: 'list',
 				'aria-label': t('modal.largeFile.listLabel'),
@@ -125,25 +125,25 @@ export class LargeFileWarningModal extends Modal {
 
 		for (const fileInfo of this.options.largeFiles) {
 			const itemEl = listContainer.createDiv({
-				cls: 'qp:flex qp:items-center qp:justify-between qp:px-3 qp:py-2 qp:border-b qp:border-obs-bg-modifier-border last:qp:border-b-0',
+				cls: 'flex items-center justify-between px-3 py-2 border-b border-obs-bg-modifier-border last:border-b-0',
 				attr: { role: 'listitem' },
 			});
 
 			// 파일 정보
-			const fileInfoEl = itemEl.createDiv({ cls: 'qp:flex-1 qp:min-w-0' });
+			const fileInfoEl = itemEl.createDiv({ cls: 'flex-1 min-w-0' });
 			fileInfoEl.createDiv({
 				text: fileInfo.file.basename || fileInfo.file.name,
-				cls: 'qp:font-medium qp:truncate',
+				cls: 'font-medium truncate',
 			});
 			fileInfoEl.createDiv({
 				text: fileInfo.file.path,
-				cls: 'qp:text-xs qp:text-obs-text-muted qp:truncate',
+				cls: 'text-xs text-obs-text-muted truncate',
 			});
 
 			// 파일 크기
 			itemEl.createSpan({
 				text: fileInfo.formattedSize,
-				cls: 'qp:ml-3 qp:text-sm qp:font-medium qp:text-obs-text-warning qp:flex-shrink-0',
+				cls: 'ml-3 text-sm font-medium text-obs-text-warning flex-shrink-0',
 				attr: { 'aria-label': t('modal.largeFile.fileSize', { size: fileInfo.formattedSize }) },
 			});
 		}
@@ -157,17 +157,17 @@ export class LargeFileWarningModal extends Modal {
 		const maxSizeFormatted = FileValidatorService.formatFileSize(this.options.maxFileSize);
 
 		const guidanceEl = contentEl.createDiv({
-			cls: 'qp:bg-obs-bg-modifier-warning qp:bg-opacity-20 qp:rounded-md qp:p-3 qp:mb-4',
+			cls: 'bg-obs-bg-modifier-warning bg-opacity-20 rounded-md p-3 mb-4',
 			attr: { role: 'note' },
 		});
 
 		guidanceEl.createDiv({
 			text: t('modal.largeFile.maxSize', { size: maxSizeFormatted }),
-			cls: 'qp:font-medium qp:mb-2',
+			cls: 'font-medium mb-2',
 		});
 
 		const listEl = guidanceEl.createEl('ul', {
-			cls: 'qp:m-0 qp:pl-4 qp:text-sm qp:text-obs-text-muted',
+			cls: 'm-0 pl-4 text-sm text-obs-text-muted',
 		});
 
 		listEl.createEl('li', { text: t('modal.largeFile.tip.uploadTime') });
@@ -182,7 +182,7 @@ export class LargeFileWarningModal extends Modal {
 		const { contentEl } = this;
 
 		const actionsEl = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-end qp:gap-2',
+			cls: 'flex justify-end gap-2',
 		});
 
 		// 취소 버튼

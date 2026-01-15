@@ -64,7 +64,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// 검증 결과 영역
 		this.validationContainer = contentEl.createDiv({
-			cls: 'qp:mb-4',
+			cls: 'mb-4',
 			attr: {
 				role: 'status',
 				'aria-live': 'polite',
@@ -106,27 +106,27 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const headerEl = contentEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-3 qp:mb-4 qp:pb-3 qp:border-b qp:border-obs-bg-modifier-border',
+			cls: 'flex items-center gap-3 mb-4 pb-3 border-b border-obs-bg-modifier-border',
 		});
 
 		// 아이콘
 		const iconEl = headerEl.createDiv({
-			cls: 'qp:flex-shrink-0 qp:w-10 qp:h-10 qp:rounded-full qp:bg-obs-bg-modifier-hover qp:flex qp:items-center qp:justify-center',
+			cls: 'flex-shrink-0 w-10 h-10 rounded-full bg-obs-bg-modifier-hover flex items-center justify-center',
 		});
 		iconEl.createSpan({
 			text: '📝',
-			cls: 'qp:text-xl',
+			cls: 'text-xl',
 		});
 
 		// 제목
-		const titleContainer = headerEl.createDiv({ cls: 'qp:flex-1' });
+		const titleContainer = headerEl.createDiv({ cls: 'flex-1' });
 		titleContainer.createEl('h3', {
 			text: t('modal.frontmatter.title'),
-			cls: 'qp:m-0 qp:text-lg qp:font-semibold',
+			cls: 'm-0 text-lg font-semibold',
 		});
 		titleContainer.createDiv({
 			text: this.options.file.path,
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:mt-1',
+			cls: 'text-sm text-obs-text-muted mt-1',
 		});
 	}
 
@@ -137,7 +137,7 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const formEl = contentEl.createDiv({
-			cls: 'qp:space-y-2',
+			cls: 'space-y-2',
 		});
 
 		// Title
@@ -274,18 +274,18 @@ export class FrontmatterEditorModal extends Modal {
 
 		if (result.issues.length === 0) {
 			const successEl = this.validationContainer.createDiv({
-				cls: 'qp:flex qp:items-center qp:gap-2 qp:p-3 qp:rounded-md qp:bg-obs-bg-modifier-success qp:bg-opacity-20',
+				cls: 'flex items-center gap-2 p-3 rounded-md bg-obs-bg-modifier-success bg-opacity-20',
 			});
-			successEl.createSpan({ text: '✓', cls: 'qp:text-obs-text-success' });
+			successEl.createSpan({ text: '✓', cls: 'text-obs-text-success' });
 			successEl.createSpan({
 				text: t('modal.frontmatter.validationSuccess'),
-				cls: 'qp:text-sm',
+				cls: 'text-sm',
 			});
 			return;
 		}
 
 		const issuesEl = this.validationContainer.createDiv({
-			cls: 'qp:space-y-2',
+			cls: 'space-y-2',
 		});
 
 		for (const issue of result.issues) {
@@ -298,9 +298,9 @@ export class FrontmatterEditorModal extends Modal {
 	 */
 	private renderIssue(container: HTMLElement, issue: ValidationIssue): void {
 		const severityColors: Record<string, string> = {
-			error: 'qp:bg-obs-bg-modifier-error qp:bg-opacity-20 qp:border-obs-text-error',
-			warning: 'qp:bg-obs-bg-modifier-warning qp:bg-opacity-20 qp:border-obs-text-warning',
-			info: 'qp:bg-obs-bg-modifier-hover qp:border-obs-bg-modifier-border',
+			error: 'bg-obs-bg-modifier-error bg-opacity-20 border-obs-text-error',
+			warning: 'bg-obs-bg-modifier-warning bg-opacity-20 border-obs-text-warning',
+			info: 'bg-obs-bg-modifier-hover border-obs-bg-modifier-border',
 		};
 
 		const severityIcons: Record<string, string> = {
@@ -310,28 +310,28 @@ export class FrontmatterEditorModal extends Modal {
 		};
 
 		const issueEl = container.createDiv({
-			cls: `qp:p-3 qp:rounded-md qp:border ${severityColors[issue.severity]}`,
+			cls: `p-3 rounded-md border ${severityColors[issue.severity]}`,
 		});
 
 		const headerEl = issueEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2',
+			cls: 'flex items-center gap-2',
 		});
 
 		headerEl.createSpan({ text: severityIcons[issue.severity] });
 		headerEl.createSpan({
 			text: issue.field,
-			cls: 'qp:font-medium',
+			cls: 'font-medium',
 		});
 
 		issueEl.createDiv({
 			text: issue.message,
-			cls: 'qp:text-sm qp:mt-1',
+			cls: 'text-sm mt-1',
 		});
 
 		if (issue.suggestion) {
 			issueEl.createDiv({
 				text: `💡 ${issue.suggestion}`,
-				cls: 'qp:text-sm qp:text-obs-text-muted qp:mt-1',
+				cls: 'text-sm text-obs-text-muted mt-1',
 			});
 		}
 	}
@@ -343,7 +343,7 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const actionsEl = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4 qp:pt-3 qp:border-t qp:border-obs-bg-modifier-border',
+			cls: 'flex justify-end gap-2 mt-4 pt-3 border-t border-obs-bg-modifier-border',
 		});
 
 		// 취소 버튼

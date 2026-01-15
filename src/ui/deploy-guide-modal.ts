@@ -106,7 +106,7 @@ export class DeployGuideModal extends Modal {
 	private render() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.addClass('qp:p-4');
+		contentEl.addClass('p-4');
 		// 반응형 너비 설정
 		contentEl.style.minWidth = 'min(450px, 90vw)';
 		contentEl.style.maxWidth = 'min(550px, 95vw)';
@@ -119,21 +119,21 @@ export class DeployGuideModal extends Modal {
 
 		contentEl.createEl('h2', {
 			text: t('deployGuide.title'),
-			cls: 'qp:text-lg qp:font-semibold qp:mb-4',
+			cls: 'text-lg font-semibold mb-4',
 		});
 
 		const progressContainer = contentEl.createDiv({
-			cls: 'qp:mb-4',
+			cls: 'mb-4',
 		});
 
 		progressContainer.createEl('span', {
 			text: stepOfText,
-			cls: 'qp:text-sm qp:text-obs-text-muted',
+			cls: 'text-sm text-obs-text-muted',
 		});
 
 		const progressValue = Math.round(((this.currentStep + 1) / this.totalSteps) * 100);
 		const progressBar = progressContainer.createDiv({
-			cls: 'qp:w-full qp:h-2 qp:bg-obs-bg-modifier-border qp:rounded qp:mt-2',
+			cls: 'w-full h-2 bg-obs-bg-modifier-border rounded mt-2',
 			attr: {
 				role: 'progressbar',
 				'aria-valuenow': String(this.currentStep + 1),
@@ -144,24 +144,24 @@ export class DeployGuideModal extends Modal {
 		});
 
 		const progressFill = progressBar.createDiv({
-			cls: 'qp:h-full qp:bg-obs-interactive-accent qp:rounded qp:transition-all',
+			cls: 'h-full bg-obs-interactive-accent rounded transition-all',
 		});
 		progressFill.style.width = `${progressValue}%`;
 
 		contentEl.createEl('h3', {
 			text: step.title,
-			cls: 'qp:text-base qp:font-medium qp:mb-2',
+			cls: 'text-base font-medium mb-2',
 		});
 
 		contentEl.createEl('p', {
 			text: step.description,
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:mb-4',
+			cls: 'text-sm text-obs-text-muted mb-4',
 		});
 
 		if (step.externalUrl && step.actionLabel) {
 			const actionBtn = contentEl.createEl('button', {
 				text: step.actionLabel,
-				cls: 'qp:w-full qp:px-4 qp:py-2 qp:bg-obs-interactive-accent/10 qp:text-obs-interactive-accent qp:rounded qp:mb-4 qp:cursor-pointer hover:qp:bg-obs-interactive-accent/20',
+				cls: 'w-full px-4 py-2 bg-obs-interactive-accent/10 text-obs-interactive-accent rounded mb-4 cursor-pointer hover:bg-obs-interactive-accent/20',
 			});
 			actionBtn.addEventListener('click', () => {
 				window.open(step.externalUrl, '_blank');
@@ -169,15 +169,15 @@ export class DeployGuideModal extends Modal {
 		}
 
 		const navContainer = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-between qp:gap-2 qp:mt-4',
+			cls: 'flex justify-between gap-2 mt-4',
 		});
 
 		const isFirstStep = this.currentStep === 0;
 		const backBtn = navContainer.createEl('button', {
 			text: t('deployGuide.back'),
 			cls: cn(
-				'qp:px-4 qp:py-2',
-				isFirstStep && 'qp:opacity-50 qp:cursor-not-allowed'
+				'px-4 py-2',
+				isFirstStep && 'opacity-50 cursor-not-allowed'
 			),
 			attr: {
 				'aria-label': t('deployGuide.back'),
@@ -195,7 +195,7 @@ export class DeployGuideModal extends Modal {
 		const nextBtnText = isLastStep ? t('deployGuide.done') : t('deployGuide.next');
 		const nextBtn = navContainer.createEl('button', {
 			text: nextBtnText,
-			cls: 'mod-cta qp:px-4 qp:py-2',
+			cls: 'mod-cta px-4 py-2',
 			attr: {
 				'aria-label': nextBtnText,
 			},

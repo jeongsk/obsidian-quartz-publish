@@ -40,7 +40,7 @@ export class CreateRepoModal extends Modal {
 	private render() {
 		const { contentEl, modalEl } = this;
 		contentEl.empty();
-		contentEl.addClass('qp:p-4');
+		contentEl.addClass('p-4');
 
 		// 반응형 너비 설정
 		modalEl.style.minWidth = 'min(400px, 90vw)';
@@ -64,12 +64,12 @@ export class CreateRepoModal extends Modal {
 
 		contentEl.createEl('h2', { 
 			text: t('modal.createRepo.title'),
-			cls: 'qp:text-lg qp:font-semibold qp:mb-4',
+			cls: 'text-lg font-semibold mb-4',
 		});
 
 		if (this.state === 'error' && this.errorMessage) {
 			const errorEl = contentEl.createDiv({
-				cls: 'qp:bg-obs-bg-modifier-error qp:border qp:border-obs-text-error qp:text-obs-text-error qp:px-4 qp:py-3 qp:rounded qp:mb-4',
+				cls: 'bg-obs-bg-modifier-error border border-obs-text-error text-obs-text-error px-4 py-3 rounded mb-4',
 			});
 			errorEl.createSpan({ text: this.errorMessage });
 		}
@@ -88,7 +88,7 @@ export class CreateRepoModal extends Modal {
 						this.repoName = value;
 						this.clearError();
 					});
-				text.inputEl.addClass('qp:w-full');
+				text.inputEl.addClass('w-full');
 				// 모달 열릴 때 첫 번째 입력 필드에 포커스
 				if (this.state === 'idle') {
 					setTimeout(() => text.inputEl.focus(), 50);
@@ -111,12 +111,12 @@ export class CreateRepoModal extends Modal {
 
 		if (this.visibility === 'private') {
 			const warningEl = contentEl.createDiv({
-				cls: 'qp:bg-obs-bg-modifier-message qp:border qp:border-obs-text-warning qp:text-obs-text-warning qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:text-sm',
+				cls: 'bg-obs-bg-modifier-message border border-obs-text-warning text-obs-text-warning px-4 py-3 rounded mb-4 text-sm',
 				attr: {
 					role: 'alert',
 				},
 			});
-			const warningIcon = warningEl.createSpan({ cls: 'qp:mr-1', attr: { 'aria-hidden': 'true' } });
+			const warningIcon = warningEl.createSpan({ cls: 'mr-1', attr: { 'aria-hidden': 'true' } });
 			setIcon(warningIcon, 'alert-triangle');
 			warningEl.createSpan({
 				text: t('modal.createRepo.privateWarning')
@@ -124,26 +124,26 @@ export class CreateRepoModal extends Modal {
 		}
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'qp:flex qp:flex-wrap qp:justify-end qp:gap-2 qp:mt-4',
+			cls: 'flex flex-wrap justify-end gap-2 mt-4',
 		});
 
 		const cancelBtn = buttonContainer.createEl('button', {
 			text: t('modal.confirm.cancel'),
-			cls: 'qp:px-4 qp:py-2',
+			cls: 'px-4 py-2',
 		});
 		cancelBtn.addEventListener('click', () => this.close());
 		cancelBtn.disabled = isDisabled;
 
 		const createBtn = buttonContainer.createEl('button', {
 			text: this.state === 'creating' ? t('modal.createRepo.creating') : t('modal.createRepo.create'),
-			cls: 'mod-cta qp:px-4 qp:py-2',
+			cls: 'mod-cta px-4 py-2',
 		});
 		createBtn.addEventListener('click', () => this.handleCreate());
 		createBtn.disabled = isDisabled;
 
 		if (this.state === 'creating') {
 			const progressEl = contentEl.createDiv({
-				cls: 'qp:mt-4 qp:text-center qp:text-sm qp:text-obs-text-muted',
+				cls: 'mt-4 text-center text-sm text-obs-text-muted',
 			});
 			progressEl.createSpan({ text: t('modal.createRepo.creatingProgress') });
 		}
@@ -153,7 +153,7 @@ export class CreateRepoModal extends Modal {
 		const { contentEl } = this;
 
 		const successHeading = contentEl.createEl('h2', {
-			cls: 'qp:text-lg qp:font-semibold qp:mb-4 qp:text-obs-text-success qp:flex qp:items-center qp:gap-2',
+			cls: 'text-lg font-semibold mb-4 text-obs-text-success flex items-center gap-2',
 		});
 		const successIcon = successHeading.createSpan({ attr: { 'aria-hidden': 'true' } });
 		setIcon(successIcon, 'check-circle-2');
@@ -161,36 +161,36 @@ export class CreateRepoModal extends Modal {
 
 		if (this.createdRepository) {
 			const infoEl = contentEl.createDiv({
-				cls: 'qp:bg-obs-bg-modifier-success qp:border qp:border-obs-text-success qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:overflow-hidden',
+				cls: 'bg-obs-bg-modifier-success border border-obs-text-success px-4 py-3 rounded mb-4 overflow-hidden',
 			});
 
 			infoEl.createEl('p', {
 				text: `Repository: ${this.createdRepository.fullName}`,
-				cls: 'qp:font-medium qp:truncate',
+				cls: 'font-medium truncate',
 			});
 
 			const linkEl = infoEl.createEl('a', {
 				text: this.createdRepository.htmlUrl,
 				href: this.createdRepository.htmlUrl,
-				cls: 'qp:text-obs-text-accent qp:underline qp:text-sm qp:block qp:truncate',
+				cls: 'text-obs-text-accent underline text-sm block truncate',
 			});
 			linkEl.setAttr('target', '_blank');
 		}
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'qp:flex qp:flex-wrap qp:justify-end qp:gap-2 qp:mt-4',
+			cls: 'flex flex-wrap justify-end gap-2 mt-4',
 		});
 
 		const closeBtn = buttonContainer.createEl('button', {
 			text: t('dashboard.action.close'),
-			cls: 'qp:px-4 qp:py-2',
+			cls: 'px-4 py-2',
 		});
 		closeBtn.addEventListener('click', () => this.close());
 
 		if (this.options.onShowDeployGuide) {
 			const guideBtn = buttonContainer.createEl('button', {
 				text: t('modal.createRepo.viewGuide'),
-				cls: 'mod-cta qp:px-4 qp:py-2',
+				cls: 'mod-cta px-4 py-2',
 			});
 			guideBtn.addEventListener('click', () => {
 				if (this.createdRepository && this.options.onShowDeployGuide) {

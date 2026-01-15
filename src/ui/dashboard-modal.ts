@@ -531,7 +531,7 @@ export class DashboardModal extends Modal {
 
 		// 프로그레스 바
 		const progressEl = loadingEl.createDiv({
-			cls: 'quartz-publish-loading-progress qp:w-full qp:mt-4',
+			cls: 'quartz-publish-loading-progress w-full mt-4',
 		});
 		const progressBarContainer = progressEl.createDiv({
 			cls: 'quartz-publish-progress',
@@ -629,14 +629,14 @@ export class DashboardModal extends Modal {
 		});
 
 		errorEl.createDiv({
-			cls: 'qp:text-sm qp:mt-2 qp:text-obs-text-muted',
+			cls: 'text-sm mt-2 text-obs-text-muted',
 			text: errorInfo.suggestion,
 		});
 
 		// 다시 시도 버튼
 		const buttonEl = errorEl.createEl('button', {
 			text: t('error.formatted.retry'),
-			cls: 'mod-cta qp:mt-4',
+			cls: 'mod-cta mt-4',
 			attr: { 'aria-label': t('error.formatted.retry') },
 		});
 		buttonEl.addEventListener('click', () => this.loadStatus());
@@ -653,7 +653,7 @@ export class DashboardModal extends Modal {
 
 		// 제목과 오프라인 표시기를 포함하는 컨테이너
 		const titleContainer = headerEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2',
+			cls: 'flex items-center gap-2',
 		});
 
 		titleContainer.createEl('h2', {
@@ -664,21 +664,21 @@ export class DashboardModal extends Modal {
 		// 오프라인 상태 표시기
 		if (this.isOffline) {
 			const offlineIndicator = titleContainer.createSpan({
-				cls: 'qp:inline-flex qp:items-center qp:gap-1 qp:px-2 qp:py-1 qp:text-xs qp:font-medium qp:rounded-full qp:bg-obs-bg-modifier-error qp:text-obs-text-error',
+				cls: 'inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-obs-bg-modifier-error text-obs-text-error',
 				attr: {
 					role: 'status',
 					'aria-live': 'polite',
 					'aria-label': t('notice.network.offline'),
 				},
 			});
-			offlineIndicator.createSpan({ text: '●', cls: 'qp:text-[8px]' });
+			offlineIndicator.createSpan({ text: '●', cls: 'text-[8px]' });
 			offlineIndicator.createSpan({ text: t('dashboard.status.offline') });
 		}
 
 		// 새로고침 버튼
 		const refreshBtn = headerEl.createEl('button', {
 			text: t('dashboard.action.refresh'),
-			cls: 'qp:text-sm',
+			cls: 'text-sm',
 			attr: {
 				'aria-label': t('dashboard.action.refresh'),
 			},
@@ -896,7 +896,7 @@ export class DashboardModal extends Modal {
 				type: 'checkbox',
 				'aria-label': selectLabel,
 			},
-			cls: 'qp:mr-3',
+			cls: 'mr-3',
 		}) as HTMLInputElement;
 		checkboxEl.checked = isSelected;
 		checkboxEl.addEventListener('change', () =>
@@ -904,18 +904,18 @@ export class DashboardModal extends Modal {
 		);
 
 		// 노트 정보
-		const infoEl = itemEl.createDiv({ cls: 'qp:flex-1 qp:min-w-0' });
+		const infoEl = itemEl.createDiv({ cls: 'flex-1 min-w-0' });
 
 		// 파일명
 		infoEl.createDiv({
 			text: note.file.basename || note.file.path.split('/').pop(),
-			cls: 'qp:font-medium qp:truncate',
+			cls: 'font-medium truncate',
 		});
 
 		// 경로
 		infoEl.createDiv({
 			text: note.file.path,
-			cls: 'qp:text-xs qp:text-obs-text-muted qp:truncate',
+			cls: 'text-xs text-obs-text-muted truncate',
 		});
 
 		// 상태 뱃지
@@ -945,7 +945,7 @@ export class DashboardModal extends Modal {
 		if (selectedCount > 0) {
 			leftEl.createSpan({
 				text: t('dashboard.selected', { count: selectedCount }),
-				cls: 'qp:text-sm qp:text-obs-text-muted',
+				cls: 'text-sm text-obs-text-muted',
 				attr: { 'aria-live': 'polite' },
 			});
 		}
@@ -1062,7 +1062,7 @@ export class ConfirmModal extends Modal {
 		contentEl.createEl('p', { text: this.message });
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4',
+			cls: 'flex justify-end gap-2 mt-4',
 		});
 
 		const cancelBtn = buttonContainer.createEl('button', {

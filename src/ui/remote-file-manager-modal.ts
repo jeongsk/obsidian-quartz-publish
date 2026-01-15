@@ -195,12 +195,12 @@ export class RemoteFileManagerModal extends Modal {
 	 */
 	private renderLoading(container: HTMLElement): void {
 		const loadingEl = container.createDiv({
-			cls: 'qp:flex qp:flex-col qp:items-center qp:justify-center qp:py-12',
+			cls: 'flex flex-col items-center justify-center py-12',
 		});
-		const loadingIcon = loadingEl.createDiv({ cls: 'qp:animate-spin', attr: { 'aria-hidden': 'true' } });
+		const loadingIcon = loadingEl.createDiv({ cls: 'animate-spin', attr: { 'aria-hidden': 'true' } });
 		setIcon(loadingIcon, 'loader-2');
 		loadingEl.createDiv({
-			cls: 'qp:mt-2 qp:text-obs-text-muted',
+			cls: 'mt-2 text-obs-text-muted',
 			text: t('modal.remoteFiles.loading'),
 		});
 	}
@@ -210,18 +210,18 @@ export class RemoteFileManagerModal extends Modal {
 	 */
 	private renderError(container: HTMLElement): void {
 		const errorEl = container.createDiv({
-			cls: 'qp:flex qp:flex-col qp:items-center qp:justify-center qp:py-12 qp:text-obs-text-error',
+			cls: 'flex flex-col items-center justify-center py-12 text-obs-text-error',
 		});
 		const errorIcon = errorEl.createDiv({ attr: { 'aria-hidden': 'true' } });
 		setIcon(errorIcon, 'x-circle');
 		errorEl.createDiv({
-			cls: 'qp:mt-2',
+			cls: 'mt-2',
 			text: this.state.error ?? t('error.remoteFiles.loadFailed'),
 		});
 
 		const retryBtn = errorEl.createEl('button', {
 			text: t('modal.remoteFiles.refresh'),
-			cls: 'qp:mt-4',
+			cls: 'mt-4',
 		});
 		retryBtn.addEventListener('click', () => this.loadFiles(true));
 	}
@@ -231,14 +231,14 @@ export class RemoteFileManagerModal extends Modal {
 	 */
 	private renderHeader(container: HTMLElement): void {
 		const headerEl = container.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2 qp:mb-4',
+			cls: 'flex items-center gap-2 mb-4',
 		});
 
 		// 검색 입력
 		const searchInput = headerEl.createEl('input', {
 			type: 'text',
 			placeholder: t('modal.remoteFiles.search'),
-			cls: 'qp-search-input qp:flex-1 qp:p-2 qp:border qp:border-obs-bg-modifier-border qp:rounded qp:bg-obs-bg-primary',
+			cls: 'qp-search-input flex-1 p-2 border border-obs-bg-modifier-border rounded bg-obs-bg-primary',
 			attr: {
 				'aria-label': t('modal.remoteFiles.search'),
 			},
@@ -253,7 +253,7 @@ export class RemoteFileManagerModal extends Modal {
 		// 새로고침 버튼
 		const refreshBtn = headerEl.createEl('button', {
 			text: t('modal.remoteFiles.refresh'),
-			cls: 'qp:px-3 qp:py-2',
+			cls: 'px-3 py-2',
 			attr: {
 				'aria-label': t('modal.remoteFiles.refresh'),
 			},
@@ -266,14 +266,14 @@ export class RemoteFileManagerModal extends Modal {
 	 */
 	private renderDuplicateWarning(container: HTMLElement): void {
 		const warningEl = container.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2 qp:p-3 qp:mb-4 qp:rounded qp:bg-obs-bg-modifier-warning qp:text-obs-text-warning',
+			cls: 'flex items-center gap-2 p-3 mb-4 rounded bg-obs-bg-modifier-warning text-obs-text-warning',
 			attr: {
 				role: 'alert',
 				'aria-live': 'polite',
 			},
 		});
 
-		const warningIcon = warningEl.createSpan({ cls: 'qp:mr-1', attr: { 'aria-hidden': 'true' } });
+		const warningIcon = warningEl.createSpan({ cls: 'mr-1', attr: { 'aria-hidden': 'true' } });
 		setIcon(warningIcon, 'alert-triangle');
 		warningEl.createSpan({
 			text: `${t('modal.remoteFiles.duplicates')} - ${t('modal.remoteFiles.duplicateCount', { count: this.state.duplicateGroups.length })}`,
@@ -285,7 +285,7 @@ export class RemoteFileManagerModal extends Modal {
 	 */
 	private renderFileList(container: HTMLElement): void {
 		const listContainer = container.createDiv({
-			cls: 'qp-file-list qp:max-h-[400px] qp:overflow-y-auto qp:border qp:border-obs-bg-modifier-border qp:rounded',
+			cls: 'qp-file-list max-h-[400px] overflow-y-auto border border-obs-bg-modifier-border rounded',
 			attr: {
 				role: 'list',
 				'aria-label': t('modal.remoteFiles.fileListLabel'),
@@ -295,7 +295,7 @@ export class RemoteFileManagerModal extends Modal {
 		// 빈 목록
 		if (this.state.filteredFiles.length === 0) {
 			listContainer.createDiv({
-				cls: 'qp:flex qp:items-center qp:justify-center qp:py-12 qp:text-obs-text-muted',
+				cls: 'flex items-center justify-center py-12 text-obs-text-muted',
 				text: t('modal.remoteFiles.empty'),
 			});
 			return;
@@ -303,7 +303,7 @@ export class RemoteFileManagerModal extends Modal {
 
 		// 파일 개수 표시
 		const countEl = container.createDiv({
-			cls: 'qp:text-sm qp:text-obs-text-muted qp:mb-2',
+			cls: 'text-sm text-obs-text-muted mb-2',
 			text: t('modal.remoteFiles.fileCount', {
 				count: this.state.filteredFiles.length,
 			}),
@@ -334,8 +334,8 @@ export class RemoteFileManagerModal extends Modal {
 
 		const itemEl = container.createDiv({
 			cls: cn(
-				'qp-file-item qp:flex qp:items-center qp:gap-2 qp:p-2 qp:border-b qp:border-obs-bg-modifier-border qp:cursor-pointer',
-				isSelected && 'qp:bg-obs-bg-modifier-hover'
+				'qp-file-item flex items-center gap-2 p-2 border-b border-obs-bg-modifier-border cursor-pointer',
+				isSelected && 'bg-obs-bg-modifier-hover'
 			),
 			attr: {
 				role: 'listitem',
@@ -345,7 +345,7 @@ export class RemoteFileManagerModal extends Modal {
 		// 체크박스
 		const checkbox = itemEl.createEl('input', {
 			type: 'checkbox',
-			cls: 'qp:mr-2',
+			cls: 'mr-2',
 			attr: {
 				'aria-label': t('modal.remoteFiles.selectFile', { name: file.name }),
 			},
@@ -357,13 +357,13 @@ export class RemoteFileManagerModal extends Modal {
 		});
 
 		// 파일 정보
-		const infoEl = itemEl.createDiv({ cls: 'qp:flex-1 qp:min-w-0' });
+		const infoEl = itemEl.createDiv({ cls: 'flex-1 min-w-0' });
 		infoEl.createDiv({
-			cls: 'qp:font-medium qp:truncate',
+			cls: 'font-medium truncate',
 			text: file.name,
 		});
 		infoEl.createDiv({
-			cls: 'qp:text-xs qp:text-obs-text-muted qp:truncate',
+			cls: 'text-xs text-obs-text-muted truncate',
 			text: file.path,
 		});
 
@@ -371,14 +371,14 @@ export class RemoteFileManagerModal extends Modal {
 		if (isDuplicate) {
 			itemEl.createSpan({
 				text: t('modal.remoteFiles.duplicateBadge'),
-				cls: 'qp-duplicate-badge qp:text-xs qp:px-1.5 qp:py-0.5 qp:rounded qp:bg-obs-bg-modifier-warning qp:text-obs-text-warning',
+				cls: 'qp-duplicate-badge text-xs px-1.5 py-0.5 rounded bg-obs-bg-modifier-warning text-obs-text-warning',
 			});
 		}
 
 		// 파일 크기
 		itemEl.createSpan({
 			text: this.remoteFileService.formatFileSize(file.size),
-			cls: 'qp:text-xs qp:text-obs-text-muted',
+			cls: 'text-xs text-obs-text-muted',
 		});
 
 		// 클릭 이벤트
@@ -405,13 +405,13 @@ export class RemoteFileManagerModal extends Modal {
 
 		// 선택 정보 표시
 		const selectionInfoEl = container.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2 qp:mt-4 qp:pt-4 qp:border-t qp:border-obs-bg-modifier-border',
+			cls: 'flex items-center gap-2 mt-4 pt-4 border-t border-obs-bg-modifier-border',
 		});
 
 		if (selectedCount > 0) {
 			selectionInfoEl.createSpan({
 				text: t('modal.remoteFiles.selected', { count: selectedCount }),
-				cls: 'qp:text-sm',
+				cls: 'text-sm',
 			});
 
 			// 전체 선택/해제 버튼
@@ -420,7 +420,7 @@ export class RemoteFileManagerModal extends Modal {
 					selectedCount === this.state.filteredFiles.length
 						? t('modal.remoteFiles.deselectAll')
 						: t('modal.remoteFiles.selectAll'),
-				cls: 'qp:text-sm qp:text-obs-text-accent qp:bg-transparent qp:border-none qp:cursor-pointer qp:underline hover:qp:text-obs-text-accent-hover',
+				cls: 'text-sm text-obs-text-accent bg-transparent border-none cursor-pointer underline hover:text-obs-text-accent-hover',
 			});
 			toggleButton.addEventListener('click', () => {
 				this.toggleSelectAll();
