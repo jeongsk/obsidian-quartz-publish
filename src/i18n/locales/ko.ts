@@ -516,6 +516,19 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.conflict.overwrite.desc': '원격 변경사항을 무시하고 현재 설정으로 덮어씁니다.',
 	'modal.conflict.cancel.title': '취소',
 	'modal.conflict.cancel.desc': '저장을 취소하고 현재 상태를 유지합니다.',
+
+	// Analytics Section
+	'analytics.heading': '애널리틱스',
+	'analytics.provider.name': '애널리틱스 제공자',
+	'analytics.provider.desc': '사용할 애널리틱스 서비스를 선택합니다',
+	'analytics.google.tagId.name': '태그 ID',
+	'analytics.google.tagId.desc': 'Google Analytics 4 측정 ID (예: G-XXXXXXXXXX)',
+	'analytics.plausible.host.name': '호스트 (선택)',
+	'analytics.plausible.host.desc': '셀프 호스팅 Plausible 인스턴스 URL (기본값: Plausible Cloud)',
+	'analytics.umami.websiteId.name': '웹사이트 ID',
+	'analytics.umami.websiteId.desc': 'Umami 대시보드에서 확인할 수 있는 Website ID (UUID 형식)',
+	'analytics.umami.host.name': '호스트',
+	'analytics.umami.host.desc': 'Umami 인스턴스 URL',
 };
 
 export default ko;

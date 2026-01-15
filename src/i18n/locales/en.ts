@@ -512,4 +512,17 @@ export default {
 	'modal.conflict.overwrite.desc': 'Ignore remote changes and overwrite with current settings.',
 	'modal.conflict.cancel.title': 'Cancel',
 	'modal.conflict.cancel.desc': 'Cancel saving and keep the current state.',
+
+	// Analytics Section
+	'analytics.heading': 'Analytics',
+	'analytics.provider.name': 'Analytics Provider',
+	'analytics.provider.desc': 'Select the analytics service to use',
+	'analytics.google.tagId.name': 'Tag ID',
+	'analytics.google.tagId.desc': 'Google Analytics 4 Measurement ID (e.g., G-XXXXXXXXXX)',
+	'analytics.plausible.host.name': 'Host (Optional)',
+	'analytics.plausible.host.desc': 'Self-hosted Plausible instance URL (defaults to Plausible Cloud)',
+	'analytics.umami.websiteId.name': 'Website ID',
+	'analytics.umami.websiteId.desc': 'Website ID from Umami dashboard (UUID format)',
+	'analytics.umami.host.name': 'Host',
+	'analytics.umami.host.desc': 'Umami instance URL',
 } as const;

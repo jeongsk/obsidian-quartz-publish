@@ -8,6 +8,7 @@
 
 import { Setting } from 'obsidian';
 import { ANALYTICS_PROVIDERS } from '../../constants/analytics';
+import { t } from '../../i18n';
 import type { AnalyticsConfig, QuartzSiteConfig } from '../../types';
 import { validateAnalytics } from '../../utils/validators';
 
@@ -58,7 +59,7 @@ export class AnalyticsSection {
 	 */
 	private render(): void {
 		// 섹션 헤더 (T055)
-		new Setting(this.containerEl).setName('Analytics').setHeading();
+		new Setting(this.containerEl).setName(t('analytics.heading')).setHeading();
 
 		// Provider 드롭다운 (T049)
 		this.renderProviderDropdown();
@@ -86,8 +87,8 @@ export class AnalyticsSection {
 	 */
 	private renderProviderDropdown(): void {
 		new Setting(this.containerEl)
-			.setName('Analytics Provider')
-			.setDesc('사용할 애널리틱스 서비스를 선택합니다')
+			.setName(t('analytics.provider.name'))
+			.setDesc(t('analytics.provider.desc'))
 			.addDropdown((dropdown) => {
 				this.providerDropdown = dropdown.selectEl;
 
@@ -175,8 +176,8 @@ export class AnalyticsSection {
 		const config = this.currentConfig;
 
 		new Setting(this.fieldsContainerEl)
-			.setName('Tag ID')
-			.setDesc('Google Analytics 4 측정 ID (예: G-XXXXXXXXXX)')
+			.setName(t('analytics.google.tagId.name'))
+			.setDesc(t('analytics.google.tagId.desc'))
 			.addText((text) =>
 				text
 					.setPlaceholder('G-XXXXXXXXXX')
@@ -201,8 +202,8 @@ export class AnalyticsSection {
 		const config = this.currentConfig;
 
 		new Setting(this.fieldsContainerEl)
-			.setName('Host (Optional)')
-			.setDesc('셀프 호스팅 Plausible 인스턴스 URL (기본값: Plausible Cloud)')
+			.setName(t('analytics.plausible.host.name'))
+			.setDesc(t('analytics.plausible.host.desc'))
 			.addText((text) =>
 				text
 					.setPlaceholder('https://plausible.yoursite.com')
@@ -231,8 +232,8 @@ export class AnalyticsSection {
 
 		// Website ID
 		new Setting(this.fieldsContainerEl)
-			.setName('Website ID')
-			.setDesc('Umami 대시보드에서 확인할 수 있는 Website ID (UUID 형식)')
+			.setName(t('analytics.umami.websiteId.name'))
+			.setDesc(t('analytics.umami.websiteId.desc'))
 			.addText((text) =>
 				text
 					.setPlaceholder('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx')
@@ -248,8 +249,8 @@ export class AnalyticsSection {
 
 		// Host
 		new Setting(this.fieldsContainerEl)
-			.setName('Host')
-			.setDesc('Umami 인스턴스 URL')
+			.setName(t('analytics.umami.host.name'))
+			.setDesc(t('analytics.umami.host.desc'))
 			.addText((text) =>
 				text
 					.setPlaceholder('https://umami.yoursite.com')
