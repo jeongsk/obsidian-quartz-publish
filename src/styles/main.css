@@ -70,8 +70,8 @@
 
 /* Dashboard Modal Container */
 .quartz-publish-dashboard-modal {
-	width: 650px;
-	max-width: 90vw;
+	width: min(650px, 95vw);
+	max-width: 95vw;
 }
 
 /* Dashboard Modal Content */
