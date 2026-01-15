@@ -128,10 +128,10 @@ export class GitHubGuideModal extends Modal {
 		const completedCount = this.statusService.getCompletedStepCount();
 
 		const statusBadge = headerContainer.createEl('span', {
-			cls: `qp:text-xs qp:px-2 qp:py-1 qp:rounded ${
+			cls: `qp:text-xs qp:px-2 qp:py-1 qp:rounded qp:text-obs-text-on-accent-inverted ${
 				isComplete
-					? 'qp:bg-obs-bg-modifier-success qp:text-obs-text-success'
-					: 'qp:bg-obs-bg-modifier-message qp:text-obs-text-warning'
+					? 'qp:bg-obs-bg-modifier-success'
+					: 'qp:bg-obs-bg-modifier-message'
 			}`,
 		});
 		statusBadge.textContent = `${completedCount}/${TOTAL_GUIDE_STEPS} ${t('guide.complete')}`;

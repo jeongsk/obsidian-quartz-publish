@@ -340,7 +340,7 @@ export class RemoteFileManagerModal extends Modal {
 			type: 'checkbox',
 			cls: 'qp:mr-2',
 			attr: {
-				'aria-label': `${file.name} 선택`,
+				'aria-label': t('modal.remoteFiles.selectFile', { name: file.name }),
 			},
 		}) as HTMLInputElement;
 		checkbox.checked = isSelected;
