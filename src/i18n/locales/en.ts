@@ -354,6 +354,7 @@ export default {
 	'modal.remoteFiles.duplicates': 'Duplicate files detected',
 	'modal.remoteFiles.duplicateCount': '{{count}} duplicate group(s)',
 	'modal.remoteFiles.duplicateBadge': 'Duplicate',
+	'modal.remoteFiles.fileListLabel': 'Published files list',
 
 	// Errors - Remote Files
 	'error.remoteFiles.loadFailed': 'Failed to load file list',

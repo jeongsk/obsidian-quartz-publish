@@ -358,6 +358,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.remoteFiles.duplicates': '중복 파일 감지됨',
 	'modal.remoteFiles.duplicateCount': '{{count}}개 중복 그룹',
 	'modal.remoteFiles.duplicateBadge': '중복',
+	'modal.remoteFiles.fileListLabel': '발행된 파일 목록',
 
 	// Errors - Remote Files
 	'error.remoteFiles.loadFailed': '파일 목록을 불러오는데 실패했습니다',

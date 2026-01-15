@@ -282,6 +282,10 @@ export class RemoteFileManagerModal extends Modal {
 	private renderFileList(container: HTMLElement): void {
 		const listContainer = container.createDiv({
 			cls: 'qp-file-list qp:max-h-[400px] qp:overflow-y-auto qp:border qp:border-obs-bg-modifier-border qp:rounded',
+			attr: {
+				role: 'list',
+				'aria-label': t('modal.remoteFiles.fileListLabel'),
+			},
 		});
 
 		// 빈 목록
@@ -327,10 +331,7 @@ export class RemoteFileManagerModal extends Modal {
 		const itemEl = container.createDiv({
 			cls: `qp-file-item qp:flex qp:items-center qp:gap-2 qp:p-2 qp:border-b qp:border-obs-bg-modifier-border qp:cursor-pointer ${isSelected ? 'qp:bg-obs-bg-modifier-hover' : ''}`,
 			attr: {
-				role: 'checkbox',
-				'aria-checked': String(isSelected),
-				'aria-label': file.path,
-				tabindex: '0',
+				role: 'listitem',
 			},
 		});
 
