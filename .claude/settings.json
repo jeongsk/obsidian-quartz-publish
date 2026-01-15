@@ -1,14 +1,17 @@
 {
-	"hooks": {
-		"Stop": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash ~/.claude/hooks/stop_hook.sh"
-					}
-				]
-			}
-		]
-	}
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/stop_hook.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true
+  }
 }
