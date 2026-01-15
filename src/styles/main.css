@@ -757,3 +757,8 @@ button.mod-warning:disabled {
 .qp-animate-spin {
 	animation: qp-spin 1s linear infinite;
 }
+
+/* Frontmatter Editor Modal */
+.quartz-publish-frontmatter-editor-modal {
+	width: min(600px, 90vw);
+}

@@ -58,7 +58,6 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl, modalEl } = this;
 		contentEl.empty();
 		modalEl.addClass('quartz-publish-frontmatter-editor-modal');
-		modalEl.style.width = '600px';
 
 		// 헤더
 		this.renderHeader();
