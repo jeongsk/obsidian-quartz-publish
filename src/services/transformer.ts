@@ -5,7 +5,12 @@
  */
 
 import type { TFile, Vault, MetadataCache } from 'obsidian';
-import type { TransformResult, AttachmentRef, FrontmatterResult } from '../types';
+import type {
+	TransformResult,
+	AttachmentRef,
+	FrontmatterResult,
+	AutoDateSettings,
+} from '../types';
 
 /**
  * 콘텐츠 변환기 클래스
@@ -130,6 +135,63 @@ export class ContentTransformer {
 
 		// 기존 프론트매터에 추가
 		const newRaw = `publish: true\n${raw}`;
+		return `---\n${newRaw}\n---\n\n${body}`;
+	}
+
+	/**
+	 * 날짜를 YYYY-MM-DD 형식으로 포맷
+	 */
+	private formatDate(date: Date): string {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		return `${year}-${month}-${day}`;
+	}
+
+	/**
+	 * 프론트매터에 날짜 필드 추가
+	 * 기존 필드가 있으면 덮어쓰지 않음
+	 *
+	 * @param content 원본 마크다운 콘텐츠
+	 * @param file 파일 객체 (생성/수정 시간 참조)
+	 * @param autoDateSettings 날짜 자동 추가 설정
+	 * @returns 날짜 필드가 추가된 콘텐츠
+	 */
+	addDateFields(content: string, file: TFile, autoDateSettings: AutoDateSettings): string {
+		const { frontmatter, body, raw } = this.parseFrontmatter(content);
+		const newFields: string[] = [];
+
+		// created 필드 처리 (파일 생성 시간 사용)
+		if (autoDateSettings.enableCreated && frontmatter.created === undefined) {
+			const createdDate = new Date(file.stat.ctime);
+			newFields.push(`created: ${this.formatDate(createdDate)}`);
+		}
+
+		// modified 필드 처리 (파일 수정 시간 사용)
+		if (autoDateSettings.enableModified && frontmatter.modified === undefined) {
+			const modifiedDate = new Date(file.stat.mtime);
+			newFields.push(`modified: ${this.formatDate(modifiedDate)}`);
+		}
+
+		// published 필드 처리 (현재 시간 사용)
+		if (autoDateSettings.enablePublished && frontmatter.published === undefined) {
+			const now = new Date();
+			newFields.push(`published: ${this.formatDate(now)}`);
+		}
+
+		// 추가할 필드가 없으면 원본 반환
+		if (newFields.length === 0) {
+			return content;
+		}
+
+		// 프론트매터 재구성
+		if (!raw) {
+			// 프론트매터가 없는 경우 새로 생성
+			return `---\n${newFields.join('\n')}\n---\n\n${body}`;
+		}
+
+		// 기존 프론트매터 끝에 추가
+		const newRaw = `${raw}\n${newFields.join('\n')}`;
 		return `---\n${newRaw}\n---\n\n${body}`;
 	}
 
