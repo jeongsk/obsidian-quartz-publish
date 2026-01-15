@@ -401,8 +401,6 @@ export interface QuartzSettings {
 	explicitPublish: boolean;
 	/** 제외 패턴 목록 */
 	ignorePatterns: string[];
-	/** URL 생성 전략 */
-	urlStrategy: 'shortest' | 'absolute';
 }
 
 /**
@@ -411,7 +409,6 @@ export interface QuartzSettings {
 export const DEFAULT_QUARTZ_SETTINGS: QuartzSettings = {
 	explicitPublish: false,
 	ignorePatterns: [],
-	urlStrategy: 'shortest',
 };
 
 // ============================================================================
@@ -512,8 +509,6 @@ export interface QuartzSiteConfig {
 	explicitPublish: boolean;
 	/** 발행 제외 패턴 목록 */
 	ignorePatterns: string[];
-	/** URL 생성 전략 */
-	urlStrategy: 'shortest' | 'absolute';
 }
 
 /**
@@ -530,7 +525,6 @@ export const DEFAULT_QUARTZ_SITE_CONFIG: QuartzSiteConfig = {
 	comments: { provider: 'null' },
 	explicitPublish: false,
 	ignorePatterns: ['private', 'templates'],
-	urlStrategy: 'shortest',
 };
 
 /**

@@ -4,7 +4,6 @@
  * 발행 관련 설정 UI 컴포넌트 (T058-T063)
  * - explicitPublish: 명시적 발행 필터
  * - ignorePatterns: 제외 패턴
- * - urlStrategy: URL 생성 전략
  */
 
 import { Setting } from 'obsidian';
@@ -24,7 +23,7 @@ export type PublishingChangeCallback = <K extends keyof QuartzSiteConfig>(
  */
 export interface PublishingSectionOptions {
 	/** 초기 설정값 */
-	config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns' | 'urlStrategy'>;
+	config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns'>;
 	/** 변경 콜백 */
 	onChange: PublishingChangeCallback;
 }
@@ -41,7 +40,6 @@ export class PublishingSection {
 
 	// 컴포넌트 참조
 	private explicitPublishToggleEl: HTMLInputElement | null = null;
-	private urlStrategyDropdown: HTMLSelectElement | null = null;
 	private patternsContainerEl: HTMLElement | null = null;
 
 	constructor(containerEl: HTMLElement, options: PublishingSectionOptions) {
@@ -63,9 +61,6 @@ export class PublishingSection {
 
 		// Ignore Patterns (T060)
 		this.renderIgnorePatternsInput();
-
-		// URL Strategy (T061)
-		this.renderUrlStrategyDropdown();
 	}
 
 	/**
@@ -195,30 +190,10 @@ export class PublishingSection {
 	}
 
 	/**
-	 * URL Strategy 드롭다운 렌더링 (T061)
-	 */
-	private renderUrlStrategyDropdown(): void {
-		new Setting(this.containerEl)
-			.setName('URL Strategy')
-			.setDesc('노트 URL 생성 방식을 선택합니다')
-			.addDropdown((dropdown) => {
-				this.urlStrategyDropdown = dropdown.selectEl;
-
-				dropdown
-					.addOption('shortest', 'Shortest (기본값)')
-					.addOption('absolute', 'Absolute paths')
-					.setValue(this.options.config.urlStrategy)
-					.onChange((value) => {
-						this.options.onChange('urlStrategy', value as 'shortest' | 'absolute');
-					});
-			});
-	}
-
-	/**
 	 * 외부에서 값 업데이트
 	 */
 	updateValues(
-		config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns' | 'urlStrategy'>
+		config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns'>
 	): void {
 		if (this.explicitPublishToggleEl) {
 			this.explicitPublishToggleEl.checked = config.explicitPublish;
@@ -226,9 +201,5 @@ export class PublishingSection {
 
 		this.patterns = [...config.ignorePatterns];
 		this.renderPatternsList();
-
-		if (this.urlStrategyDropdown) {
-			this.urlStrategyDropdown.value = config.urlStrategy;
-		}
 	}
 }

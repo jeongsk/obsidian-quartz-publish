@@ -24,8 +24,6 @@ export interface ParsedQuartzConfig {
 	explicitPublish: boolean;
 	/** 제외 패턴 목록 */
 	ignorePatterns: string[];
-	/** URL 생성 전략 */
-	urlStrategy: 'shortest' | 'absolute';
 	/** 원본 파일 내용 */
 	rawContent: string;
 }
@@ -86,13 +84,9 @@ export class QuartzConfigService {
 			// ignorePatterns 추출
 			const ignorePatterns = this.parseIgnorePatterns(content);
 
-			// urlStrategy 추출 (기본값: shortest)
-			const urlStrategy = this.parseUrlStrategy(content);
-
 			return {
 				explicitPublish: hasExplicitPublish,
 				ignorePatterns,
-				urlStrategy,
 				rawContent: content,
 			};
 		} catch {
@@ -110,18 +104,6 @@ export class QuartzConfigService {
 			return [];
 		}
 		return this.parseStringArray(match[1]);
-	}
-
-	/**
-	 * urlStrategy 값 추출
-	 */
-	private parseUrlStrategy(content: string): 'shortest' | 'absolute' {
-		// urlStrategy: "absolute" 또는 urlStrategy: "shortest" 형식 매칭
-		const match = content.match(/urlStrategy\s*:\s*["'](\w+)["']/);
-		if (match?.[1] === 'absolute') {
-			return 'absolute';
-		}
-		return 'shortest';
 	}
 
 	/**
@@ -253,48 +235,6 @@ export class QuartzConfigService {
 			const needsComma = blockContent.length > 0 && !blockContent.endsWith(',');
 			const separator = needsComma ? ',' : '';
 			const newBlockContent = `${blockContent}${separator}\n    ${newIgnorePatterns},\n  `;
-			const newContent =
-				content.slice(0, configBlock.startIndex) +
-				`configuration: {${newBlockContent}}` +
-				content.slice(configBlock.endIndex);
-			return { success: true, newContent };
-		}
-
-		return { success: false, error: 'configuration 블록을 찾을 수 없습니다' };
-	}
-
-	/**
-	 * URL 전략 설정 변경
-	 *
-	 * @param content 현재 파일 내용
-	 * @param strategy URL 전략
-	 * @returns 변경 결과
-	 */
-	setUrlStrategy(
-		content: string,
-		strategy: 'shortest' | 'absolute'
-	): ConfigChangeResult {
-		const newUrlStrategy = `urlStrategy: "${strategy}"`;
-
-		// 기존 urlStrategy 찾기
-		const urlStrategyPattern = /urlStrategy\s*:\s*["']\w+["']/;
-		const match = content.match(urlStrategyPattern);
-
-		if (match) {
-			// 기존 설정 교체
-			const newContent = content.replace(urlStrategyPattern, newUrlStrategy);
-			return { success: true, newContent };
-		}
-
-		// urlStrategy가 없는 경우 - configuration 블록에 추가
-		const configBlock = this.findConfigurationBlock(content);
-
-		if (configBlock) {
-			const blockContent = configBlock.blockContent.trimEnd();
-			// 마지막 콘텐츠 뒤에 쉼표가 없으면 추가
-			const needsComma = blockContent.length > 0 && !blockContent.endsWith(',');
-			const separator = needsComma ? ',' : '';
-			const newBlockContent = `${blockContent}${separator}\n    ${newUrlStrategy},\n  `;
 			const newContent =
 				content.slice(0, configBlock.startIndex) +
 				`configuration: {${newBlockContent}}` +
@@ -602,7 +542,6 @@ export class QuartzConfigService {
 			comments: parsed.comments,
 			explicitPublish: parsed.explicitPublish,
 			ignorePatterns: parsed.ignorePatterns,
-			urlStrategy: parsed.urlStrategy,
 		};
 	}
 
@@ -667,12 +606,6 @@ export class QuartzConfigService {
 		);
 		if (patternsResult.success && patternsResult.newContent) {
 			content = patternsResult.newContent;
-		}
-
-		// urlStrategy 업데이트
-		const strategyResult = this.setUrlStrategy(content, config.urlStrategy);
-		if (strategyResult.success && strategyResult.newContent) {
-			content = strategyResult.newContent;
 		}
 
 		return content;

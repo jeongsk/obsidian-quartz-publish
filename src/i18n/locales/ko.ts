@@ -119,8 +119,6 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.publishing.explicitPublishDesc': '명시적 발행 플래그가 있는 노트만 발행',
 	'settings.publishing.ignorePatterns': '무시 패턴',
 	'settings.publishing.ignorePatternsDesc': '발행 시 무시할 Glob 패턴',
-	'settings.publishing.urlStrategy': 'URL 전략',
-	'settings.publishing.urlStrategyDesc': '발행된 노트의 URL 생성 전략',
 
 	// Settings - Publish Filter
 	'settings.filter.title': '발행 필터',

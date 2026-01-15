@@ -57,7 +57,6 @@ Obsidian 노트를 Quartz 정적 사이트로 발행하는 플러그인입니다
 |------|------|------------------|
 | 일부만 공개 | ExplicitPublish() 플러그인 활성화/비활성화 | plugins.filters |
 | 제외 패턴 | 특정 폴더/파일 제외 | ignorePatterns |
-| URL 규칙 | shortestPaths / absolutePaths | urlStrategy |
 
 #### 3.2 Quartz 업그레이드
 - 설정 화면 진입 시 최신 버전 자동 체크
@@ -150,7 +149,6 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 
 - [x] ExplicitPublish 토글 (`src/ui/settings-tab.ts`)
 - [x] 제외 패턴 설정 (`src/services/quartz-config.ts`)
-- [x] URL 전략 변경 (`src/services/quartz-config.ts`)
 - [x] Quartz 업그레이드 기능 (`src/services/quartz-upgrade.ts`)
 - [x] 브랜치 자동 감지 (Test Connection 시)
 - [x] 상세 에러 메시지 표시

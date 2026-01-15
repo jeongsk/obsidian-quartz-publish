@@ -813,7 +813,6 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			config: {
 				explicitPublish: extendedConfig.explicitPublish,
 				ignorePatterns: extendedConfig.ignorePatterns,
-				urlStrategy: extendedConfig.urlStrategy,
 			},
 			onChange: (field, value) => {
 				this.handleAdvancedConfigChange(field, value);
@@ -893,7 +892,6 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.publishingSection?.updateValues({
 			explicitPublish: originalConfig.explicitPublish,
 			ignorePatterns: originalConfig.ignorePatterns,
-			urlStrategy: originalConfig.urlStrategy,
 		});
 
 		// UI 상태 업데이트

@@ -9,7 +9,7 @@ Quartz Publish 플러그인에서 Quartz 설정을 직접 관리하는 방법을
 | 섹션 | 설정 항목 |
 |------|----------|
 | **Site Info** | 사이트 제목, 기본 URL, 로케일 |
-| **Publishing** | ExplicitPublish, 제외 패턴, URL 전략 |
+| **Publishing** | ExplicitPublish, 제외 패턴 |
 | **Analytics** | 애널리틱스 제공자 및 설정 |
 
 ## Site Info (사이트 정보)
@@ -89,21 +89,6 @@ templates/**
 | `**/name.md` | 모든 위치의 특정 파일명 |
 
 **Quartz 설정 위치**: `configuration.ignorePatterns`
-
-### URL Strategy
-
-URL 생성 방식을 설정합니다.
-
-| 값 | 설명 | 예시 |
-|----|------|------|
-| **Shortest Paths** | 가능한 짧은 경로 | `/note-name` |
-| **Absolute Paths** | 폴더 구조 유지 | `/folder/subfolder/note-name` |
-
-**Quartz 설정 위치**: `configuration.urlStrategy`
-
-**권장**:
-- 짧고 깔끔한 URL → **Shortest Paths**
-- SEO와 구조적 URL → **Absolute Paths**
 
 ## Analytics (애널리틱스)
 
@@ -203,7 +188,6 @@ Page Title: 나의 디지털 가든
 Base URL: username.github.io/blog
 Locale: ko-KR
 Explicit Publish: On
-URL Strategy: Shortest Paths
 Analytics: None
 ```
 
@@ -214,7 +198,6 @@ Page Title: Tech Blog by Username
 Base URL: blog.example.com
 Locale: en-US
 Explicit Publish: On
-URL Strategy: Absolute Paths
 Analytics: Google Analytics (G-XXXXXXXXXX)
 ```
 

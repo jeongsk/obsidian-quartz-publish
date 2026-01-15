@@ -70,40 +70,6 @@ describe('QuartzConfigService', () => {
 			expect(result?.ignorePatterns).toEqual([]);
 		});
 
-		it('urlStrategy "shortest"를 파싱한다', () => {
-			const content = `
-				configuration: {
-					urlStrategy: "shortest"
-				}
-			`;
-			const result = service.parseConfig(content);
-
-			expect(result).not.toBeNull();
-			expect(result?.urlStrategy).toBe('shortest');
-		});
-
-		it('urlStrategy "absolute"를 파싱한다', () => {
-			const content = `
-				configuration: {
-					urlStrategy: "absolute"
-				}
-			`;
-			const result = service.parseConfig(content);
-
-			expect(result).not.toBeNull();
-			expect(result?.urlStrategy).toBe('absolute');
-		});
-
-		it('urlStrategy가 없으면 기본값 "shortest"를 반환한다', () => {
-			const content = `
-				configuration: {}
-			`;
-			const result = service.parseConfig(content);
-
-			expect(result).not.toBeNull();
-			expect(result?.urlStrategy).toBe('shortest');
-		});
-
 		it('실제 quartz.config.ts 형식을 파싱한다', () => {
 			const content = `
 import { QuartzConfig } from "./quartz/cfg"
@@ -145,7 +111,6 @@ export default config
 			expect(result).not.toBeNull();
 			expect(result?.explicitPublish).toBe(true);
 			expect(result?.ignorePatterns).toEqual(['private', 'templates', '.obsidian']);
-			expect(result?.urlStrategy).toBe('shortest');
 		});
 	});
 
@@ -273,61 +238,6 @@ export default config
 		it('configuration 블록이 없으면 에러를 반환한다', () => {
 			const content = 'const config = {}';
 			const result = service.setIgnorePatterns(content, ['test']);
-
-			expect(result.success).toBe(false);
-			expect(result.error).toBe('configuration 블록을 찾을 수 없습니다');
-		});
-	});
-
-	describe('setUrlStrategy', () => {
-		it('urlStrategy를 shortest에서 absolute로 변경한다', () => {
-			const content = 'urlStrategy: "shortest"';
-			const result = service.setUrlStrategy(content, 'absolute');
-
-			expect(result.success).toBe(true);
-			expect(result.newContent).toContain('urlStrategy: "absolute"');
-		});
-
-		it('urlStrategy를 absolute에서 shortest로 변경한다', () => {
-			const content = 'urlStrategy: "absolute"';
-			const result = service.setUrlStrategy(content, 'shortest');
-
-			expect(result.success).toBe(true);
-			expect(result.newContent).toContain('urlStrategy: "shortest"');
-		});
-
-		it('홑따옴표로 된 urlStrategy도 교체한다', () => {
-			const content = "urlStrategy: 'absolute'";
-			const result = service.setUrlStrategy(content, 'shortest');
-
-			expect(result.success).toBe(true);
-			expect(result.newContent).toContain('urlStrategy: "shortest"');
-		});
-
-		it('중첩 객체(analytics)가 있는 configuration 블록에서도 올바르게 동작한다', () => {
-			const content = `const config = {
-  configuration: {
-    pageTitle: "Test",
-    analytics: {
-      provider: "plausible"
-    },
-    locale: "ko-KR"
-  }
-}`;
-			const result = service.setUrlStrategy(content, 'absolute');
-
-			expect(result.success).toBe(true);
-			expect(result.newContent).toContain('urlStrategy: "absolute"');
-			// analytics 블록이 그대로 유지되어야 함
-			expect(result.newContent).toContain('analytics: {');
-			expect(result.newContent).toContain('provider: "plausible"');
-			// urlStrategy가 analytics 블록 안에 들어가면 안 됨
-			expect(result.newContent).not.toMatch(/analytics:\s*\{[^}]*urlStrategy/);
-		});
-
-		it('configuration 블록이 없으면 에러를 반환한다', () => {
-			const content = 'const config = {}';
-			const result = service.setUrlStrategy(content, 'absolute');
 
 			expect(result.success).toBe(false);
 			expect(result.error).toBe('configuration 블록을 찾을 수 없습니다');

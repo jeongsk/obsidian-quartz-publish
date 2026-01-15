@@ -115,8 +115,6 @@ export default {
 	'settings.publishing.explicitPublishDesc': 'Only publish notes with explicit publish flag',
 	'settings.publishing.ignorePatterns': 'Ignore Patterns',
 	'settings.publishing.ignorePatternsDesc': 'Glob patterns to ignore when publishing',
-	'settings.publishing.urlStrategy': 'URL Strategy',
-	'settings.publishing.urlStrategyDesc': 'URL generation strategy for published notes',
 
 	// Settings - Publish Filter
 	'settings.filter.title': 'Publish Filter',
