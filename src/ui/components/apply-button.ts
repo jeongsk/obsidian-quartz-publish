@@ -96,18 +96,21 @@ export class ApplyButton {
 		switch (newState) {
 			case 'disabled':
 				this.buttonEl.disabled = true;
+				this.buttonEl.removeAttribute('aria-busy');
 				this.buttonEl.addClass('is-disabled');
 				this.setButtonContent('upload-cloud', '적용');
 				break;
 
 			case 'enabled':
 				this.buttonEl.disabled = false;
+				this.buttonEl.removeAttribute('aria-busy');
 				this.setButtonContent('upload-cloud', '적용');
 				break;
 
 			case 'loading':
 				this.buttonEl.disabled = true;
 				this.buttonEl.addClass('is-loading');
+				this.buttonEl.setAttribute('aria-busy', 'true');
 				this.setButtonContent('loader', '저장 중...');
 				break;
 		}
