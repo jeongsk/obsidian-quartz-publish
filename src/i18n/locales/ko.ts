@@ -115,6 +115,17 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.comments.errors.repoIdRequired': '저장소 ID가 필요합니다',
 	'settings.comments.errors.categoryRequired': '카테고리 이름이 필요합니다',
 	'settings.comments.errors.categoryIdRequired': '카테고리 ID가 필요합니다',
+	// Comments - Options
+	'settings.comments.provider.none': '없음',
+	'settings.comments.provider.giscus': 'Giscus (GitHub Discussions)',
+	'settings.comments.mapping.url': 'URL',
+	'settings.comments.mapping.title': '제목',
+	'settings.comments.mapping.ogTitle': 'og:title',
+	'settings.comments.mapping.pathname': '경로명',
+	'settings.comments.mapping.specific': '특정 용어',
+	'settings.comments.mapping.number': '이슈 번호',
+	'settings.comments.inputPosition.bottom': '하단',
+	'settings.comments.inputPosition.top': '상단',
 
 	// Settings - Typography
 	'settings.typography.title': '타이포그래피',

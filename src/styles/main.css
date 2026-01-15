@@ -6,7 +6,6 @@
  *
  * 주의: Preflight(기본 스타일 리셋)를 제외하여 Obsidian 기존 스타일과 충돌 방지
  */
-
 @import "tailwindcss/theme.css" prefix(qp);
 @import "tailwindcss/utilities.css" prefix(qp);
 
@@ -785,18 +784,5 @@ textarea.is-invalid:focus {
 /* Frontmatter Editor Modal */
 .quartz-publish-frontmatter-editor-modal {
 	width: min(600px, 90vw);
-}
-
-/* Screen Reader Only - 접근성 */
-.qp\:sr-only {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border-width: 0;
 }
 

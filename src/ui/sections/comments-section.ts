@@ -13,22 +13,22 @@ export interface CommentsSectionOptions {
 }
 
 const COMMENTS_PROVIDERS = [
-	{ value: 'null', label: 'None' },
-	{ value: 'giscus', label: 'Giscus (GitHub Discussions)' },
+	{ value: 'null', labelKey: 'settings.comments.provider.none' },
+	{ value: 'giscus', labelKey: 'settings.comments.provider.giscus' },
 ] as const;
 
 const MAPPING_OPTIONS = [
-	{ value: 'url', label: 'URL' },
-	{ value: 'title', label: 'Title' },
-	{ value: 'og:title', label: 'og:title' },
-	{ value: 'pathname', label: 'Pathname' },
-	{ value: 'specific', label: 'Specific term' },
-	{ value: 'number', label: 'Issue number' },
+	{ value: 'url', labelKey: 'settings.comments.mapping.url' },
+	{ value: 'title', labelKey: 'settings.comments.mapping.title' },
+	{ value: 'og:title', labelKey: 'settings.comments.mapping.ogTitle' },
+	{ value: 'pathname', labelKey: 'settings.comments.mapping.pathname' },
+	{ value: 'specific', labelKey: 'settings.comments.mapping.specific' },
+	{ value: 'number', labelKey: 'settings.comments.mapping.number' },
 ] as const;
 
 const INPUT_POSITION_OPTIONS = [
-	{ value: 'bottom', label: 'Bottom' },
-	{ value: 'top', label: 'Top' },
+	{ value: 'bottom', labelKey: 'settings.comments.inputPosition.bottom' },
+	{ value: 'top', labelKey: 'settings.comments.inputPosition.top' },
 ] as const;
 
 export class CommentsSection {
@@ -81,7 +81,7 @@ export class CommentsSection {
 				this.providerDropdown = dropdown.selectEl;
 
 				for (const provider of COMMENTS_PROVIDERS) {
-					dropdown.addOption(provider.value, provider.label);
+					dropdown.addOption(provider.value, t(provider.labelKey));
 				}
 
 				dropdown.setValue(this.currentConfig.provider);
@@ -181,7 +181,7 @@ export class CommentsSection {
 			.setDesc(t('settings.comments.mappingDesc'))
 			.addDropdown((dropdown) => {
 				for (const option of MAPPING_OPTIONS) {
-					dropdown.addOption(option.value, option.label);
+					dropdown.addOption(option.value, t(option.labelKey));
 				}
 				dropdown.setValue(config.mapping ?? 'url');
 				dropdown.onChange((value) => this.updateGiscusField('mapping', value as GiscusConfig['mapping']));
@@ -211,7 +211,7 @@ export class CommentsSection {
 			.setDesc(t('settings.comments.inputPositionDesc'))
 			.addDropdown((dropdown) => {
 				for (const option of INPUT_POSITION_OPTIONS) {
-					dropdown.addOption(option.value, option.label);
+					dropdown.addOption(option.value, t(option.labelKey));
 				}
 				dropdown.setValue(config.inputPosition ?? 'bottom');
 				dropdown.onChange((value) => this.updateGiscusField('inputPosition', value as GiscusConfig['inputPosition']));

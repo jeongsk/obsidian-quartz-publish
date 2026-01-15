@@ -111,6 +111,17 @@ export default {
 	'settings.comments.errors.repoIdRequired': 'Repository ID is required',
 	'settings.comments.errors.categoryRequired': 'Category name is required',
 	'settings.comments.errors.categoryIdRequired': 'Category ID is required',
+	// Comments - Options
+	'settings.comments.provider.none': 'None',
+	'settings.comments.provider.giscus': 'Giscus (GitHub Discussions)',
+	'settings.comments.mapping.url': 'URL',
+	'settings.comments.mapping.title': 'Title',
+	'settings.comments.mapping.ogTitle': 'og:title',
+	'settings.comments.mapping.pathname': 'Pathname',
+	'settings.comments.mapping.specific': 'Specific term',
+	'settings.comments.mapping.number': 'Issue number',
+	'settings.comments.inputPosition.bottom': 'Bottom',
+	'settings.comments.inputPosition.top': 'Top',
 
 	// Settings - Typography
 	'settings.typography.title': 'Typography',
