@@ -176,6 +176,72 @@ export const DEFAULT_QUARTZ_SETTINGS: QuartzSettings = {
 	urlStrategy: 'shortest',
 };
 
+/**
+ * Quartz 설정 파일 정보
+ */
+export interface QuartzConfigFile {
+	/** 파일 경로 (항상 quartz.config.ts) */
+	path: 'quartz.config.ts';
+	/** GitHub blob SHA */
+	sha: string;
+	/** 파일 내용 */
+	content: string;
+	/** 마지막 조회 시간 (Unix timestamp) */
+	lastFetched: number;
+}
+
+/**
+ * Quartz 버전 정보
+ */
+export interface QuartzVersionInfo {
+	/** 현재 설치된 버전 */
+	current: string | null;
+	/** 최신 릴리스 버전 */
+	latest: string | null;
+	/** 업데이트 가능 여부 */
+	hasUpdate: boolean;
+	/** 마지막 확인 시간 (Unix timestamp) */
+	lastChecked: number;
+}
+
+/**
+ * 업그레이드 상태 타입
+ */
+export type UpgradeStatus =
+	| 'idle'
+	| 'checking'
+	| 'downloading'
+	| 'applying'
+	| 'completed'
+	| 'error';
+
+/**
+ * Quartz 업그레이드 진행 상황
+ */
+export interface QuartzUpgradeProgress {
+	/** 현재 상태 */
+	status: UpgradeStatus;
+	/** 총 파일 수 */
+	totalFiles: number;
+	/** 완료된 파일 수 */
+	completedFiles: number;
+	/** 현재 처리 중인 파일 */
+	currentFile: string | null;
+	/** 오류 메시지 */
+	error: string | null;
+}
+
+/**
+ * 업그레이드 진행 상황 초기값
+ */
+export const INITIAL_UPGRADE_PROGRESS: QuartzUpgradeProgress = {
+	status: 'idle',
+	totalFiles: 0,
+	completedFiles: 0,
+	currentFile: null,
+	error: null,
+};
+
 // ============================================================================
 // Plugin Data (Persisted)
 // ============================================================================

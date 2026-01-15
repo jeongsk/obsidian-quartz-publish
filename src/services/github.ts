@@ -484,4 +484,264 @@ export class GitHubService {
 	getBranch(): string {
 		return this.branch;
 	}
+
+	// ============================================================================
+	// External Repository Methods (for Quartz upgrade)
+	// ============================================================================
+
+	/**
+	 * 외부 리포지토리의 최신 릴리스 조회
+	 *
+	 * @param owner 리포지토리 소유자
+	 * @param repo 리포지토리 이름
+	 * @returns 릴리스 정보 또는 null
+	 */
+	async getLatestRelease(
+		owner: string,
+		repo: string
+	): Promise<{
+		tagName: string;
+		name: string;
+		publishedAt: string;
+		body: string;
+	} | null> {
+		try {
+			const response = await this.request<{
+				tag_name: string;
+				name: string;
+				published_at: string;
+				body: string;
+			}>(`/repos/${owner}/${repo}/releases/latest`);
+
+			return {
+				tagName: response.tag_name,
+				name: response.name,
+				publishedAt: response.published_at,
+				body: response.body,
+			};
+		} catch (error) {
+			if (error instanceof GitHubError && error.statusCode === 404) {
+				return null;
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * 외부 리포지토리의 Git Tree 조회 (재귀)
+	 *
+	 * @param owner 리포지토리 소유자
+	 * @param repo 리포지토리 이름
+	 * @param ref 브랜치/태그/커밋 SHA
+	 * @returns Tree 항목 목록
+	 */
+	async getExternalTree(
+		owner: string,
+		repo: string,
+		ref: string
+	): Promise<
+		Array<{
+			path: string;
+			mode: string;
+			type: 'blob' | 'tree';
+			sha: string;
+			size?: number;
+		}>
+	> {
+		const response = await this.request<{
+			tree: Array<{
+				path: string;
+				mode: string;
+				type: 'blob' | 'tree';
+				sha: string;
+				size?: number;
+			}>;
+		}>(`/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`);
+
+		return response.tree;
+	}
+
+	/**
+	 * 외부 리포지토리의 파일 내용 조회
+	 *
+	 * @param owner 리포지토리 소유자
+	 * @param repo 리포지토리 이름
+	 * @param path 파일 경로
+	 * @param ref 브랜치/태그/커밋 SHA
+	 * @returns 파일 내용 (UTF-8 디코딩됨) 또는 null
+	 */
+	async getExternalFileContent(
+		owner: string,
+		repo: string,
+		path: string,
+		ref: string
+	): Promise<string | null> {
+		try {
+			const response = await this.request<GitHubContentsResponse>(
+				`/repos/${owner}/${repo}/contents/${path}?ref=${ref}`
+			);
+
+			if (response.type !== 'file' || !response.content) {
+				return null;
+			}
+
+			// Base64 디코딩
+			const content = decodeURIComponent(
+				atob(response.content.replace(/\n/g, ''))
+					.split('')
+					.map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+					.join('')
+			);
+
+			return content;
+		} catch (error) {
+			if (error instanceof GitHubError && error.statusCode === 404) {
+				return null;
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * 외부 리포지토리의 바이너리 파일 내용 조회 (Base64)
+	 *
+	 * @param owner 리포지토리 소유자
+	 * @param repo 리포지토리 이름
+	 * @param path 파일 경로
+	 * @param ref 브랜치/태그/커밋 SHA
+	 * @returns Base64 인코딩된 파일 내용 또는 null
+	 */
+	async getExternalFileContentBase64(
+		owner: string,
+		repo: string,
+		path: string,
+		ref: string
+	): Promise<string | null> {
+		try {
+			const response = await this.request<GitHubContentsResponse>(
+				`/repos/${owner}/${repo}/contents/${path}?ref=${ref}`
+			);
+
+			if (response.type !== 'file' || !response.content) {
+				return null;
+			}
+
+			// Base64 문자열 그대로 반환 (줄바꿈 제거)
+			return response.content.replace(/\n/g, '');
+		} catch (error) {
+			if (error instanceof GitHubError && error.statusCode === 404) {
+				return null;
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * 여러 파일을 한 번의 커밋으로 업데이트
+	 *
+	 * Git Data API를 사용하여 여러 파일을 atomic하게 커밋합니다.
+	 *
+	 * @param files 업데이트할 파일 목록 { path, content }
+	 * @param message 커밋 메시지
+	 * @returns 커밋 결과
+	 */
+	async commitMultipleFiles(
+		files: Array<{ path: string; content: string }>,
+		message: string
+	): Promise<{ success: boolean; commitSha?: string; error?: string }> {
+		try {
+			// 1. 현재 브랜치의 HEAD 참조 가져오기
+			const refResponse = await this.request<{ object: { sha: string } }>(
+				`/repos/${this.owner}/${this.repo}/git/ref/heads/${this.branch}`
+			);
+			const headSha = refResponse.object.sha;
+
+			// 2. HEAD 커밋의 tree SHA 가져오기
+			const commitResponse = await this.request<{ tree: { sha: string } }>(
+				`/repos/${this.owner}/${this.repo}/git/commits/${headSha}`
+			);
+			const baseTreeSha = commitResponse.tree.sha;
+
+			// 3. 각 파일에 대해 blob 생성
+			const treeItems: Array<{
+				path: string;
+				mode: string;
+				type: string;
+				sha: string;
+			}> = [];
+
+			for (const file of files) {
+				const blobResponse = await this.request<{ sha: string }>(
+					`/repos/${this.owner}/${this.repo}/git/blobs`,
+					{
+						method: 'POST',
+						body: JSON.stringify({
+							content: file.content,
+							encoding: 'utf-8',
+						}),
+					}
+				);
+
+				treeItems.push({
+					path: file.path,
+					mode: '100644',
+					type: 'blob',
+					sha: blobResponse.sha,
+				});
+			}
+
+			// 4. 새 tree 생성
+			const newTreeResponse = await this.request<{ sha: string }>(
+				`/repos/${this.owner}/${this.repo}/git/trees`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						base_tree: baseTreeSha,
+						tree: treeItems,
+					}),
+				}
+			);
+
+			// 5. 새 commit 생성
+			const newCommitResponse = await this.request<{ sha: string }>(
+				`/repos/${this.owner}/${this.repo}/git/commits`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						message,
+						tree: newTreeResponse.sha,
+						parents: [headSha],
+					}),
+				}
+			);
+
+			// 6. 브랜치 참조 업데이트
+			await this.request(
+				`/repos/${this.owner}/${this.repo}/git/refs/heads/${this.branch}`,
+				{
+					method: 'PATCH',
+					body: JSON.stringify({
+						sha: newCommitResponse.sha,
+					}),
+				}
+			);
+
+			return {
+				success: true,
+				commitSha: newCommitResponse.sha,
+			};
+		} catch (error) {
+			if (error instanceof GitHubError) {
+				return {
+					success: false,
+					error: error.message,
+				};
+			}
+
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : 'Unknown error',
+			};
+		}
+	}
 }
