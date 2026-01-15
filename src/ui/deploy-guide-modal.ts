@@ -115,14 +115,22 @@ export class DeployGuideModal extends Modal {
 			cls: 'qp:text-sm qp:text-obs-text-muted',
 		});
 
+		const progressValue = Math.round(((this.currentStep + 1) / totalSteps) * 100);
 		const progressBar = progressContainer.createDiv({
 			cls: 'qp:w-full qp:h-2 qp:bg-obs-bg-modifier-border qp:rounded qp:mt-2',
+			attr: {
+				role: 'progressbar',
+				'aria-valuenow': String(this.currentStep + 1),
+				'aria-valuemin': '1',
+				'aria-valuemax': String(totalSteps),
+				'aria-label': `Step ${step.stepNumber} of ${totalSteps}`,
+			},
 		});
 
 		const progressFill = progressBar.createDiv({
 			cls: 'qp:h-full qp:bg-obs-interactive-accent qp:rounded qp:transition-all',
 		});
-		progressFill.style.width = `${((this.currentStep + 1) / totalSteps) * 100}%`;
+		progressFill.style.width = `${progressValue}%`;
 
 		contentEl.createEl('h3', {
 			text: step.title,

@@ -66,6 +66,11 @@ export class FrontmatterEditorModal extends Modal {
 		// 검증 결과 영역
 		this.validationContainer = contentEl.createDiv({
 			cls: 'qp:mb-4',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+				'aria-label': t('modal.frontmatter.validationStatus'),
+			},
 		});
 		this.updateValidation();
 

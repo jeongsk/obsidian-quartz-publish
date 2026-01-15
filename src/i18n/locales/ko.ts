@@ -250,6 +250,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.frontmatter.cssDesc': '페이지에 적용할 CSS 클래스',
 	'modal.frontmatter.save': '저장 후 발행',
 	'modal.frontmatter.validationSuccess': '모든 검증을 통과했습니다',
+	'modal.frontmatter.validationStatus': '검증 상태',
 
 	// Modals - Font Picker
 	'modal.fontPicker.placeholder': '폰트 검색... (예: Roboto, Noto Sans)',

@@ -104,6 +104,9 @@ export class CreateRepoModal extends Modal {
 		if (this.visibility === 'private') {
 			const warningEl = contentEl.createDiv({
 				cls: 'qp:bg-obs-bg-modifier-message qp:border qp:border-obs-text-warning qp:text-obs-text-warning qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:text-sm',
+				attr: {
+					role: 'alert',
+				},
 			});
 			warningEl.createSpan({
 				text: '⚠️ ' + t('modal.createRepo.privateWarning')

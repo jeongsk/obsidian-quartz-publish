@@ -246,6 +246,7 @@ export default {
 	'modal.frontmatter.cssDesc': 'CSS classes to apply to the page',
 	'modal.frontmatter.save': 'Save & Publish',
 	'modal.frontmatter.validationSuccess': 'All validations passed',
+	'modal.frontmatter.validationStatus': 'Validation status',
 
 	// Modals - Font Picker
 	'modal.fontPicker.placeholder': 'Search fonts... (e.g. Roboto, Noto Sans)',

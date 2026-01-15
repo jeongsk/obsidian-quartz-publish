@@ -152,14 +152,22 @@ export class GitHubGuideModal extends Modal {
 		});
 
 		// 진행 바
+		const progressValue = Math.round(((this.currentStep + 1) / totalSteps) * 100);
 		const progressBar = progressContainer.createDiv({
 			cls: 'qp:w-full qp:h-2 qp:bg-obs-bg-modifier-border qp:rounded qp:mt-2',
+			attr: {
+				role: 'progressbar',
+				'aria-valuenow': String(this.currentStep + 1),
+				'aria-valuemin': '1',
+				'aria-valuemax': String(totalSteps),
+				'aria-label': t('guide.stepOf', { current: this.currentStep + 1, total: totalSteps }),
+			},
 		});
 
 		const progressFill = progressBar.createDiv({
 			cls: 'qp:h-full qp:bg-obs-interactive-accent qp:rounded qp:transition-all qp:duration-300',
 		});
-		progressFill.style.width = `${((this.currentStep + 1) / totalSteps) * 100}%`;
+		progressFill.style.width = `${progressValue}%`;
 
 		// 단계 인디케이터 (점)
 		const dotsContainer = progressContainer.createDiv({
@@ -179,12 +187,24 @@ export class GitHubGuideModal extends Modal {
 							? 'qp:bg-obs-text-success'
 							: 'qp:bg-obs-bg-modifier-border'
 				}`,
+				attr: {
+					role: 'button',
+					tabindex: '0',
+					'aria-label': step.title,
+					...(isCurrentStep && { 'aria-current': 'step' }),
+				},
 			});
 
-			dot.setAttribute('aria-label', step.title);
-			dot.addEventListener('click', () => {
+			const navigateToStep = () => {
 				this.currentStep = i;
 				this.render();
+			};
+			dot.addEventListener('click', navigateToStep);
+			dot.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					navigateToStep();
+				}
 			});
 		}
 	}
