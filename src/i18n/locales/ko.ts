@@ -430,6 +430,16 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'guide.error.network.title': 'Network Error',
 	'guide.error.network.cause': '인터넷 연결에 문제가 있습니다',
 	'guide.error.network.solution': '네트워크 연결을 확인하고 다시 시도하세요',
+
+	// Common - Buttons
+	'common.apply': '적용',
+	'common.saving': '저장 중...',
+	'common.refresh': '새로고침',
+	'common.refreshDesc': 'GitHub에서 설정 다시 불러오기',
+
+	// Common - Warnings
+	'common.unsavedChanges': '저장되지 않은 변경사항이 있습니다',
+	'common.discardChanges': '변경사항 취소',
 };
 
 export default ko;

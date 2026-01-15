@@ -426,4 +426,14 @@ export default {
 	'guide.error.network.title': 'Network Error',
 	'guide.error.network.cause': 'There is a problem with your internet connection',
 	'guide.error.network.solution': 'Check your network connection and try again',
+
+	// Common - Buttons
+	'common.apply': 'Apply',
+	'common.saving': 'Saving...',
+	'common.refresh': 'Refresh',
+	'common.refreshDesc': 'Reload settings from GitHub',
+
+	// Common - Warnings
+	'common.unsavedChanges': 'You have unsaved changes',
+	'common.discardChanges': 'Discard changes',
 } as const;

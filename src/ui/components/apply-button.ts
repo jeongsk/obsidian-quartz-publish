@@ -8,6 +8,7 @@
  */
 
 import { setIcon } from 'obsidian';
+import { t } from '../../i18n';
 
 /**
  * 버튼 상태 타입
@@ -51,8 +52,8 @@ export class ApplyButton {
 			const refreshBtn = wrapper.createEl('button', {
 				cls: 'quartz-publish-refresh-button',
 			});
-			refreshBtn.createSpan({ text: 'Refresh' });
-			refreshBtn.setAttribute('aria-label', 'Reload settings from GitHub');
+			refreshBtn.createSpan({ text: t('common.refresh') });
+			refreshBtn.setAttribute('aria-label', t('common.refreshDesc'));
 			refreshBtn.addEventListener('click', async () => {
 				await this.options.onRefresh?.();
 			});
@@ -69,7 +70,7 @@ export class ApplyButton {
 		setIcon(iconSpan, 'upload-cloud');
 
 		this.buttonEl.createSpan({
-			text: '적용',
+			text: t('common.apply'),
 			cls: 'quartz-publish-apply-button-text',
 		});
 
@@ -99,20 +100,20 @@ export class ApplyButton {
 				this.buttonEl.disabled = true;
 				this.buttonEl.removeAttribute('aria-busy');
 				this.buttonEl.addClass('is-disabled');
-				this.setButtonContent('upload-cloud', '적용');
+				this.setButtonContent('upload-cloud', t('common.apply'));
 				break;
 
 			case 'enabled':
 				this.buttonEl.disabled = false;
 				this.buttonEl.removeAttribute('aria-busy');
-				this.setButtonContent('upload-cloud', '적용');
+				this.setButtonContent('upload-cloud', t('common.apply'));
 				break;
 
 			case 'loading':
 				this.buttonEl.disabled = true;
 				this.buttonEl.addClass('is-loading');
 				this.buttonEl.setAttribute('aria-busy', 'true');
-				this.setButtonContent('loader', '저장 중...');
+				this.setButtonContent('loader', t('common.saving'));
 				break;
 		}
 	}
