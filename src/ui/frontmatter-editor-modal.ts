@@ -142,7 +142,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// Title
 		new Setting(formEl)
-			.setName('Title')
+			.setName(t('modal.frontmatter.titleName'))
 			.setDesc(t('modal.frontmatter.titleDesc'))
 			.addText((text) => {
 				text
@@ -159,7 +159,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// Description
 		new Setting(formEl)
-			.setName('Description')
+			.setName(t('modal.frontmatter.descriptionName'))
 			.setDesc(t('modal.frontmatter.descriptionDesc'))
 			.addTextArea((textarea) => {
 				textarea
@@ -175,7 +175,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// Tags
 		new Setting(formEl)
-			.setName('Tags')
+			.setName(t('modal.frontmatter.tagsName'))
 			.setDesc(t('modal.frontmatter.tagsDesc'))
 			.addText((text) => {
 				const currentTags = this.editedFrontmatter.tags;
@@ -199,7 +199,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// Draft
 		new Setting(formEl)
-			.setName('Draft')
+			.setName(t('modal.frontmatter.draftName'))
 			.setDesc(t('modal.frontmatter.draftDesc'))
 			.addToggle((toggle) => {
 				toggle.setValue(this.editedFrontmatter.draft === true).onChange((value) => {
@@ -210,7 +210,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// Permalink
 		new Setting(formEl)
-			.setName('Permalink')
+			.setName(t('modal.frontmatter.permalinkName'))
 			.setDesc(t('modal.frontmatter.permalinkDesc'))
 			.addText((text) => {
 				text
@@ -224,7 +224,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// Enable TOC
 		new Setting(formEl)
-			.setName('Enable TOC')
+			.setName(t('modal.frontmatter.tocName'))
 			.setDesc(t('modal.frontmatter.tocDesc'))
 			.addToggle((toggle) => {
 				toggle
@@ -236,7 +236,7 @@ export class FrontmatterEditorModal extends Modal {
 
 		// CSS Classes
 		new Setting(formEl)
-			.setName('CSS Classes')
+			.setName(t('modal.frontmatter.cssName'))
 			.setDesc(t('modal.frontmatter.cssDesc'))
 			.addText((text) => {
 				const currentClasses = this.editedFrontmatter.cssclasses;
