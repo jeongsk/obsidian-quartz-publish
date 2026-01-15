@@ -6,7 +6,7 @@
  * - ignorePatterns: 제외 패턴
  */
 
-import { Setting } from 'obsidian';
+import { setIcon, Setting } from 'obsidian';
 import { t } from '../../i18n';
 import type { QuartzSiteConfig } from '../../types';
 import { validateGlobPattern } from '../../utils/glob-validator';
@@ -117,10 +117,10 @@ export class PublishingSection {
 				});
 
 				const removeBtn = patternEl.createEl('button', {
-					cls: 'qp:text-obs-text-error qp:bg-transparent qp:border-none qp:p-1 qp:cursor-pointer hover:qp:bg-obs-bg-modifier-hover qp:rounded',
+					cls: 'clickable-icon qp:text-obs-text-error',
 					attr: { 'aria-label': t('publishing.ignorePatterns.remove') },
 				});
-				removeBtn.textContent = '×';
+				setIcon(removeBtn, 'trash-2');
 
 				const index = i;
 				removeBtn.onclick = () => {
@@ -146,12 +146,12 @@ export class PublishingSection {
 		});
 
 		const addBtn = addRowEl.createEl('button', {
-			cls: 'qp:text-obs-text-success qp:bg-transparent qp:border-none qp:p-1 qp:cursor-pointer hover:qp:bg-obs-bg-modifier-hover qp:rounded',
+			cls: 'clickable-icon qp:text-obs-text-success',
 			attr: {
 				'aria-label': t('publishing.ignorePatterns.add'),
 			},
 		});
-		addBtn.textContent = '+';
+		setIcon(addBtn, 'plus');
 
 		const errorEl = this.patternsContainerEl.createDiv({
 			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1 qp:mb-2 qp:min-h-[20px]',
