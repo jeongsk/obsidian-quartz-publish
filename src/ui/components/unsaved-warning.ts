@@ -44,6 +44,7 @@ export class UnsavedWarning {
 
 		const iconEl = messageWrapper.createSpan({
 			cls: 'quartz-publish-unsaved-warning-icon',
+			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconEl, 'alert-triangle');
 

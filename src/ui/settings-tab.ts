@@ -1220,6 +1220,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			statusEl.createEl('span', {
 				text: '⚠',
 				cls: 'quartz-publish-version-status-icon',
+				attr: { 'aria-hidden': 'true' },
 			});
 			statusEl.createEl('span', {
 				text: t('upgrade.updateAvailable', { current: versionInfo.current ?? '', latest: versionInfo.latest ?? '' }),
@@ -1229,6 +1230,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			statusEl.createEl('span', {
 				text: '✓',
 				cls: 'quartz-publish-version-status-icon',
+				attr: { 'aria-hidden': 'true' },
 			});
 			statusEl.createEl('span', {
 				text: t('upgrade.upToDate'),

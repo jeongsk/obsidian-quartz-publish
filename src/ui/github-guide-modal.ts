@@ -78,7 +78,10 @@ export class GitHubGuideModal extends Modal {
 	private render() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.addClass('qp:p-4', 'qp:min-w-[500px]', 'qp:max-w-[600px]');
+		contentEl.addClass('qp:p-4');
+		// 반응형 너비: 작은 화면에서는 90vw, 큰 화면에서는 500-600px
+		contentEl.style.minWidth = 'min(500px, 90vw)';
+		contentEl.style.maxWidth = 'min(600px, 95vw)';
 
 		// 문제 해결 모드인 경우
 		if (this.showTroubleshooting) {
@@ -179,14 +182,17 @@ export class GitHubGuideModal extends Modal {
 			const isCurrentStep = i === this.currentStep;
 			const isCompleted = step.completionCheck?.() ?? false;
 
+			let dotClass = 'qp:w-3 qp:h-3 qp:rounded-full qp:cursor-pointer qp:transition-all ';
+			if (isCurrentStep) {
+				dotClass += 'qp:bg-obs-interactive-accent qp:ring-2 qp:ring-obs-interactive-accent/30';
+			} else if (isCompleted) {
+				dotClass += 'qp:bg-obs-text-success';
+			} else {
+				dotClass += 'qp:bg-obs-bg-modifier-border';
+			}
+
 			const dot = dotsContainer.createDiv({
-				cls: `qp:w-3 qp:h-3 qp:rounded-full qp:cursor-pointer qp:transition-all ${
-					isCurrentStep
-						? 'qp:bg-obs-interactive-accent qp:ring-2 qp:ring-obs-interactive-accent/30'
-						: isCompleted
-							? 'qp:bg-obs-text-success'
-							: 'qp:bg-obs-bg-modifier-border'
-				}`,
+				cls: dotClass,
 				attr: {
 					role: 'button',
 					tabindex: '0',

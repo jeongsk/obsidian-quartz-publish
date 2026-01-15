@@ -7,7 +7,7 @@
  * 주의: Preflight(기본 스타일 리셋)를 제외하여 Obsidian 기존 스타일과 충돌 방지
  */
 
-@layer theme, base, components, utilities;
+@source "../../src/**/*.ts";
 @import "tailwindcss/theme.css" layer(theme) prefix(qp);
 @import "tailwindcss/utilities.css" layer(utilities) prefix(qp);
 
@@ -742,6 +742,31 @@ button.mod-warning:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
 	filter: grayscale(30%);
+}
+
+/* Apply Button */
+.quartz-publish-apply-button.is-disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	background-color: var(--background-modifier-border) !important;
+	color: var(--text-muted) !important;
+}
+
+.quartz-publish-apply-button.is-loading {
+	cursor: wait;
+}
+
+/* Invalid input field styling */
+input.is-invalid,
+textarea.is-invalid {
+	border-color: var(--text-error) !important;
+	box-shadow: 0 0 0 2px rgba(var(--color-red-rgb), 0.2);
+}
+
+input.is-invalid:focus,
+textarea.is-invalid:focus {
+	border-color: var(--text-error) !important;
+	box-shadow: 0 0 0 2px rgba(var(--color-red-rgb), 0.3);
 }
 
 /* Animation */
