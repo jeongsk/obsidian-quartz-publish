@@ -11,6 +11,7 @@ import { QuartzConfigService, type ParsedQuartzConfig } from '../services/quartz
 import { QuartzUpgradeService } from '../services/quartz-upgrade';
 import { validateGlobPattern } from '../utils/glob-validator';
 import type { QuartzVersionInfo, QuartzUpgradeProgress } from '../types';
+import { DEFAULT_AUTO_DATE_SETTINGS } from '../types';
 
 /**
  * 플러그인 설정 탭
@@ -36,6 +37,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// GitHub 연동 섹션
 		this.createGitHubSection(containerEl);
+
+		// 날짜 자동 추가 섹션
+		this.createAutoDateSection(containerEl);
 
 		// Quartz 설정 섹션
 		this.createQuartzSettingsSection(containerEl);
@@ -125,6 +129,67 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.connectionStatusEl = testConnectionSetting.descEl.createDiv({
 			cls: 'quartz-publish-connection-status',
 		});
+	}
+
+	/**
+	 * 날짜 자동 추가 섹션 생성
+	 */
+	private createAutoDateSection(containerEl: HTMLElement): void {
+		new Setting(containerEl).setName('Auto Date Fields').setHeading();
+
+		new Setting(containerEl)
+			.setName('Automatic date fields')
+			.setDesc(
+				'Automatically add date fields to frontmatter when publishing. Existing fields are preserved.'
+			);
+
+		// Created 날짜 토글
+		new Setting(containerEl)
+			.setName('Add created date')
+			.setDesc('Add file creation date (format: YYYY-MM-DD)')
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoDateSettings?.enableCreated ?? DEFAULT_AUTO_DATE_SETTINGS.enableCreated)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.autoDateSettings) {
+							this.plugin.settings.autoDateSettings = { ...DEFAULT_AUTO_DATE_SETTINGS };
+						}
+						this.plugin.settings.autoDateSettings.enableCreated = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Modified 날짜 토글
+		new Setting(containerEl)
+			.setName('Add modified date')
+			.setDesc('Add file modification date (format: YYYY-MM-DD)')
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoDateSettings?.enableModified ?? DEFAULT_AUTO_DATE_SETTINGS.enableModified)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.autoDateSettings) {
+							this.plugin.settings.autoDateSettings = { ...DEFAULT_AUTO_DATE_SETTINGS };
+						}
+						this.plugin.settings.autoDateSettings.enableModified = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Published 날짜 토글
+		new Setting(containerEl)
+			.setName('Add published date')
+			.setDesc('Add current date as published date (format: YYYY-MM-DD)')
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoDateSettings?.enablePublished ?? DEFAULT_AUTO_DATE_SETTINGS.enablePublished)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.autoDateSettings) {
+							this.plugin.settings.autoDateSettings = { ...DEFAULT_AUTO_DATE_SETTINGS };
+						}
+						this.plugin.settings.autoDateSettings.enablePublished = value;
+						await this.plugin.saveSettings();
+					})
+			);
 	}
 
 	/**
