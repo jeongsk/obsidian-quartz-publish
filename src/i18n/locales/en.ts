@@ -245,4 +245,35 @@ export default {
 	// Connection Status
 	'connection.connected': 'Connected to {{owner}}/{{name}} (branch: {{branch}})',
 	'connection.connecting': 'Testing connection...',
+
+	// Settings - Remote File Management
+	'settings.github.manageFiles': 'Manage Published Files',
+	'settings.github.manageFilesDesc': 'View and delete files from your remote repository',
+
+	// Modal - Remote Files
+	'modal.remoteFiles.title': 'Manage Published Files',
+	'modal.remoteFiles.empty': 'No published files found',
+	'modal.remoteFiles.loading': 'Loading files...',
+	'modal.remoteFiles.refresh': 'Refresh',
+	'modal.remoteFiles.delete': 'Delete Selected',
+	'modal.remoteFiles.search': 'Search files...',
+	'modal.remoteFiles.selected': '{{count}} file(s) selected',
+	'modal.remoteFiles.selectAll': 'Select All',
+	'modal.remoteFiles.deselectAll': 'Deselect All',
+	'modal.remoteFiles.fileCount': '{{count}} files',
+	'modal.remoteFiles.deleteConfirm.title': 'Confirm Deletion',
+	'modal.remoteFiles.deleteConfirm.message': 'Are you sure you want to delete {{count}} file(s)? This action cannot be undone.',
+	'modal.remoteFiles.deleteProgress': 'Deleting files... ({{current}}/{{total}})',
+	'modal.remoteFiles.deleteSuccess': 'Successfully deleted {{count}} file(s)',
+	'modal.remoteFiles.deleteFailed': 'Failed to delete some files',
+	'modal.remoteFiles.deletePartial': 'Deleted {{succeeded}} file(s), {{failed}} failed',
+	'modal.remoteFiles.duplicates': 'Duplicate files detected',
+	'modal.remoteFiles.duplicateCount': '{{count}} duplicate group(s)',
+	'modal.remoteFiles.duplicateBadge': 'Duplicate',
+
+	// Errors - Remote Files
+	'error.remoteFiles.loadFailed': 'Failed to load file list',
+	'error.remoteFiles.maxFiles': 'Cannot delete more than {{max}} files at once',
+	'error.remoteFiles.noSelection': 'No files selected',
+	'error.remoteFiles.deleteFailed': 'Failed to delete file: {{path}}',
 } as const;

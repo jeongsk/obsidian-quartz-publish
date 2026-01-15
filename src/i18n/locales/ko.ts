@@ -249,6 +249,37 @@ const ko: { [K in TranslationKeys]?: string } = {
 	// Connection Status
 	'connection.connected': '{{owner}}/{{name}}에 연결됨 (브랜치: {{branch}})',
 	'connection.connecting': '연결 테스트 중...',
+
+	// Settings - Remote File Management
+	'settings.github.manageFiles': '발행된 파일 관리',
+	'settings.github.manageFilesDesc': '원격 저장소의 파일을 조회하고 삭제합니다',
+
+	// Modal - Remote Files
+	'modal.remoteFiles.title': '발행된 파일 관리',
+	'modal.remoteFiles.empty': '발행된 파일이 없습니다',
+	'modal.remoteFiles.loading': '파일 목록 로딩 중...',
+	'modal.remoteFiles.refresh': '새로고침',
+	'modal.remoteFiles.delete': '선택 삭제',
+	'modal.remoteFiles.search': '파일 검색...',
+	'modal.remoteFiles.selected': '{{count}}개 파일 선택됨',
+	'modal.remoteFiles.selectAll': '전체 선택',
+	'modal.remoteFiles.deselectAll': '선택 해제',
+	'modal.remoteFiles.fileCount': '{{count}}개 파일',
+	'modal.remoteFiles.deleteConfirm.title': '삭제 확인',
+	'modal.remoteFiles.deleteConfirm.message': '{{count}}개 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+	'modal.remoteFiles.deleteProgress': '파일 삭제 중... ({{current}}/{{total}})',
+	'modal.remoteFiles.deleteSuccess': '{{count}}개 파일이 삭제되었습니다',
+	'modal.remoteFiles.deleteFailed': '일부 파일 삭제에 실패했습니다',
+	'modal.remoteFiles.deletePartial': '{{succeeded}}개 삭제됨, {{failed}}개 실패',
+	'modal.remoteFiles.duplicates': '중복 파일 감지됨',
+	'modal.remoteFiles.duplicateCount': '{{count}}개 중복 그룹',
+	'modal.remoteFiles.duplicateBadge': '중복',
+
+	// Errors - Remote Files
+	'error.remoteFiles.loadFailed': '파일 목록을 불러오는데 실패했습니다',
+	'error.remoteFiles.maxFiles': '한 번에 최대 {{max}}개 파일만 삭제할 수 있습니다',
+	'error.remoteFiles.noSelection': '선택된 파일이 없습니다',
+	'error.remoteFiles.deleteFailed': '파일 삭제 실패: {{path}}',
 };
 
 export default ko;
