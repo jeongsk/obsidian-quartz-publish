@@ -120,6 +120,48 @@ export class QuartzConfigService {
 	}
 
 	/**
+	 * configuration 블록의 위치를 찾습니다 (중첩 객체 처리)
+	 * @param content 파일 내용
+	 * @returns 블록 정보 또는 null
+	 */
+	private findConfigurationBlock(content: string): {
+		startIndex: number;
+		endIndex: number;
+		blockContent: string;
+	} | null {
+		// "configuration:" 찾기
+		const configStartMatch = content.match(/configuration\s*:\s*\{/);
+		if (!configStartMatch || configStartMatch.index === undefined) {
+			return null;
+		}
+
+		const openBraceIndex = content.indexOf('{', configStartMatch.index);
+		let depth = 1;
+		let i = openBraceIndex + 1;
+
+		// 중첩된 괄호를 추적하면서 configuration 블록 끝 찾기
+		while (i < content.length && depth > 0) {
+			const char = content[i];
+			if (char === '{') {
+				depth++;
+			} else if (char === '}') {
+				depth--;
+			}
+			i++;
+		}
+
+		if (depth !== 0) {
+			return null;
+		}
+
+		return {
+			startIndex: configStartMatch.index,
+			endIndex: i,
+			blockContent: content.slice(openBraceIndex + 1, i - 1),
+		};
+	}
+
+	/**
 	 * 문자열 배열 파싱 헬퍼
 	 * 예: '"pattern1", "pattern2"' -> ['pattern1', 'pattern2']
 	 */
@@ -198,19 +240,18 @@ export class QuartzConfigService {
 		}
 
 		// ignorePatterns가 없는 경우 - configuration 블록에 추가
-		// configuration: { ... } 블록 찾기
-		const configBlockPattern = /(configuration\s*:\s*\{)([^}]*?)(\})/;
-		const configMatch = content.match(configBlockPattern);
+		const configBlock = this.findConfigurationBlock(content);
 
-		if (configMatch) {
-			const existingContent = configMatch[2].trim();
-			const newConfigContent = existingContent
-				? `${existingContent},\n    ${newIgnorePatterns}`
-				: `\n    ${newIgnorePatterns}\n  `;
-			const newContent = content.replace(
-				configBlockPattern,
-				`$1${newConfigContent}$3`
-			);
+		if (configBlock) {
+			const blockContent = configBlock.blockContent.trimEnd();
+			// 마지막 콘텐츠 뒤에 쉼표가 없으면 추가
+			const needsComma = blockContent.length > 0 && !blockContent.endsWith(',');
+			const separator = needsComma ? ',' : '';
+			const newBlockContent = `${blockContent}${separator}\n    ${newIgnorePatterns},\n  `;
+			const newContent =
+				content.slice(0, configBlock.startIndex) +
+				`configuration: {${newBlockContent}}` +
+				content.slice(configBlock.endIndex);
 			return { success: true, newContent };
 		}
 
@@ -241,18 +282,18 @@ export class QuartzConfigService {
 		}
 
 		// urlStrategy가 없는 경우 - configuration 블록에 추가
-		const configBlockPattern = /(configuration\s*:\s*\{)([^}]*?)(\})/;
-		const configMatch = content.match(configBlockPattern);
+		const configBlock = this.findConfigurationBlock(content);
 
-		if (configMatch) {
-			const existingContent = configMatch[2].trim();
-			const newConfigContent = existingContent
-				? `${existingContent},\n    ${newUrlStrategy}`
-				: `\n    ${newUrlStrategy}\n  `;
-			const newContent = content.replace(
-				configBlockPattern,
-				`$1${newConfigContent}$3`
-			);
+		if (configBlock) {
+			const blockContent = configBlock.blockContent.trimEnd();
+			// 마지막 콘텐츠 뒤에 쉼표가 없으면 추가
+			const needsComma = blockContent.length > 0 && !blockContent.endsWith(',');
+			const separator = needsComma ? ',' : '';
+			const newBlockContent = `${blockContent}${separator}\n    ${newUrlStrategy},\n  `;
+			const newContent =
+				content.slice(0, configBlock.startIndex) +
+				`configuration: {${newBlockContent}}` +
+				content.slice(configBlock.endIndex);
 			return { success: true, newContent };
 		}
 

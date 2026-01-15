@@ -248,6 +248,35 @@ export default config
 			expect(result.newContent).toContain('"**/*.draft.md"');
 			expect(result.newContent).toContain('"private/*"');
 		});
+
+		it('중첩 객체(analytics)가 있는 configuration 블록에서도 올바르게 동작한다', () => {
+			const content = `const config = {
+  configuration: {
+    pageTitle: "Test",
+    analytics: {
+      provider: "plausible"
+    },
+    locale: "ko-KR"
+  }
+}`;
+			const result = service.setIgnorePatterns(content, ['private', 'templates']);
+
+			expect(result.success).toBe(true);
+			expect(result.newContent).toContain('ignorePatterns: ["private", "templates"]');
+			// analytics 블록이 그대로 유지되어야 함
+			expect(result.newContent).toContain('analytics: {');
+			expect(result.newContent).toContain('provider: "plausible"');
+			// ignorePatterns가 configuration 블록 내부에 추가되어야 함
+			expect(result.newContent).not.toContain('analytics: {\n      provider: "plausible"\n    },\n    ignorePatterns');
+		});
+
+		it('configuration 블록이 없으면 에러를 반환한다', () => {
+			const content = 'const config = {}';
+			const result = service.setIgnorePatterns(content, ['test']);
+
+			expect(result.success).toBe(false);
+			expect(result.error).toBe('configuration 블록을 찾을 수 없습니다');
+		});
 	});
 
 	describe('setUrlStrategy', () => {
@@ -273,6 +302,35 @@ export default config
 
 			expect(result.success).toBe(true);
 			expect(result.newContent).toContain('urlStrategy: "shortest"');
+		});
+
+		it('중첩 객체(analytics)가 있는 configuration 블록에서도 올바르게 동작한다', () => {
+			const content = `const config = {
+  configuration: {
+    pageTitle: "Test",
+    analytics: {
+      provider: "plausible"
+    },
+    locale: "ko-KR"
+  }
+}`;
+			const result = service.setUrlStrategy(content, 'absolute');
+
+			expect(result.success).toBe(true);
+			expect(result.newContent).toContain('urlStrategy: "absolute"');
+			// analytics 블록이 그대로 유지되어야 함
+			expect(result.newContent).toContain('analytics: {');
+			expect(result.newContent).toContain('provider: "plausible"');
+			// urlStrategy가 analytics 블록 안에 들어가면 안 됨
+			expect(result.newContent).not.toMatch(/analytics:\s*\{[^}]*urlStrategy/);
+		});
+
+		it('configuration 블록이 없으면 에러를 반환한다', () => {
+			const content = 'const config = {}';
+			const result = service.setUrlStrategy(content, 'absolute');
+
+			expect(result.success).toBe(false);
+			expect(result.error).toBe('configuration 블록을 찾을 수 없습니다');
 		});
 	});
 
