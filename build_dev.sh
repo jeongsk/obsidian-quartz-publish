@@ -2,6 +2,14 @@
 
 set -e  # 오류 발생 시 스크립트 중단
 
+# OBSIDIAN_VAULT_PATH 환경 변수 확인
+if [[ -z "$OBSIDIAN_VAULT_PATH" ]]; then
+    echo "Error: OBSIDIAN_VAULT_PATH is not set."
+    echo "Please set it to your Obsidian vault path:"
+    echo "  export OBSIDIAN_VAULT_PATH=\"/path/to/your/vault\""
+    exit 1
+fi
+
 npm i & npm run build
 
 PLUGIN_NAME="quartz-publish"
