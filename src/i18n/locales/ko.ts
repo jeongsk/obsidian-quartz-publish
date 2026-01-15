@@ -19,8 +19,11 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.github.newToQuartzDesc': '템플릿으로 새 Quartz 저장소 생성',
 
 	// Settings - Quick Links
+	'settings.quickLinks.title': '바로가기',
 	'settings.quickLinks.github': 'GitHub 저장소 열기',
+	'settings.quickLinks.githubDisabled': 'GitHub 저장소 (먼저 저장소 URL을 설정하세요)',
 	'settings.quickLinks.site': '배포 사이트 열기',
+	'settings.quickLinks.siteDisabled': '배포 사이트 (먼저 사이트 URL을 설정하세요)',
 
 	// Settings - Auto Date
 	'settings.autoDate.title': '자동 날짜 필드',
@@ -387,13 +390,13 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'guide.step1.tip1': '이미 GitHub 계정이 있다면 이 단계를 건너뛰세요',
 	'guide.step1.tip2': '이메일 인증을 완료해야 합니다',
 
-	'guide.step2.title': 'Quartz 템플릿 Fork',
+	'guide.step2.title': 'Quartz 템플릿으로 저장소 생성',
 	'guide.step2.description':
-		'Quartz 공식 템플릿을 자신의 GitHub 계정으로 Fork합니다. Fork 버튼을 클릭하고 "Create fork"를 선택하세요.',
+		'Quartz 공식 템플릿을 사용하여 새 저장소를 생성합니다. "Use this template" 버튼을 클릭하고 "Create a new repository"를 선택하세요.',
 	'guide.step2.action': 'Quartz 템플릿 열기',
-	'guide.step2.tip1': 'Repository name은 원하는 이름으로 변경할 수 있습니다',
-	'guide.step2.tip2': 'Copy the main branch only 옵션을 체크하세요',
-	'guide.step2.tip3': 'Fork가 완료되면 자동으로 새 저장소로 이동됩니다',
+	'guide.step2.tip1': 'Repository name은 원하는 이름으로 설정하세요 (예: quartz)',
+	'guide.step2.tip2': 'Public/Private 설정을 확인하세요 (Public 추천)',
+	'guide.step2.tip3': '저장소 생성이 완료되면 해당 저장소 URL을 복사해 두세요',
 
 	'guide.step3.title': 'Personal Access Token 생성',
 	'guide.step3.description':
@@ -406,7 +409,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 
 	'guide.step4.title': '플러그인 설정 연결',
 	'guide.step4.description':
-		'Fork한 리포지토리 URL과 생성한 토큰을 플러그인 설정에 입력하고 연결을 테스트합니다.',
+		'생성한 리포지토리 URL과 발급받은 토큰을 플러그인 설정에 입력하고 연결을 테스트합니다.',
 	'guide.step4.action': '설정으로 이동',
 	'guide.step4.tip1': 'Repository URL: https://github.com/사용자명/저장소명',
 	'guide.step4.tip2': '연결 테스트 버튼으로 설정을 확인하세요',

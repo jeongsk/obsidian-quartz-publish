@@ -15,8 +15,11 @@ export default {
 	'settings.github.newToQuartzDesc': 'Create a new Quartz repository from template',
 
 	// Settings - Quick Links
+	'settings.quickLinks.title': 'Quick Links',
 	'settings.quickLinks.github': 'Open GitHub Repository',
+	'settings.quickLinks.githubDisabled': 'GitHub Repository (configure repository URL first)',
 	'settings.quickLinks.site': 'Open Deployed Site',
+	'settings.quickLinks.siteDisabled': 'Deployed Site (configure site URL first)',
 
 	// Settings - Auto Date
 	'settings.autoDate.title': 'Auto Date Fields',
@@ -383,13 +386,13 @@ export default {
 	'guide.step1.tip1': 'Skip this step if you already have a GitHub account',
 	'guide.step1.tip2': 'You need to complete email verification',
 
-	'guide.step2.title': 'Fork Quartz Template',
+	'guide.step2.title': 'Create Repository from Quartz Template',
 	'guide.step2.description':
-		'Fork the official Quartz template to your GitHub account. Click the Fork button and select "Create fork".',
+		'Create a new repository using the official Quartz template. Click the "Use this template" button and select "Create a new repository".',
 	'guide.step2.action': 'Open Quartz Template',
-	'guide.step2.tip1': 'You can change the Repository name to any name you want',
-	'guide.step2.tip2': 'Check the "Copy the main branch only" option',
-	'guide.step2.tip3': 'After forking, you will be redirected to the new repository',
+	'guide.step2.tip1': 'Set the Repository name to any name you want (e.g., quartz)',
+	'guide.step2.tip2': 'Check the Public/Private setting (Public recommended)',
+	'guide.step2.tip3': 'After creating, copy the repository URL',
 
 	'guide.step3.title': 'Create Personal Access Token',
 	'guide.step3.description':
@@ -402,7 +405,7 @@ export default {
 
 	'guide.step4.title': 'Connect Plugin Settings',
 	'guide.step4.description':
-		'Enter the forked repository URL and the generated token in the plugin settings, then test the connection.',
+		'Enter the created repository URL and the generated token in the plugin settings, then test the connection.',
 	'guide.step4.action': 'Go to Settings',
 	'guide.step4.tip1': 'Repository URL: https://github.com/username/repository',
 	'guide.step4.tip2': 'Use the Test Connection button to verify your settings',

@@ -274,7 +274,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 */
 	private createQuickLinksSection(containerEl: HTMLElement): void {
 		this.quickLinksContainerEl = containerEl.createDiv({
-			cls: 'qp:flex qp:gap-2 qp:mb-4',
+			cls: 'qp:flex qp:flex-wrap qp:gap-2 qp:mb-4',
+			attr: {
+				role: 'group',
+				'aria-label': t('settings.quickLinks.title'),
+			},
 		});
 		this.renderQuickLinksButtons();
 	}
@@ -291,13 +295,20 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const baseUrl = quartzSiteConfig?.baseUrl;
 
 		// GitHub 저장소 버튼
+		const isGithubDisabled = !repoUrl || !isValidGitHubUrl(repoUrl);
 		const githubButton = this.quickLinksContainerEl.createEl('button', {
-			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-[--background-modifier-hover] qp:text-[--text-normal] hover:qp:bg-[--background-modifier-active-hover]',
+			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
+			attr: {
+				'aria-label': isGithubDisabled
+					? t('settings.quickLinks.githubDisabled')
+					: t('settings.quickLinks.github'),
+				...(isGithubDisabled && { 'aria-disabled': 'true' }),
+			},
 		});
 		githubButton.createSpan({ text: t('settings.quickLinks.github') });
 
-		if (!repoUrl || !isValidGitHubUrl(repoUrl)) {
-			githubButton.addClass('qp:opacity-50', 'qp:cursor-not-allowed');
+		if (isGithubDisabled) {
+			githubButton.addClass('qp:opacity-60', 'qp:cursor-not-allowed');
 			githubButton.disabled = true;
 		} else {
 			githubButton.addEventListener('click', () => {
@@ -306,13 +317,20 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		}
 
 		// 배포 사이트 버튼
+		const isSiteDisabled = !baseUrl;
 		const siteButton = this.quickLinksContainerEl.createEl('button', {
-			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-[--background-modifier-hover] qp:text-[--text-normal] hover:qp:bg-[--background-modifier-active-hover]',
+			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
+			attr: {
+				'aria-label': isSiteDisabled
+					? t('settings.quickLinks.siteDisabled')
+					: t('settings.quickLinks.site'),
+				...(isSiteDisabled && { 'aria-disabled': 'true' }),
+			},
 		});
 		siteButton.createSpan({ text: t('settings.quickLinks.site') });
 
-		if (!baseUrl) {
-			siteButton.addClass('qp:opacity-50', 'qp:cursor-not-allowed');
+		if (isSiteDisabled) {
+			siteButton.addClass('qp:opacity-60', 'qp:cursor-not-allowed');
 			siteButton.disabled = true;
 		} else {
 			siteButton.addEventListener('click', () => {
