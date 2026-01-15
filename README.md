@@ -59,6 +59,7 @@ slug: custom-url-path
 
 ## 문서
 
+- [Quartz 블로그 만들기 가이드](docs/quartz-blog-setup-guide.md) - GitHub 템플릿으로 Quartz 블로그 생성 및 배포 가이드
 - [Quartz 날짜 처리 방식](docs/quartz-date-handling.md) - Quartz에서 작성일/수정일을 처리하는 방법
 
 ## 개발
