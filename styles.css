@@ -276,11 +276,17 @@
     color: var(--hn-color-obs-text-success);
   }
 }
+.quartz-publish-dashboard-modal {
+  width: 650px;
+  max-width: 90vw;
+}
 .quartz-publish-dashboard {
+  display: flex;
+  flex-direction: column;
   max-height: 70vh;
-  min-width: 600px;
 }
 .quartz-publish-dashboard-header {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -290,6 +296,7 @@
   margin: 0;
 }
 .quartz-publish-tabs {
+  flex-shrink: 0;
   display: flex;
   gap: 0.25rem;
   border-bottom: 1px solid var(--background-modifier-border);
@@ -336,6 +343,8 @@
   color: var(--text-on-accent);
 }
 .quartz-publish-note-list {
+  flex: 1;
+  min-height: 100px;
   max-height: 400px;
   overflow-y: auto;
   border: 1px solid var(--background-modifier-border);
@@ -375,6 +384,7 @@
   font-style: italic;
 }
 .quartz-publish-actions {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -388,6 +398,8 @@
 }
 .quartz-publish-actions-right {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 .quartz-publish-loading {

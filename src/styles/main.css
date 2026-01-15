@@ -66,13 +66,21 @@
  * Obsidian 기본 디자인 가이드라인을 준수합니다.
  */
 
-/* Dashboard Modal */
+/* Dashboard Modal Container */
+.quartz-publish-dashboard-modal {
+	width: 650px;
+	max-width: 90vw;
+}
+
+/* Dashboard Modal Content */
 .quartz-publish-dashboard {
+	display: flex;
+	flex-direction: column;
 	max-height: 70vh;
-	min-width: 600px;
 }
 
 .quartz-publish-dashboard-header {
+	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -85,6 +93,7 @@
 
 /* Dashboard Tabs */
 .quartz-publish-tabs {
+	flex-shrink: 0;
 	display: flex;
 	gap: 0.25rem;
 	border-bottom: 1px solid var(--background-modifier-border);
@@ -139,6 +148,8 @@
 
 /* Note List */
 .quartz-publish-note-list {
+	flex: 1;
+	min-height: 100px;
 	max-height: 400px;
 	overflow-y: auto;
 	border: 1px solid var(--background-modifier-border);
@@ -186,6 +197,7 @@
 
 /* Action Buttons */
 .quartz-publish-actions {
+	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -201,6 +213,8 @@
 
 .quartz-publish-actions-right {
 	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
 	gap: 0.5rem;
 }
 

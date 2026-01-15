@@ -83,9 +83,10 @@ export class DashboardModal extends Modal {
 	 * 모달이 열릴 때 호출됩니다.
 	 */
 	async onOpen(): Promise<void> {
-		const { contentEl } = this;
+		const { contentEl, modalEl } = this;
 		contentEl.empty();
 		contentEl.addClass('quartz-publish-dashboard');
+		modalEl.addClass('quartz-publish-dashboard-modal');
 
 		// 상태 로딩
 		await this.loadStatus();
