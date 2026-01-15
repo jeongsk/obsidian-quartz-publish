@@ -289,6 +289,9 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.fontPicker.currentFont': '현재 폰트 (선택됨)',
 	'modal.fontPicker.category': '카테고리: {{category}}',
 
+	// Modals - Note Picker
+	'modal.notePicker.placeholder': '예시: 폴더/노트',
+
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Quartz 저장소 생성',
 	'modal.createRepo.name': '저장소 이름',

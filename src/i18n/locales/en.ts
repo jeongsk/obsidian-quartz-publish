@@ -285,6 +285,9 @@ export default {
 	'modal.fontPicker.currentFont': 'Current font (selected)',
 	'modal.fontPicker.category': 'Category: {{category}}',
 
+	// Modals - Note Picker
+	'modal.notePicker.placeholder': 'e.g. folder/note',
+
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Create Quartz Repository',
 	'modal.createRepo.name': 'Repository Name',
