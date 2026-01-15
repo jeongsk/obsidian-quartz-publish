@@ -102,7 +102,7 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const headerEl = contentEl.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-3 qp:mb-4 qp:pb-3 qp:border-b qp:border-obs-border',
+			cls: 'qp:flex qp:items-center qp:gap-3 qp:mb-4 qp:pb-3 qp:border-b qp:border-obs-bg-modifier-border',
 		});
 
 		// 아이콘
@@ -294,7 +294,7 @@ export class FrontmatterEditorModal extends Modal {
 		const severityColors: Record<string, string> = {
 			error: 'qp:bg-obs-bg-modifier-error qp:bg-opacity-20 qp:border-obs-text-error',
 			warning: 'qp:bg-obs-bg-modifier-warning qp:bg-opacity-20 qp:border-obs-text-warning',
-			info: 'qp:bg-obs-bg-modifier-hover qp:border-obs-border',
+			info: 'qp:bg-obs-bg-modifier-hover qp:border-obs-bg-modifier-border',
 		};
 
 		const severityIcons: Record<string, string> = {
@@ -337,7 +337,7 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const actionsEl = contentEl.createDiv({
-			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4 qp:pt-3 qp:border-t qp:border-obs-border',
+			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4 qp:pt-3 qp:border-t qp:border-obs-bg-modifier-border',
 		});
 
 		// 취소 버튼

@@ -116,7 +116,7 @@ export class LargeFileWarningModal extends Modal {
 		const { contentEl } = this;
 
 		const listContainer = contentEl.createDiv({
-			cls: 'qp:max-h-48 qp:overflow-y-auto qp:border qp:border-obs-border qp:rounded-md qp:mb-4',
+			cls: 'qp:max-h-48 qp:overflow-y-auto qp:border qp:border-obs-bg-modifier-border qp:rounded-md qp:mb-4',
 			attr: {
 				role: 'list',
 				'aria-label': '대용량 파일 목록',
@@ -125,7 +125,7 @@ export class LargeFileWarningModal extends Modal {
 
 		for (const fileInfo of this.options.largeFiles) {
 			const itemEl = listContainer.createDiv({
-				cls: 'qp:flex qp:items-center qp:justify-between qp:px-3 qp:py-2 qp:border-b qp:border-obs-border last:qp:border-b-0',
+				cls: 'qp:flex qp:items-center qp:justify-between qp:px-3 qp:py-2 qp:border-b qp:border-obs-bg-modifier-border last:qp:border-b-0',
 				attr: { role: 'listitem' },
 			});
 

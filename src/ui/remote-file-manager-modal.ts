@@ -235,7 +235,7 @@ export class RemoteFileManagerModal extends Modal {
 		const searchInput = headerEl.createEl('input', {
 			type: 'text',
 			placeholder: t('modal.remoteFiles.search'),
-			cls: 'qp-search-input qp:flex-1 qp:p-2 qp:border qp:border-obs-border qp:rounded qp:bg-obs-bg',
+			cls: 'qp-search-input qp:flex-1 qp:p-2 qp:border qp:border-obs-bg-modifier-border qp:rounded qp:bg-obs-bg-primary',
 			attr: {
 				'aria-label': t('modal.remoteFiles.search'),
 			},
@@ -281,7 +281,7 @@ export class RemoteFileManagerModal extends Modal {
 	 */
 	private renderFileList(container: HTMLElement): void {
 		const listContainer = container.createDiv({
-			cls: 'qp-file-list qp:max-h-[400px] qp:overflow-y-auto qp:border qp:border-obs-border qp:rounded',
+			cls: 'qp-file-list qp:max-h-[400px] qp:overflow-y-auto qp:border qp:border-obs-bg-modifier-border qp:rounded',
 		});
 
 		// 빈 목록
@@ -325,7 +325,7 @@ export class RemoteFileManagerModal extends Modal {
 		const isDuplicate = duplicateFileNames.has(file.name);
 
 		const itemEl = container.createDiv({
-			cls: `qp-file-item qp:flex qp:items-center qp:gap-2 qp:p-2 qp:border-b qp:border-obs-border qp:cursor-pointer ${isSelected ? 'qp:bg-obs-bg-modifier-hover' : ''}`,
+			cls: `qp-file-item qp:flex qp:items-center qp:gap-2 qp:p-2 qp:border-b qp:border-obs-bg-modifier-border qp:cursor-pointer ${isSelected ? 'qp:bg-obs-bg-modifier-hover' : ''}`,
 			attr: {
 				role: 'checkbox',
 				'aria-checked': String(isSelected),
@@ -397,7 +397,7 @@ export class RemoteFileManagerModal extends Modal {
 
 		// 선택 정보 표시
 		const selectionInfoEl = container.createDiv({
-			cls: 'qp:flex qp:items-center qp:gap-2 qp:mt-4 qp:pt-4 qp:border-t qp:border-obs-border',
+			cls: 'qp:flex qp:items-center qp:gap-2 qp:mt-4 qp:pt-4 qp:border-t qp:border-obs-bg-modifier-border',
 		});
 
 		if (selectedCount > 0) {

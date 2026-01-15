@@ -127,8 +127,8 @@ export class GitHubGuideModal extends Modal {
 		const statusBadge = headerContainer.createEl('span', {
 			cls: `qp:text-xs qp:px-2 qp:py-1 qp:rounded ${
 				isComplete
-					? 'qp:bg-green-100 qp:text-green-700'
-					: 'qp:bg-yellow-100 qp:text-yellow-700'
+					? 'qp:bg-obs-bg-modifier-success qp:text-obs-text-success'
+					: 'qp:bg-obs-bg-modifier-message qp:text-obs-text-warning'
 			}`,
 		});
 		statusBadge.textContent = `${completedCount}/${TOTAL_GUIDE_STEPS} ${t('guide.complete')}`;
@@ -148,16 +148,16 @@ export class GitHubGuideModal extends Modal {
 				current: this.currentStep + 1,
 				total: totalSteps,
 			}),
-			cls: 'qp:text-sm qp:text-gray-500',
+			cls: 'qp:text-sm qp:text-obs-text-muted',
 		});
 
 		// 진행 바
 		const progressBar = progressContainer.createDiv({
-			cls: 'qp:w-full qp:h-2 qp:bg-gray-200 qp:rounded qp:mt-2',
+			cls: 'qp:w-full qp:h-2 qp:bg-obs-bg-modifier-border qp:rounded qp:mt-2',
 		});
 
 		const progressFill = progressBar.createDiv({
-			cls: 'qp:h-full qp:bg-blue-500 qp:rounded qp:transition-all qp:duration-300',
+			cls: 'qp:h-full qp:bg-obs-interactive-accent qp:rounded qp:transition-all qp:duration-300',
 		});
 		progressFill.style.width = `${((this.currentStep + 1) / totalSteps) * 100}%`;
 
@@ -174,10 +174,10 @@ export class GitHubGuideModal extends Modal {
 			const dot = dotsContainer.createDiv({
 				cls: `qp:w-3 qp:h-3 qp:rounded-full qp:cursor-pointer qp:transition-all ${
 					isCurrentStep
-						? 'qp:bg-blue-500 qp:ring-2 qp:ring-blue-200'
+						? 'qp:bg-obs-interactive-accent qp:ring-2 qp:ring-obs-interactive-accent/30'
 						: isCompleted
-							? 'qp:bg-green-500'
-							: 'qp:bg-gray-300'
+							? 'qp:bg-obs-text-success'
+							: 'qp:bg-obs-bg-modifier-border'
 				}`,
 			});
 
@@ -206,26 +206,26 @@ export class GitHubGuideModal extends Modal {
 		if (isCompleted) {
 			const checkIcon = titleContainer.createEl('span', {
 				text: '✓',
-				cls: 'qp:text-green-500 qp:font-bold qp:text-lg',
+				cls: 'qp:text-obs-text-success qp:font-bold qp:text-lg',
 			});
 			checkIcon.setAttribute('aria-label', t('guide.complete'));
 		}
 
 		titleContainer.createEl('h3', {
 			text: step.title,
-			cls: `qp:text-base qp:font-medium qp:m-0 ${isCompleted ? 'qp:text-green-700' : ''}`,
+			cls: `qp:text-base qp:font-medium qp:m-0 ${isCompleted ? 'qp:text-obs-text-success' : ''}`,
 		});
 
 		// 설명
 		contentContainer.createEl('p', {
 			text: step.description,
-			cls: 'qp:text-sm qp:text-gray-600 qp:mb-4 qp:leading-relaxed',
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:mb-4 qp:leading-relaxed',
 		});
 
 		// 스크린샷 (있는 경우)
 		if (step.screenshot) {
 			const imgContainer = contentContainer.createDiv({
-				cls: 'qp:mb-4 qp:rounded qp:overflow-hidden qp:border qp:border-gray-200',
+				cls: 'qp:mb-4 qp:rounded qp:overflow-hidden qp:border qp:border-obs-bg-modifier-border',
 			});
 			const img = imgContainer.createEl('img', {
 				cls: 'qp:w-full qp:h-auto',
@@ -238,7 +238,7 @@ export class GitHubGuideModal extends Modal {
 		if (step.externalUrl && step.actionLabel) {
 			const actionBtn = contentContainer.createEl('button', {
 				text: step.actionLabel,
-				cls: 'qp:w-full qp:px-4 qp:py-3 qp:bg-blue-100 qp:text-blue-700 qp:rounded qp:cursor-pointer qp:hover:bg-blue-200 qp:transition-colors qp:font-medium',
+				cls: 'qp:w-full qp:px-4 qp:py-3 qp:bg-obs-interactive-accent/10 qp:text-obs-interactive-accent qp:rounded qp:cursor-pointer hover:qp:bg-obs-interactive-accent/20 qp:transition-colors qp:font-medium',
 			});
 			actionBtn.addEventListener('click', () => {
 				window.open(step.externalUrl, '_blank');
@@ -251,7 +251,7 @@ export class GitHubGuideModal extends Modal {
 	 */
 	private renderTips(container: HTMLElement, tips: string[]) {
 		const tipsContainer = container.createDiv({
-			cls: 'qp:mb-6 qp:p-3 qp:bg-blue-50 qp:rounded qp:border qp:border-blue-100',
+			cls: 'qp:mb-6 qp:p-3 qp:bg-obs-interactive-accent/10 qp:rounded qp:border qp:border-obs-interactive-accent/20',
 		});
 
 		tipsContainer.createEl('span', {
@@ -260,7 +260,7 @@ export class GitHubGuideModal extends Modal {
 		});
 
 		const tipsList = tipsContainer.createEl('ul', {
-			cls: 'qp:text-sm qp:text-blue-700 qp:m-0 qp:pl-4',
+			cls: 'qp:text-sm qp:text-obs-text-accent qp:m-0 qp:pl-4',
 		});
 
 		tips.forEach((tip) => {
@@ -276,7 +276,7 @@ export class GitHubGuideModal extends Modal {
 	 */
 	private renderNavigation(container: HTMLElement, totalSteps: number) {
 		const navContainer = container.createDiv({
-			cls: 'qp:flex qp:justify-between qp:gap-2 qp:pt-4 qp:border-t qp:border-gray-200',
+			cls: 'qp:flex qp:justify-between qp:gap-2 qp:pt-4 qp:border-t qp:border-obs-bg-modifier-border',
 		});
 
 		// 이전 버튼
@@ -340,7 +340,7 @@ export class GitHubGuideModal extends Modal {
 		// 뒤로가기 버튼
 		const backBtn = headerContainer.createEl('button', {
 			text: '← ' + t('guide.back'),
-			cls: 'qp:text-sm qp:text-gray-500 qp:cursor-pointer qp:hover:text-gray-700',
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:cursor-pointer hover:qp:text-obs-text-normal',
 		});
 		backBtn.addEventListener('click', () => {
 			this.showTroubleshooting = false;
@@ -354,7 +354,7 @@ export class GitHubGuideModal extends Modal {
 
 		this.troubleshootingItems.forEach((item) => {
 			const itemEl = itemsContainer.createDiv({
-				cls: 'qp:p-4 qp:bg-gray-50 qp:rounded qp:border qp:border-gray-200',
+				cls: 'qp:p-4 qp:bg-obs-bg-secondary qp:rounded qp:border qp:border-obs-bg-modifier-border',
 			});
 
 			// 오류 코드 배지
@@ -364,14 +364,14 @@ export class GitHubGuideModal extends Modal {
 
 			headerRow.createEl('span', {
 				text: item.errorMessage,
-				cls: 'qp:px-2 qp:py-1 qp:text-xs qp:font-mono qp:bg-red-100 qp:text-red-700 qp:rounded',
+				cls: 'qp:px-2 qp:py-1 qp:text-xs qp:font-mono qp:bg-obs-bg-modifier-error qp:text-obs-text-error qp:rounded',
 			});
 
 			// 관련 단계 표시
 			if (item.relatedStep) {
 				headerRow.createEl('span', {
 					text: `→ ${t('guide.stepOf', { current: item.relatedStep, total: TOTAL_GUIDE_STEPS })}`,
-					cls: 'qp:text-xs qp:text-gray-500',
+					cls: 'qp:text-xs qp:text-obs-text-muted',
 				});
 			}
 
@@ -385,7 +385,7 @@ export class GitHubGuideModal extends Modal {
 			});
 			causeEl.createEl('span', {
 				text: item.cause,
-				cls: 'qp:text-sm qp:text-gray-600',
+				cls: 'qp:text-sm qp:text-obs-text-muted',
 			});
 
 			// 해결 방법
@@ -396,14 +396,14 @@ export class GitHubGuideModal extends Modal {
 			});
 			solutionEl.createEl('span', {
 				text: item.solution,
-				cls: 'qp:text-sm qp:text-green-700 qp:font-medium',
+				cls: 'qp:text-sm qp:text-obs-text-success qp:font-medium',
 			});
 
 			// 관련 단계로 이동 버튼
 			if (item.relatedStep) {
 				const goToStepBtn = itemEl.createEl('button', {
 					text: `${item.relatedStep}단계로 이동`,
-					cls: 'qp:mt-3 qp:text-sm qp:text-blue-600 qp:cursor-pointer qp:hover:text-blue-800',
+					cls: 'qp:mt-3 qp:text-sm qp:text-obs-text-accent qp:cursor-pointer hover:qp:text-obs-text-accent-hover',
 				});
 				goToStepBtn.addEventListener('click', () => {
 					this.showTroubleshooting = false;
@@ -415,7 +415,7 @@ export class GitHubGuideModal extends Modal {
 
 		// 닫기 버튼
 		const closeContainer = container.createDiv({
-			cls: 'qp:flex qp:justify-end qp:mt-6 qp:pt-4 qp:border-t qp:border-gray-200',
+			cls: 'qp:flex qp:justify-end qp:mt-6 qp:pt-4 qp:border-t qp:border-obs-bg-modifier-border',
 		});
 
 		const closeBtn = closeContainer.createEl('button', {

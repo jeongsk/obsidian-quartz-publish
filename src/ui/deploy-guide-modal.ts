@@ -112,15 +112,15 @@ export class DeployGuideModal extends Modal {
 
 		progressContainer.createEl('span', {
 			text: `Step ${step.stepNumber} of ${totalSteps}`,
-			cls: 'qp:text-sm qp:text-gray-500',
+			cls: 'qp:text-sm qp:text-obs-text-muted',
 		});
 
 		const progressBar = progressContainer.createDiv({
-			cls: 'qp:w-full qp:h-2 qp:bg-gray-200 qp:rounded qp:mt-2',
+			cls: 'qp:w-full qp:h-2 qp:bg-obs-bg-modifier-border qp:rounded qp:mt-2',
 		});
 
 		const progressFill = progressBar.createDiv({
-			cls: 'qp:h-full qp:bg-blue-500 qp:rounded qp:transition-all',
+			cls: 'qp:h-full qp:bg-obs-interactive-accent qp:rounded qp:transition-all',
 		});
 		progressFill.style.width = `${((this.currentStep + 1) / totalSteps) * 100}%`;
 
@@ -131,13 +131,13 @@ export class DeployGuideModal extends Modal {
 
 		contentEl.createEl('p', {
 			text: step.description,
-			cls: 'qp:text-sm qp:text-gray-600 qp:mb-4',
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:mb-4',
 		});
 
 		if (step.externalUrl && step.actionLabel) {
 			const actionBtn = contentEl.createEl('button', {
 				text: step.actionLabel,
-				cls: 'qp:w-full qp:px-4 qp:py-2 qp:bg-blue-100 qp:text-blue-700 qp:rounded qp:mb-4 qp:cursor-pointer qp:hover:bg-blue-200',
+				cls: 'qp:w-full qp:px-4 qp:py-2 qp:bg-obs-interactive-accent/10 qp:text-obs-interactive-accent qp:rounded qp:mb-4 qp:cursor-pointer hover:qp:bg-obs-interactive-accent/20',
 			});
 			actionBtn.addEventListener('click', () => {
 				window.open(step.externalUrl, '_blank');

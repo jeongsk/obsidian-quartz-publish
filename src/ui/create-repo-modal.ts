@@ -65,7 +65,7 @@ export class CreateRepoModal extends Modal {
 
 		if (this.state === 'error' && this.errorMessage) {
 			const errorEl = contentEl.createDiv({
-				cls: 'qp:bg-red-100 qp:border qp:border-red-400 qp:text-red-700 qp:px-4 qp:py-3 qp:rounded qp:mb-4',
+				cls: 'qp:bg-obs-bg-modifier-error qp:border qp:border-obs-text-error qp:text-obs-text-error qp:px-4 qp:py-3 qp:rounded qp:mb-4',
 			});
 			errorEl.createSpan({ text: this.errorMessage });
 		}
@@ -103,9 +103,9 @@ export class CreateRepoModal extends Modal {
 
 		if (this.visibility === 'private') {
 			const warningEl = contentEl.createDiv({
-				cls: 'qp:bg-yellow-50 qp:border qp:border-yellow-200 qp:text-yellow-800 qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:text-sm',
+				cls: 'qp:bg-obs-bg-modifier-message qp:border qp:border-obs-text-warning qp:text-obs-text-warning qp:px-4 qp:py-3 qp:rounded qp:mb-4 qp:text-sm',
 			});
-			warningEl.createSpan({ 
+			warningEl.createSpan({
 				text: '⚠️ ' + t('modal.createRepo.privateWarning')
 			});
 		}
@@ -130,7 +130,7 @@ export class CreateRepoModal extends Modal {
 
 		if (this.state === 'creating') {
 			const progressEl = contentEl.createDiv({
-				cls: 'qp:mt-4 qp:text-center qp:text-sm qp:text-gray-500',
+				cls: 'qp:mt-4 qp:text-center qp:text-sm qp:text-obs-text-muted',
 			});
 			progressEl.createSpan({ text: t('modal.createRepo.creatingProgress') });
 		}
@@ -141,23 +141,23 @@ export class CreateRepoModal extends Modal {
 
 		contentEl.createEl('h2', {
 			text: '✅ ' + t('modal.createRepo.success'),
-			cls: 'qp:text-lg qp:font-semibold qp:mb-4 qp:text-green-600',
+			cls: 'qp:text-lg qp:font-semibold qp:mb-4 qp:text-obs-text-success',
 		});
 
 		if (this.createdRepository) {
 			const infoEl = contentEl.createDiv({
-				cls: 'qp:bg-green-50 qp:border qp:border-green-200 qp:px-4 qp:py-3 qp:rounded qp:mb-4',
+				cls: 'qp:bg-obs-bg-modifier-success qp:border qp:border-obs-text-success qp:px-4 qp:py-3 qp:rounded qp:mb-4',
 			});
-			
+
 			infoEl.createEl('p', {
 				text: `Repository: ${this.createdRepository.fullName}`,
 				cls: 'qp:font-medium',
 			});
-			
+
 			const linkEl = infoEl.createEl('a', {
 				text: this.createdRepository.htmlUrl,
 				href: this.createdRepository.htmlUrl,
-				cls: 'qp:text-blue-600 qp:underline qp:text-sm',
+				cls: 'qp:text-obs-text-accent qp:underline qp:text-sm',
 			});
 			linkEl.setAttr('target', '_blank');
 		}
