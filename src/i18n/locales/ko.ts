@@ -270,6 +270,8 @@ const ko: { [K in TranslationKeys]?: string } = {
 
 	// Modals - Font Picker
 	'modal.fontPicker.placeholder': '폰트 검색... (예: Roboto, Noto Sans)',
+	'modal.fontPicker.currentFont': '현재 폰트 (선택됨)',
+	'modal.fontPicker.category': '카테고리: {{category}}',
 
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Quartz 저장소 생성',

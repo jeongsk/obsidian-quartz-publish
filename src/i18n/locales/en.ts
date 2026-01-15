@@ -266,6 +266,8 @@ export default {
 
 	// Modals - Font Picker
 	'modal.fontPicker.placeholder': 'Search fonts... (e.g. Roboto, Noto Sans)',
+	'modal.fontPicker.currentFont': 'Current font (selected)',
+	'modal.fontPicker.category': 'Category: {{category}}',
 
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Create Quartz Repository',

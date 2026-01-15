@@ -47,17 +47,36 @@ export class FontPickerModal extends FuzzySuggestModal<GoogleFont> {
 		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 		el.style.fontSize = '1.1em';
 
+		// 접근성: 스크린리더를 위한 aria 속성
+		el.setAttribute('role', 'option');
+
 		// 현재 선택된 폰트 표시
-		if (match.item.family === this.currentFont) {
+		const isCurrentFont = match.item.family === this.currentFont;
+		if (isCurrentFont) {
 			el.addClass('selected');
-			const checkmark = el.createSpan({ cls: 'suggestion-flair' });
+			el.setAttribute('aria-selected', 'true');
+			const checkmark = el.createSpan({
+				cls: 'suggestion-flair',
+				attr: {
+					'aria-hidden': 'true',
+				},
+			});
 			checkmark.setText('✓');
+
+			// 스크린리더용 숨김 텍스트
+			el.createSpan({
+				cls: 'qp:sr-only',
+				text: t('modal.fontPicker.currentFont'),
+			});
 		}
 
 		// 카테고리 표시
 		const category = el.createDiv({
 			cls: 'suggestion-note',
 			text: match.item.category,
+			attr: {
+				'aria-label': t('modal.fontPicker.category', { category: match.item.category }),
+			},
 		});
 		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 		category.style.fontFamily = 'var(--font-interface)';
