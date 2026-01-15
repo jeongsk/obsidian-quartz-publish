@@ -1,9 +1,9 @@
 # Quartz Publish
 
-[![GitHub License](https://img.shields.io/github/license/anpigon/obsidian-quartz-publish)](LICENSE)
-[![GitHub Release](https://img.shields.io/github/v/release/anpigon/obsidian-quartz-publish)](https://github.com/anpigon/obsidian-quartz-publish/releases)
-[![GitHub Downloads](https://img.shields.io/github/downloads/anpigon/obsidian-quartz-publish/total)](https://github.com/anpigon/obsidian-quartz-publish/releases)
-[![CI](https://github.com/anpigon/obsidian-quartz-publish/actions/workflows/test.yml/badge.svg)](https://github.com/anpigon/obsidian-quartz-publish/actions/workflows/test.yml)
+[![GitHub License](https://img.shields.io/github/license/jeongsk/obsidian-quartz-publish)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/jeongsk/obsidian-quartz-publish)](https://github.com/jeongsk/obsidian-quartz-publish/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/jeongsk/obsidian-quartz-publish/total)](https://github.com/jeongsk/obsidian-quartz-publish/releases)
+[![CI](https://github.com/jeongsk/obsidian-quartz-publish/actions/workflows/test.yml/badge.svg)](https://github.com/jeongsk/obsidian-quartz-publish/actions/workflows/test.yml)
 
 Obsidian 노트를 [Quartz](https://quartz.jzhao.xyz/) 블로그에 직접 발행하는 플러그인입니다.
 
@@ -19,7 +19,7 @@ Obsidian 노트를 [Quartz](https://quartz.jzhao.xyz/) 블로그에 직접 발�
 
 ### 수동 설치
 
-1. [Releases](https://github.com/anpigon/obsidian-quartz-publish/releases)에서 최신 버전을 다운로드합니다.
+1. [Releases](https://github.com/jeongsk/obsidian-quartz-publish/releases)에서 최신 버전을 다운로드합니다.
 2. `main.js`, `manifest.json`, `styles.css` 파일을 Obsidian vault의 `.obsidian/plugins/quartz-publish/` 폴더에 복사합니다.
 3. Obsidian을 재시작하고 설정 > 커뮤니티 플러그인에서 "Quartz Publish"를 활성화합니다.
 
@@ -27,7 +27,7 @@ Obsidian 노트를 [Quartz](https://quartz.jzhao.xyz/) 블로그에 직접 발�
 
 1. [BRAT](https://github.com/TfTHacker/obsidian42-brat) 플러그인을 설치합니다.
 2. BRAT 설정에서 "Add Beta plugin"을 선택합니다.
-3. `anpigon/obsidian-quartz-publish`를 입력하고 추가합니다.
+3. `jeongsk/obsidian-quartz-publish`를 입력하고 추가합니다.
 
 ## 설정
 
@@ -72,7 +72,7 @@ slug: custom-url-path
 ### 설치
 
 ```bash
-git clone https://github.com/anpigon/obsidian-quartz-publish.git
+git clone https://github.com/jeongsk/obsidian-quartz-publish.git
 cd obsidian-quartz-publish
 npm install
 ```
