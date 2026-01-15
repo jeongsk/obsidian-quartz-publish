@@ -666,6 +666,9 @@ export class DashboardModal extends Modal {
 		const refreshBtn = headerEl.createEl('button', {
 			text: t('dashboard.action.refresh'),
 			cls: 'qp:text-sm',
+			attr: {
+				'aria-label': t('dashboard.action.refresh'),
+			},
 		});
 		refreshBtn.addEventListener('click', () => this.refresh());
 	}
@@ -1045,6 +1048,7 @@ export class ConfirmModal extends Modal {
 
 		const cancelBtn = buttonContainer.createEl('button', {
 			text: this.cancelText,
+			attr: { 'aria-label': this.cancelText },
 		});
 		cancelBtn.addEventListener('click', () => {
 			this.resolvePromise?.(false);
@@ -1054,6 +1058,7 @@ export class ConfirmModal extends Modal {
 		const confirmBtn = buttonContainer.createEl('button', {
 			text: this.confirmText,
 			cls: this.isDangerous ? 'mod-warning' : 'mod-cta',
+			attr: { 'aria-label': this.confirmText },
 		});
 		confirmBtn.addEventListener('click', () => {
 			this.resolvePromise?.(true);
