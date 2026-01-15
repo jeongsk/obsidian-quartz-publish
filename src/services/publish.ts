@@ -13,10 +13,13 @@ import type {
 	BatchPublishResult,
 	UnpublishResult,
 	AttachmentRecord,
+	PublishError,
 } from '../types';
 import { MAX_FILE_SIZE, DEFAULT_AUTO_DATE_SETTINGS } from '../types';
+import type { LargeFileInfo, FileValidationResult } from '../types';
 import { GitHubService } from './github';
 import { ContentTransformer } from './transformer';
+import { FileValidatorService } from './file-validator';
 
 /**
  * 발행 서비스 클래스
@@ -27,6 +30,7 @@ export class PublishService {
 	private settings: PluginSettings;
 	private github: GitHubService;
 	private transformer: ContentTransformer;
+	private fileValidator: FileValidatorService;
 	private publishRecords: Record<string, PublishRecord>;
 	private onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>;
 	private onRecordRemove: (localPath: string) => Promise<void>;
@@ -59,6 +63,33 @@ export class PublishService {
 			settings.contentPath,
 			settings.staticPath
 		);
+
+		this.fileValidator = new FileValidatorService();
+	}
+
+	/**
+	 * 파일 목록에서 대용량 파일을 검증합니다.
+	 * @param files 검증할 파일 목록
+	 * @returns 검증 결과
+	 */
+	validateFileSizes(files: TFile[]): FileValidationResult {
+		return this.fileValidator.validateFiles(files);
+	}
+
+	/**
+	 * 대용량 파일 목록을 반환합니다.
+	 * @param files 검사할 파일 목록
+	 * @returns 대용량 파일 정보 배열
+	 */
+	findLargeFiles(files: TFile[]): LargeFileInfo[] {
+		return this.fileValidator.findLargeFiles(files);
+	}
+
+	/**
+	 * 최대 파일 크기를 반환합니다.
+	 */
+	getMaxFileSize(): number {
+		return this.fileValidator.getMaxFileSize();
 	}
 
 	/**
@@ -153,14 +184,48 @@ export class PublishService {
 			};
 		} catch (error) {
 			console.error('[QuartzPublish] Publish error:', error);
+
+			// 에러 타입 분석
+			const errorType = this.classifyError(error);
+
 			return {
 				success: false,
 				file,
-				error: 'unknown',
+				error: errorType,
 			};
 		} finally {
 			this.isPublishing = false;
 		}
+	}
+
+	/**
+	 * 에러 타입을 분류합니다.
+	 */
+	private classifyError(error: unknown): PublishError {
+		if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('network'))) {
+			return 'offline';
+		}
+
+		if (error instanceof Error) {
+			const message = error.message.toLowerCase();
+
+			// 네트워크 관련 에러
+			if (message.includes('failed to fetch') || message.includes('network') || message.includes('offline')) {
+				return 'offline';
+			}
+
+			// Rate limit 에러
+			if (message.includes('rate limit') || message.includes('403')) {
+				return 'rate_limited';
+			}
+
+			// 충돌 에러
+			if (message.includes('409') || message.includes('conflict')) {
+				return 'conflict';
+			}
+		}
+
+		return 'unknown';
 	}
 
 	/**
@@ -247,10 +312,24 @@ export class PublishService {
 				file,
 			};
 		} catch (error) {
+			console.error('[QuartzPublish] Unpublish error:', error);
+
+			// 네트워크 에러 감지 시 재시도 안내
+			const isNetworkError =
+				error instanceof TypeError ||
+				(error instanceof Error &&
+					(error.message.toLowerCase().includes('fetch') ||
+						error.message.toLowerCase().includes('network') ||
+						error.message.toLowerCase().includes('offline')));
+
 			return {
 				success: false,
 				file,
-				error: error instanceof Error ? error.message : 'Unknown error',
+				error: isNetworkError
+					? '네트워크 연결을 확인하고 다시 시도해주세요.'
+					: error instanceof Error
+						? error.message
+						: 'Unknown error',
 			};
 		}
 	}

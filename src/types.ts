@@ -448,6 +448,62 @@ export interface ConnectionTestResult {
 }
 
 // ============================================================================
+// Network Status Types (Phase 5 - Non-Functional Requirements)
+// ============================================================================
+
+/**
+ * 네트워크 연결 상태
+ */
+export type NetworkStatus = 'online' | 'offline' | 'unknown';
+
+/**
+ * 네트워크 상태 변경 콜백
+ */
+export type NetworkStatusCallback = (status: NetworkStatus) => void;
+
+// ============================================================================
+// File Validation Types (Phase 5 - Non-Functional Requirements)
+// ============================================================================
+
+/**
+ * 대용량 파일 정보
+ */
+export interface LargeFileInfo {
+	/** 파일 객체 */
+	file: TFile;
+	/** 파일 크기 (bytes) */
+	size: number;
+	/** 포맷된 크기 (예: "12.5 MB") */
+	formattedSize: string;
+}
+
+/**
+ * 파일 검증 결과
+ */
+export interface FileValidationResult {
+	/** 검증 통과 여부 */
+	isValid: boolean;
+	/** 대용량 파일 목록 */
+	largeFiles: LargeFileInfo[];
+	/** 총 대용량 파일 수 */
+	count: number;
+}
+
+/**
+ * 발행 전 검사 결과
+ */
+export interface PublishPreflightResult {
+	/** 발행 가능 여부 */
+	canPublish: boolean;
+	/** 네트워크 상태 */
+	networkStatus: NetworkStatus;
+	/** 대용량 파일 검증 결과 */
+	fileValidation: FileValidationResult;
+	/** 차단 사유 (발행 불가 시) */
+	blockReason?: 'offline' | 'large_files_rejected';
+}
+
+// ============================================================================
 // Publish Service Types
 // ============================================================================
 
@@ -461,6 +517,7 @@ export type PublishError =
 	| 'network_error'
 	| 'rate_limited'
 	| 'conflict'
+	| 'offline'
 	| 'unknown';
 
 /**

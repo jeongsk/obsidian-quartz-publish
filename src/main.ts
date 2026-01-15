@@ -4,6 +4,7 @@ import { DEFAULT_SETTINGS } from './types';
 import { QuartzPublishSettingTab } from './ui/settings-tab';
 import { PublishService } from './services/publish';
 import { StatusService } from './services/status';
+import { NetworkService } from './services/network';
 import { DashboardModal } from './ui/dashboard-modal';
 
 /**
@@ -15,9 +16,13 @@ export default class QuartzPublishPlugin extends Plugin {
 	settings!: PluginSettings;
 	publishRecords!: Record<string, PublishRecord>;
 	private statusService!: StatusService;
+	private networkService!: NetworkService;
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
+
+		// NetworkService 초기화
+		this.networkService = new NetworkService();
 
 		// StatusService 초기화
 		this.statusService = new StatusService({
@@ -88,6 +93,8 @@ export default class QuartzPublishPlugin extends Plugin {
 	}
 
 	onunload(): void {
+		// NetworkService 정리
+		this.networkService?.destroy();
 		console.log('Quartz Publish plugin unloaded');
 	}
 
@@ -138,6 +145,12 @@ export default class QuartzPublishPlugin extends Plugin {
 	 * 노트 발행
 	 */
 	async publishNote(file: TFile): Promise<void> {
+		// 네트워크 연결 확인
+		if (!this.networkService.isOnline()) {
+			new Notice('인터넷 연결을 확인해주세요. 발행하려면 네트워크 연결이 필요합니다.');
+			return;
+		}
+
 		// 설정 확인
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
 			new Notice('Please configure GitHub settings first');
@@ -179,6 +192,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			onDelete: async (files) => this.batchUnpublish(files),
 			onLoadStatus: async (onProgress) =>
 				this.statusService.calculateStatusOverview(onProgress),
+			networkService: this.networkService,
 		}).open();
 	}
 
