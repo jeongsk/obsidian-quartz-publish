@@ -24,6 +24,8 @@ import { ApplyButton } from './components/apply-button';
 import { UnsavedWarning } from './components/unsaved-warning';
 import { ConfirmModal } from './components/confirm-modal';
 import { ConflictModal } from './components/conflict-modal';
+import { CreateRepoModal } from './create-repo-modal';
+import { DeployGuideModal } from './deploy-guide-modal';
 
 /**
  * 플러그인 설정 탭
@@ -147,8 +149,23 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.repoUrl = value;
 						await this.plugin.saveSettings();
+						this.display();
 					})
 			);
+
+		if (!this.plugin.settings.repoUrl && this.plugin.settings.githubToken) {
+			new Setting(containerEl)
+				.setName('New to Quartz?')
+				.setDesc('Create a new Quartz repository from template')
+				.addButton((button) =>
+					button
+						.setButtonText('Create Quartz Repository')
+						.setCta()
+						.onClick(() => {
+							this.openCreateRepoModal();
+						})
+				);
+		}
 
 		// 브랜치 설정
 		new Setting(containerEl)
@@ -298,9 +315,21 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		}
 	}
 
-	/**
-	 * 연결 상태 표시
-	 */
+	private openCreateRepoModal(): void {
+		const modal = new CreateRepoModal(this.app, {
+			token: this.plugin.settings.githubToken,
+			onSuccess: async (repository) => {
+				this.plugin.settings.repoUrl = repository.htmlUrl;
+				await this.plugin.saveSettings();
+				this.display();
+			},
+			onShowDeployGuide: (repository) => {
+				new DeployGuideModal(this.app, { repository }).open();
+			},
+		});
+		modal.open();
+	}
+
 	private showConnectionStatus(
 		status: 'connected' | 'connecting' | 'error',
 		message: string

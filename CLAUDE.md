@@ -52,6 +52,7 @@ npm run lint:fix     # 린트 자동 수정
 - TypeScript 5.9+ + Obsidian API (Plugin, PluginSettingTab, Modal, Notice, Setting), fetch (built-in) (004-advanced-quartz-config)
 - Obsidian Plugin Data (`data.json` via `loadData`/`saveData`), GitHub Repository (`quartz.config.ts`) (004-advanced-quartz-config)
 - TypeScript 5.9+ + Obsidian API + Obsidian API (Plugin, Modal, Notice, TFile, Vault), fetch (built-in) (005-non-functional-requirements)
+- TypeScript 5.9+ + Obsidian API (Plugin, Modal, Notice, Setting), fetch (built-in) (006-beginner-support)
 
 ## Recent Changes
 - 004-advanced-quartz-config: Quartz 고급 설정 관리 (pageTitle, baseUrl, locale, analytics 등)

@@ -111,7 +111,7 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 | Phase 2 | 노트 관리 | 100% | ✅ 완료 |
 | Phase 3 | Quartz 설정 관리 | 100% | ✅ 완료 |
 | Phase 4 | 초보자 지원 | 0% | ❌ 미착수 |
-| 비기능 | 비기능 요구사항 | 50% | ⚠️ 일부 |
+| 비기능 | 비기능 요구사항 | 100% | ✅ 완료 |
 
 ### Phase 1: MVP 상세 현황 ✅
 
@@ -160,11 +160,11 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 - [ ] 자동 리포지토리 생성
 - [ ] 배포 가이드 제공
 
-### 비기능 요구사항 상세 현황 ⚠️
+### 비기능 요구사항 상세 현황 ✅
 
-- [ ] 오프라인 시 발행 불가 안내
+- [x] 오프라인 시 발행 불가 안내 (`src/services/network.ts`, `src/ui/dashboard-modal.ts`)
 - [x] 대용량 파일 제한 상수 정의 (`MAX_FILE_SIZE`)
-- [ ] 대용량 파일 경고 UI
+- [x] 대용량 파일 경고 UI (`src/ui/large-file-warning-modal.ts`)
 - [x] 발행 진행 프로그레스 표시 (`src/ui/dashboard-modal.ts`)
 - [x] 에러 처리 개선 (네트워크 오류, Rate Limit 안내)
 - [x] 접근성 개선 (키보드 네비게이션, ARIA 레이블)
@@ -181,12 +181,15 @@ src/
 │   ├── publish.ts             # 발행 서비스
 │   ├── status.ts              # 발행 상태 계산 서비스
 │   ├── quartz-config.ts       # Quartz 설정 파싱/수정 서비스
-│   └── quartz-upgrade.ts      # Quartz 업그레이드 서비스
+│   ├── quartz-upgrade.ts      # Quartz 업그레이드 서비스
+│   ├── network.ts             # 네트워크 상태 감지 서비스
+│   └── file-validator.ts      # 파일 크기 검증 서비스
 ├── utils/
 │   └── glob-validator.ts      # glob 패턴 유효성 검사
 ├── ui/
 │   ├── settings-tab.ts        # 설정 탭 UI
-│   └── dashboard-modal.ts     # 발행 대시보드 모달
+│   ├── dashboard-modal.ts     # 발행 대시보드 모달
+│   └── large-file-warning-modal.ts  # 대용량 파일 경고 모달
 └── styles/
     └── main.css               # TailwindCSS 스타일
 
