@@ -5,7 +5,7 @@
  * DeployGuideModal 패턴을 확장하여 구현합니다.
  */
 
-import { Modal } from "obsidian";
+import { Modal, setIcon } from "obsidian";
 import type { App } from "obsidian";
 import type {
 	GuideStep,
@@ -251,10 +251,10 @@ export class GitHubGuideModal extends Modal {
 		const isCompleted = step.completionCheck?.() ?? false;
 		if (isCompleted) {
 			const checkIcon = titleContainer.createEl("span", {
-				text: "✓",
-				cls: "qp:text-obs-text-success qp:font-bold qp:text-lg",
+				cls: "qp:text-obs-text-success",
+				attr: { "aria-label": t("guide.complete") },
 			});
-			checkIcon.setAttribute("aria-label", t("guide.complete"));
+			setIcon(checkIcon, "check");
 		}
 
 		titleContainer.createEl("h3", {
@@ -430,10 +430,11 @@ export class GitHubGuideModal extends Modal {
 			const causeEl = itemEl.createDiv({
 				cls: "qp:mb-2",
 			});
-			causeEl.createEl("span", {
-				text: "⚠️ ",
-				cls: "qp:mr-1",
+			const causeIcon = causeEl.createEl("span", {
+				cls: "qp:mr-1 qp:text-obs-text-warning",
+				attr: { "aria-hidden": "true" },
 			});
+			setIcon(causeIcon, "alert-triangle");
 			causeEl.createEl("span", {
 				text: item.cause,
 				cls: "qp:text-sm qp:text-obs-text-muted",
@@ -441,10 +442,11 @@ export class GitHubGuideModal extends Modal {
 
 			// 해결 방법
 			const solutionEl = itemEl.createDiv();
-			solutionEl.createEl("span", {
-				text: "✅ ",
-				cls: "qp:mr-1",
+			const solutionIcon = solutionEl.createEl("span", {
+				cls: "qp:mr-1 qp:text-obs-text-success",
+				attr: { "aria-hidden": "true" },
 			});
+			setIcon(solutionIcon, "check-circle-2");
 			solutionEl.createEl("span", {
 				text: item.solution,
 				cls: "qp:text-sm qp:text-obs-text-success qp:font-medium",
