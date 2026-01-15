@@ -692,7 +692,7 @@ export class DashboardModal extends Modal {
 		const { contentEl } = this;
 		const tabsEl = contentEl.createDiv({
 			cls: 'quartz-publish-tabs',
-			attr: { role: 'tablist', 'aria-label': '발행 상태 탭' },
+			attr: { role: 'tablist', 'aria-label': t('dashboard.aria.tabs') },
 		});
 
 		TAB_KEYS.forEach((tabKey, index) => {
@@ -714,7 +714,7 @@ export class DashboardModal extends Modal {
 			tabEl.createSpan({
 				text: String(count),
 				cls: 'quartz-publish-tab-badge',
-				attr: { 'aria-label': `${count}개` },
+				attr: { 'aria-label': t('dashboard.aria.itemCount', { count: String(count) }) },
 			});
 
 			tabEl.addEventListener('click', () => this.switchTab(tabKey));
@@ -883,16 +883,17 @@ export class DashboardModal extends Modal {
 	 */
 	private renderNoteItem(container: HTMLElement, note: NoteStatus): void {
 		const isSelected = this.state.selectedPaths.has(note.file.path);
-		const noteName = note.file.basename || note.file.path.split('/').pop();
+		const noteName = note.file.basename || note.file.path.split('/').pop() || 'Untitled';
 		const itemEl = container.createDiv({
 			cls: `quartz-publish-note-item ${isSelected ? 'quartz-publish-note-item--selected' : ''}`,
 		});
 
 		// 체크박스
+		const selectLabel = t('dashboard.aria.selectNote', { name: noteName });
 		const checkboxEl = itemEl.createEl('input', {
 			attr: {
 				type: 'checkbox',
-				'aria-label': `${noteName} 선택`,
+				'aria-label': selectLabel,
 			},
 			cls: 'qp:mr-3',
 		}) as HTMLInputElement;
@@ -930,7 +931,7 @@ export class DashboardModal extends Modal {
 		const { contentEl } = this;
 		const actionsEl = contentEl.createDiv({
 			cls: 'quartz-publish-actions',
-			attr: { role: 'toolbar', 'aria-label': '대시보드 작업' },
+			attr: { role: 'toolbar', 'aria-label': t('dashboard.aria.toolbar') },
 		});
 
 		const leftEl = actionsEl.createDiv({ cls: 'quartz-publish-actions-left' });

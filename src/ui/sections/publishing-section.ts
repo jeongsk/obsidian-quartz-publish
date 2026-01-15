@@ -89,74 +89,11 @@ export class PublishingSection {
 			.setName(t('publishing.ignorePatterns.name'))
 			.setDesc(t('publishing.ignorePatterns.desc'));
 
-		// 패턴 목록 컨테이너
 		this.patternsContainerEl = this.containerEl.createDiv({
 			cls: 'quartz-publish-patterns-list qp:mb-2',
 		});
 
 		this.renderPatternsList();
-
-		// 패턴 추가 입력
-		const addPatternContainer = this.containerEl.createDiv({
-			cls: 'quartz-publish-add-pattern qp:flex qp:gap-2',
-		});
-
-		const inputEl = addPatternContainer.createEl('input', {
-			type: 'text',
-			placeholder: t('publishing.ignorePatterns.placeholder'),
-			cls: 'qp:flex-1',
-			attr: {
-				'aria-label': t('publishing.ignorePatterns.name'),
-				'aria-describedby': 'pattern-error',
-			},
-		});
-
-		const errorEl = this.containerEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1',
-			attr: {
-				id: 'pattern-error',
-				role: 'alert',
-				'aria-live': 'polite',
-			},
-		});
-
-		const addBtn = addPatternContainer.createEl('button', {
-			text: t('publishing.ignorePatterns.add'),
-			attr: {
-				'aria-label': t('publishing.ignorePatterns.add'),
-			},
-		});
-
-		addBtn.onclick = () => {
-			const newPattern = inputEl.value.trim();
-			if (!newPattern) return;
-
-			// 유효성 검사
-			const validation = validateGlobPattern(newPattern);
-			if (!validation.valid) {
-				errorEl.textContent = validation.error || t('publishing.ignorePatterns.invalid');
-				return;
-			}
-
-			// 중복 검사
-			if (this.patterns.includes(newPattern)) {
-				errorEl.textContent = t('publishing.ignorePatterns.duplicate');
-				return;
-			}
-
-			errorEl.textContent = '';
-			this.patterns.push(newPattern);
-			inputEl.value = '';
-			this.renderPatternsList();
-			this.options.onChange('ignorePatterns', [...this.patterns]);
-		};
-
-		// Enter 키 지원
-		inputEl.onkeydown = (e) => {
-			if (e.key === 'Enter') {
-				addBtn.click();
-			}
-		};
 	}
 
 	/**
@@ -167,12 +104,7 @@ export class PublishingSection {
 
 		this.patternsContainerEl.empty();
 
-		if (this.patterns.length === 0) {
-			this.patternsContainerEl.createEl('p', {
-				text: t('publishing.ignorePatterns.empty'),
-				cls: 'qp:text-obs-text-muted qp:text-sm',
-			});
-		} else {
+		if (this.patterns.length > 0) {
 			for (let i = 0; i < this.patterns.length; i++) {
 				const pattern = this.patterns[i];
 				const patternEl = this.patternsContainerEl.createDiv({
@@ -185,7 +117,7 @@ export class PublishingSection {
 				});
 
 				const removeBtn = patternEl.createEl('button', {
-					cls: 'qp:text-obs-text-error',
+					cls: 'qp:text-obs-text-error qp:bg-transparent qp:border-none qp:p-1 qp:cursor-pointer hover:qp:bg-obs-bg-modifier-hover qp:rounded',
 					attr: { 'aria-label': t('publishing.ignorePatterns.remove') },
 				});
 				removeBtn.textContent = '×';
@@ -198,6 +130,73 @@ export class PublishingSection {
 				};
 			}
 		}
+
+		const addRowEl = this.patternsContainerEl.createDiv({
+			cls: 'quartz-publish-pattern-item qp:flex qp:items-center qp:gap-2 qp:mb-1',
+		});
+
+		const inputEl = addRowEl.createEl('input', {
+			type: 'text',
+			placeholder: t('publishing.ignorePatterns.placeholder'),
+			cls: 'qp:flex-1 qp:bg-obs-bg-secondary qp:border-transparent focus:qp:border-obs-interactive-accent qp:text-obs-text-normal qp:placeholder-obs-text-muted qp:rounded qp:px-2 qp:py-1',
+			attr: {
+				'aria-label': t('publishing.ignorePatterns.name'),
+				'aria-describedby': 'pattern-error',
+			},
+		});
+
+		const addBtn = addRowEl.createEl('button', {
+			cls: 'qp:text-obs-text-success qp:bg-transparent qp:border-none qp:p-1 qp:cursor-pointer hover:qp:bg-obs-bg-modifier-hover qp:rounded',
+			attr: {
+				'aria-label': t('publishing.ignorePatterns.add'),
+			},
+		});
+		addBtn.textContent = '+';
+
+		const errorEl = this.patternsContainerEl.createDiv({
+			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1 qp:mb-2 qp:min-h-[20px]',
+			attr: {
+				id: 'pattern-error',
+				role: 'alert',
+				'aria-live': 'polite',
+			},
+		});
+
+		const handleAdd = () => {
+			const newPattern = inputEl.value.trim();
+			if (!newPattern) return;
+
+			const validation = validateGlobPattern(newPattern);
+			if (!validation.valid) {
+				errorEl.textContent = validation.error || t('publishing.ignorePatterns.invalid');
+				return;
+			}
+
+			if (this.patterns.includes(newPattern)) {
+				errorEl.textContent = t('publishing.ignorePatterns.duplicate');
+				return;
+			}
+
+			errorEl.textContent = '';
+			this.patterns.push(newPattern);
+			this.options.onChange('ignorePatterns', [...this.patterns]);
+			this.renderPatternsList();
+			
+			setTimeout(() => {
+				const newInput = this.patternsContainerEl?.querySelector('input');
+				newInput?.focus();
+			}, 0);
+		};
+
+		addBtn.onclick = handleAdd;
+
+		inputEl.onkeydown = (e) => {
+			if (e.key === 'Enter') {
+				handleAdd();
+			} else {
+				if (errorEl.textContent) errorEl.textContent = '';
+			}
+		};
 	}
 
 	/**

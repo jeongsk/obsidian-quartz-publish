@@ -195,6 +195,11 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'dashboard.tabDescription.modified': '발행 후 내용이 변경된 노트입니다',
 	'dashboard.tabDescription.deleted': '로컬에서 삭제되었거나 발행 해제된 노트입니다',
 	'dashboard.tabDescription.synced': '원격과 동기화된 최신 상태의 노트입니다',
+	// Dashboard - Accessibility
+	'dashboard.aria.tabs': '발행 상태 탭',
+	'dashboard.aria.itemCount': '{{count}}개',
+	'dashboard.aria.selectNote': '{{name}} 선택',
+	'dashboard.aria.toolbar': '대시보드 작업',
 
 	// Notices
 	'notice.publish.start': '{{filename}} 발행 중...',

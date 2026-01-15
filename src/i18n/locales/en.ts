@@ -191,6 +191,11 @@ export default {
 	'dashboard.tabDescription.modified': 'Notes modified after publishing',
 	'dashboard.tabDescription.deleted': 'Notes deleted locally or unpublished',
 	'dashboard.tabDescription.synced': 'Notes synced with remote',
+	// Dashboard - Accessibility
+	'dashboard.aria.tabs': 'Publish status tabs',
+	'dashboard.aria.itemCount': '{{count}} items',
+	'dashboard.aria.selectNote': 'Select {{name}}',
+	'dashboard.aria.toolbar': 'Dashboard actions',
 
 	// Notices
 	'notice.publish.start': 'Publishing {{filename}}...',
