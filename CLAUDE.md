@@ -47,6 +47,8 @@ npm run lint:fix     # 린트 자동 수정
 - Obsidian Plugin Data (`data.json`) (001-quartz-publish)
 - TypeScript 5.9+ + Obsidian API (Modal, Notice, TFile, Vault, MetadataCache) (002-note-management)
 - Obsidian Plugin Data (`data.json` via `loadData`/`saveData`) (002-note-management)
+- TypeScript 5.9+ + Obsidian API (Plugin, PluginSettingTab, Notice, Modal), fetch (built-in) (003-quartz-config)
+- Obsidian Plugin Data (`data.json` via `loadData`/`saveData`), GitHub Repository (`quartz.config.ts`) (003-quartz-config)
 
 ## Recent Changes
 - 001-quartz-publish: Added TypeScript 5.9+ + Obsidian API, fetch (built-in)
