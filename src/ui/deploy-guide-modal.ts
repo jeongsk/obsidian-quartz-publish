@@ -2,6 +2,7 @@ import { Modal } from 'obsidian';
 import type { App } from 'obsidian';
 import type { DeployGuideStep, CreatedRepository } from '../types';
 import { t } from '../i18n';
+import { cn } from '../utils/cn';
 
 interface DeployGuideModalOptions {
 	repository: CreatedRepository;
@@ -171,17 +172,18 @@ export class DeployGuideModal extends Modal {
 			cls: 'qp:flex qp:justify-between qp:gap-2 qp:mt-4',
 		});
 
+		const isFirstStep = this.currentStep === 0;
 		const backBtn = navContainer.createEl('button', {
 			text: t('deployGuide.back'),
-			cls: 'qp:px-4 qp:py-2',
+			cls: cn(
+				'qp:px-4 qp:py-2',
+				isFirstStep && 'qp:opacity-50 qp:cursor-not-allowed'
+			),
 			attr: {
 				'aria-label': t('deployGuide.back'),
 			},
 		});
-		backBtn.disabled = this.currentStep === 0;
-		if (this.currentStep === 0) {
-			backBtn.addClass('qp:opacity-50', 'qp:cursor-not-allowed');
-		}
+		backBtn.disabled = isFirstStep;
 		backBtn.addEventListener('click', () => {
 			if (this.currentStep > 0) {
 				this.currentStep--;

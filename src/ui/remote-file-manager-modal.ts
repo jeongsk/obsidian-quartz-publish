@@ -15,6 +15,7 @@ import { RemoteFileService } from '../services/remote-file';
 import type { GitHubService } from '../services/github';
 import { ConfirmModal } from './components/confirm-modal';
 import { t } from '../i18n';
+import { cn } from '../utils/cn';
 
 /**
  * Remote File Manager Modal 옵션
@@ -332,7 +333,10 @@ export class RemoteFileManagerModal extends Modal {
 		const isDuplicate = duplicateFileNames.has(file.name);
 
 		const itemEl = container.createDiv({
-			cls: `qp-file-item qp:flex qp:items-center qp:gap-2 qp:p-2 qp:border-b qp:border-obs-bg-modifier-border qp:cursor-pointer ${isSelected ? 'qp:bg-obs-bg-modifier-hover' : ''}`,
+			cls: cn(
+				'qp-file-item qp:flex qp:items-center qp:gap-2 qp:p-2 qp:border-b qp:border-obs-bg-modifier-border qp:cursor-pointer',
+				isSelected && 'qp:bg-obs-bg-modifier-hover'
+			),
 			attr: {
 				role: 'listitem',
 			},

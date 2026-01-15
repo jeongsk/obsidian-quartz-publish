@@ -19,6 +19,7 @@ import { FileValidatorService } from '../services/file-validator';
 import { LargeFileWarningModal } from './large-file-warning-modal';
 import { MAX_FILE_SIZE } from '../types';
 import { t } from '../i18n';
+import { cn } from '../utils/cn';
 
 /**
  * 진행 상황 정보
@@ -700,7 +701,7 @@ export class DashboardModal extends Modal {
 			const isActive = this.state.activeTab === tabKey;
 
 			const tabEl = tabsEl.createEl('button', {
-				cls: `quartz-publish-tab ${isActive ? 'quartz-publish-tab--active' : ''}`,
+				cls: cn('quartz-publish-tab', isActive && 'quartz-publish-tab--active'),
 				attr: {
 					role: 'tab',
 					'aria-selected': String(isActive),
@@ -885,7 +886,7 @@ export class DashboardModal extends Modal {
 		const isSelected = this.state.selectedPaths.has(note.file.path);
 		const noteName = note.file.basename || note.file.path.split('/').pop() || 'Untitled';
 		const itemEl = container.createDiv({
-			cls: `quartz-publish-note-item ${isSelected ? 'quartz-publish-note-item--selected' : ''}`,
+			cls: cn('quartz-publish-note-item', isSelected && 'quartz-publish-note-item--selected'),
 		});
 
 		// 체크박스

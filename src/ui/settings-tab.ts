@@ -32,6 +32,7 @@ import { GitHubGuideModal } from './github-guide-modal';
 import { RemoteFileManagerModal } from './remote-file-manager-modal';
 import { t } from '../i18n';
 import { isValidGitHubUrl, normalizeBaseUrl } from '../utils/url';
+import { cn } from '../utils/cn';
 
 /**
  * 플러그인 설정 탭
@@ -297,7 +298,10 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// GitHub 저장소 버튼
 		const isGithubDisabled = !repoUrl || !isValidGitHubUrl(repoUrl);
 		const githubButton = this.quickLinksContainerEl.createEl('button', {
-			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
+			cls: cn(
+				'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
+				isGithubDisabled && 'qp:opacity-60 qp:cursor-not-allowed'
+			),
 			attr: {
 				'aria-label': isGithubDisabled
 					? t('settings.quickLinks.githubDisabled')
@@ -306,11 +310,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			},
 		});
 		githubButton.createSpan({ text: t('settings.quickLinks.github') });
+		githubButton.disabled = isGithubDisabled;
 
-		if (isGithubDisabled) {
-			githubButton.addClass('qp:opacity-60', 'qp:cursor-not-allowed');
-			githubButton.disabled = true;
-		} else {
+		if (!isGithubDisabled) {
 			githubButton.addEventListener('click', () => {
 				window.open(repoUrl, '_blank');
 			});
@@ -319,7 +321,10 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// 배포 사이트 버튼
 		const isSiteDisabled = !baseUrl;
 		const siteButton = this.quickLinksContainerEl.createEl('button', {
-			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
+			cls: cn(
+				'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
+				isSiteDisabled && 'qp:opacity-60 qp:cursor-not-allowed'
+			),
 			attr: {
 				'aria-label': isSiteDisabled
 					? t('settings.quickLinks.siteDisabled')
@@ -328,11 +333,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			},
 		});
 		siteButton.createSpan({ text: t('settings.quickLinks.site') });
+		siteButton.disabled = isSiteDisabled;
 
-		if (isSiteDisabled) {
-			siteButton.addClass('qp:opacity-60', 'qp:cursor-not-allowed');
-			siteButton.disabled = true;
-		} else {
+		if (!isSiteDisabled) {
 			siteButton.addEventListener('click', () => {
 				window.open(normalizeBaseUrl(baseUrl), '_blank');
 			});
@@ -519,6 +522,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.publishFilterSection = new PublishFilterSection(containerEl, {
 			config: filterSettings,
+			app: this.app,
 			vault: this.app.vault,
 			onChange: async (field, value) => {
 				if (!this.plugin.settings.publishFilterSettings) {
