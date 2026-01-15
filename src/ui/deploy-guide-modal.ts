@@ -1,91 +1,100 @@
 import { Modal } from 'obsidian';
 import type { App } from 'obsidian';
 import type { DeployGuideStep, CreatedRepository } from '../types';
+import { t } from '../i18n';
 
 interface DeployGuideModalOptions {
 	repository: CreatedRepository;
 }
 
-const DEPLOY_GUIDE_STEPS: Omit<DeployGuideStep, 'externalUrl'>[] = [
-	{
-		stepNumber: 1,
-		title: 'Open Repository Settings',
-		description: 'Go to your GitHub repository settings page to configure GitHub Pages.',
-		actionLabel: 'Open Settings',
-	},
-	{
-		stepNumber: 2,
-		title: 'Navigate to Pages Section',
-		description: 'In the left sidebar, click on "Pages" under the "Code and automation" section.',
-		actionLabel: 'Open Pages Settings',
-	},
-	{
-		stepNumber: 3,
-		title: 'Configure Build Source',
-		description: 'Under "Build and deployment", set the Source to "GitHub Actions". This allows Quartz to automatically deploy when you publish notes.',
-	},
-	{
-		stepNumber: 4,
-		title: 'Enable Workflow Permissions',
-		description: 'Go to Settings > Actions > General. Under "Workflow permissions", select "Read and write permissions" to allow the deploy workflow to push to GitHub Pages.',
-		actionLabel: 'Open Actions Settings',
-	},
-	{
-		stepNumber: 5,
-		title: 'Trigger First Deployment',
-		description: 'The deployment will start automatically when you publish your first note. You can also trigger it manually from the Actions tab.',
-		actionLabel: 'View Actions',
-	},
-	{
-		stepNumber: 6,
-		title: 'Visit Your Site',
-		description: 'After deployment completes (usually 2-3 minutes), your Quartz site will be live! Click below to visit your new digital garden.',
-		actionLabel: 'Open Your Site',
-	},
-];
+/**
+ * 스텝 번호 배열
+ */
+const STEP_NUMBERS = [1, 2, 3, 4, 5, 6] as const;
 
 export class DeployGuideModal extends Modal {
 	private currentStep = 0;
 	private repository: CreatedRepository;
-	private steps: DeployGuideStep[];
+	private totalSteps = STEP_NUMBERS.length;
 
 	constructor(app: App, options: DeployGuideModalOptions) {
 		super(app);
 		this.repository = options.repository;
-		this.steps = this.buildStepsWithUrls();
 	}
 
-	private buildStepsWithUrls(): DeployGuideStep[] {
+	/**
+	 * 현재 스텝 정보를 동적으로 반환 (번역 적용)
+	 */
+	private getCurrentStepInfo(): DeployGuideStep {
+		const stepNumber = STEP_NUMBERS[this.currentStep];
 		const baseUrl = this.repository.htmlUrl;
 		const owner = this.repository.owner;
 		const name = this.repository.name;
 
-		return DEPLOY_GUIDE_STEPS.map((step) => {
-			let externalUrl: string | undefined;
+		let externalUrl: string | undefined;
+		let actionLabel: string | undefined;
 
-			switch (step.stepNumber) {
-				case 1:
-					externalUrl = `${baseUrl}/settings`;
-					break;
-				case 2:
-					externalUrl = `${baseUrl}/settings/pages`;
-					break;
-				case 4:
-					externalUrl = `${baseUrl}/settings/actions`;
-					break;
-				case 5:
-					externalUrl = `${baseUrl}/actions`;
-					break;
-				case 6:
-					externalUrl = `https://${owner}.github.io/${name}/`;
-					break;
-			}
+		switch (stepNumber) {
+			case 1:
+				externalUrl = `${baseUrl}/settings`;
+				actionLabel = t('deployGuide.step1.action');
+				break;
+			case 2:
+				externalUrl = `${baseUrl}/settings/pages`;
+				actionLabel = t('deployGuide.step2.action');
+				break;
+			case 3:
+				// No external URL for step 3
+				break;
+			case 4:
+				externalUrl = `${baseUrl}/settings/actions`;
+				actionLabel = t('deployGuide.step4.action');
+				break;
+			case 5:
+				externalUrl = `${baseUrl}/actions`;
+				actionLabel = t('deployGuide.step5.action');
+				break;
+			case 6:
+				externalUrl = `https://${owner}.github.io/${name}/`;
+				actionLabel = t('deployGuide.step6.action');
+				break;
+		}
 
-			return { ...step, externalUrl };
-		});
+		return {
+			stepNumber,
+			title: t(`deployGuide.step${stepNumber}.title`),
+			description: t(`deployGuide.step${stepNumber}.desc`),
+			actionLabel,
+			externalUrl,
+		};
 	}
 
 	onOpen() {
+		// 키보드 네비게이션 설정
+		this.scope.register([], 'ArrowLeft', () => {
+			if (this.currentStep > 0) {
+				this.currentStep--;
+				this.render();
+			}
+			return false;
+		});
+		this.scope.register([], 'ArrowRight', () => {
+			if (this.currentStep < this.totalSteps - 1) {
+				this.currentStep++;
+				this.render();
+			}
+			return false;
+		});
+		this.scope.register([], 'Enter', () => {
+			if (this.currentStep === this.totalSteps - 1) {
+				this.close();
+			} else {
+				this.currentStep++;
+				this.render();
+			}
+			return false;
+		});
+
 		this.render();
 	}
 
@@ -96,13 +105,19 @@ export class DeployGuideModal extends Modal {
 	private render() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.addClass('qp:p-4', 'qp:min-w-[450px]');
+		contentEl.addClass('qp:p-4');
+		// 반응형 너비 설정
+		contentEl.style.minWidth = 'min(450px, 90vw)';
+		contentEl.style.maxWidth = 'min(550px, 95vw)';
 
-		const step = this.steps[this.currentStep];
-		const totalSteps = this.steps.length;
+		const step = this.getCurrentStepInfo();
+		const stepOfText = t('deployGuide.stepOf', {
+			current: String(step.stepNumber),
+			total: String(this.totalSteps),
+		});
 
 		contentEl.createEl('h2', {
-			text: 'GitHub Pages Deploy Guide',
+			text: t('deployGuide.title'),
 			cls: 'qp:text-lg qp:font-semibold qp:mb-4',
 		});
 
@@ -111,19 +126,19 @@ export class DeployGuideModal extends Modal {
 		});
 
 		progressContainer.createEl('span', {
-			text: `Step ${step.stepNumber} of ${totalSteps}`,
+			text: stepOfText,
 			cls: 'qp:text-sm qp:text-obs-text-muted',
 		});
 
-		const progressValue = Math.round(((this.currentStep + 1) / totalSteps) * 100);
+		const progressValue = Math.round(((this.currentStep + 1) / this.totalSteps) * 100);
 		const progressBar = progressContainer.createDiv({
 			cls: 'qp:w-full qp:h-2 qp:bg-obs-bg-modifier-border qp:rounded qp:mt-2',
 			attr: {
 				role: 'progressbar',
 				'aria-valuenow': String(this.currentStep + 1),
 				'aria-valuemin': '1',
-				'aria-valuemax': String(totalSteps),
-				'aria-label': `Step ${step.stepNumber} of ${totalSteps}`,
+				'aria-valuemax': String(this.totalSteps),
+				'aria-label': stepOfText,
 			},
 		});
 
@@ -157,10 +172,16 @@ export class DeployGuideModal extends Modal {
 		});
 
 		const backBtn = navContainer.createEl('button', {
-			text: 'Back',
+			text: t('deployGuide.back'),
 			cls: 'qp:px-4 qp:py-2',
+			attr: {
+				'aria-label': t('deployGuide.back'),
+			},
 		});
 		backBtn.disabled = this.currentStep === 0;
+		if (this.currentStep === 0) {
+			backBtn.addClass('qp:opacity-50', 'qp:cursor-not-allowed');
+		}
 		backBtn.addEventListener('click', () => {
 			if (this.currentStep > 0) {
 				this.currentStep--;
@@ -168,10 +189,14 @@ export class DeployGuideModal extends Modal {
 			}
 		});
 
-		const isLastStep = this.currentStep === totalSteps - 1;
+		const isLastStep = this.currentStep === this.totalSteps - 1;
+		const nextBtnText = isLastStep ? t('deployGuide.done') : t('deployGuide.next');
 		const nextBtn = navContainer.createEl('button', {
-			text: isLastStep ? 'Done' : 'Next',
+			text: nextBtnText,
 			cls: 'mod-cta qp:px-4 qp:py-2',
+			attr: {
+				'aria-label': nextBtnText,
+			},
 		});
 		nextBtn.addEventListener('click', () => {
 			if (isLastStep) {

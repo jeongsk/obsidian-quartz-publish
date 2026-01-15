@@ -471,6 +471,30 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'behavior.dateType.modified.desc': '노트가 마지막으로 수정된 날짜',
 	'behavior.dateType.published': '발행일',
 	'behavior.dateType.published.desc': '노트가 발행된 날짜',
+
+	// Deploy Guide Modal
+	'deployGuide.title': 'GitHub Pages 배포 가이드',
+	'deployGuide.stepOf': '단계 {{current}} / {{total}}',
+	'deployGuide.back': '이전',
+	'deployGuide.next': '다음',
+	'deployGuide.done': '완료',
+	'deployGuide.step1.title': '리포지토리 설정 열기',
+	'deployGuide.step1.desc': 'GitHub 리포지토리 설정 페이지로 이동하여 GitHub Pages를 구성하세요.',
+	'deployGuide.step1.action': '설정 열기',
+	'deployGuide.step2.title': 'Pages 섹션으로 이동',
+	'deployGuide.step2.desc': '왼쪽 사이드바에서 "Code and automation" 섹션 아래의 "Pages"를 클릭하세요.',
+	'deployGuide.step2.action': 'Pages 설정 열기',
+	'deployGuide.step3.title': '빌드 소스 설정',
+	'deployGuide.step3.desc': '"Build and deployment"에서 Source를 "GitHub Actions"로 설정하세요. 노트를 발행할 때 Quartz가 자동으로 배포됩니다.',
+	'deployGuide.step4.title': '워크플로우 권한 활성화',
+	'deployGuide.step4.desc': 'Settings > Actions > General로 이동하세요. "Workflow permissions"에서 "Read and write permissions"를 선택하여 배포 워크플로우가 GitHub Pages에 푸시할 수 있도록 합니다.',
+	'deployGuide.step4.action': 'Actions 설정 열기',
+	'deployGuide.step5.title': '첫 배포 실행',
+	'deployGuide.step5.desc': '첫 번째 노트를 발행하면 자동으로 배포가 시작됩니다. Actions 탭에서 수동으로 트리거할 수도 있습니다.',
+	'deployGuide.step5.action': 'Actions 보기',
+	'deployGuide.step6.title': '사이트 방문',
+	'deployGuide.step6.desc': '배포가 완료되면(보통 2-3분) Quartz 사이트가 라이브됩니다! 아래 버튼을 클릭하여 새로운 디지털 가든을 방문하세요.',
+	'deployGuide.step6.action': '내 사이트 열기',
 };
 
 export default ko;

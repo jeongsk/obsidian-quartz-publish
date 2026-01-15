@@ -8,8 +8,8 @@
  */
 
 @source "../../src/**/*.ts";
-@import "tailwindcss/theme.css" layer(theme) prefix(qp);
-@import "tailwindcss/utilities.css" layer(utilities) prefix(qp);
+@import "tailwindcss/theme.css" prefix(qp);
+@import "tailwindcss/utilities.css" prefix(qp);
 
 /*
  * Obsidian CSS 변수를 TailwindCSS에서 사용할 수 있도록 정의
@@ -787,3 +787,4 @@ textarea.is-invalid:focus {
 .quartz-publish-frontmatter-editor-modal {
 	width: min(600px, 90vw);
 }
+
