@@ -92,14 +92,11 @@ export class ConfirmModal extends Modal {
 					this.close();
 				});
 
-			// CTA 스타일 적용
-			if (this.options.confirmCta) {
-				button.setCta();
-			}
-
-			// 위험 작업 스타일
+			// 위험 작업이면 Warning 스타일, 아니면 CTA 스타일
 			if (this.options.isDangerous) {
 				button.setWarning();
+			} else if (this.options.confirmCta) {
+				button.setCta();
 			}
 		});
 	}
