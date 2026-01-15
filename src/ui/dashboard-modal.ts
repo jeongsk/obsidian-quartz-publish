@@ -848,6 +848,10 @@ export class DashboardModal extends Modal {
 			listEl.createDiv({
 				cls: 'quartz-publish-note-list-empty',
 				text: this.getEmptyMessage(),
+				attr: {
+					role: 'status',
+					'aria-live': 'polite',
+				},
 			});
 			return;
 		}
