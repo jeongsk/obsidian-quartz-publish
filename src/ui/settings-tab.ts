@@ -28,6 +28,7 @@ import { CreateRepoModal } from './create-repo-modal';
 import { DeployGuideModal } from './deploy-guide-modal';
 import { RemoteFileManagerModal } from './remote-file-manager-modal';
 import { t } from '../i18n';
+import { isValidGitHubUrl, normalizeBaseUrl } from '../utils/url';
 
 /**
  * 플러그인 설정 탭
@@ -60,6 +61,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 	// Phase 8 (Feature 008): Publish Filter Section
 	private publishFilterSection: PublishFilterSection | null = null;
+
+	// Quick Links 버튼 참조
+	private quickLinksContainerEl: HTMLElement | null = null;
 
 	constructor(app: App, plugin: QuartzPublishPlugin) {
 		super(app, plugin);
@@ -114,6 +118,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 */
 	private createGitHubSection(containerEl: HTMLElement): void {
 		new Setting(containerEl).setName(t('settings.github.title')).setHeading();
+
+		// 바로가기 버튼 그룹
+		this.createQuickLinksSection(containerEl);
 
 		// GitHub Token 입력
 		new Setting(containerEl)
@@ -237,6 +244,58 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			contentPath: contentPath || 'content',
 		});
 		modal.open();
+	}
+
+	/**
+	 * 바로가기 버튼 섹션 생성
+	 */
+	private createQuickLinksSection(containerEl: HTMLElement): void {
+		this.quickLinksContainerEl = containerEl.createDiv({
+			cls: 'qp:flex qp:gap-2 qp:mb-4',
+		});
+		this.renderQuickLinksButtons();
+	}
+
+	/**
+	 * 바로가기 버튼 렌더링
+	 */
+	private renderQuickLinksButtons(): void {
+		if (!this.quickLinksContainerEl) return;
+
+		this.quickLinksContainerEl.empty();
+
+		const { repoUrl, quartzSiteConfig } = this.plugin.settings;
+		const baseUrl = quartzSiteConfig?.baseUrl;
+
+		// GitHub 저장소 버튼
+		const githubButton = this.quickLinksContainerEl.createEl('button', {
+			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-[--background-modifier-hover] qp:text-[--text-normal] hover:qp:bg-[--background-modifier-active-hover]',
+		});
+		githubButton.createSpan({ text: t('settings.quickLinks.github') });
+
+		if (!repoUrl || !isValidGitHubUrl(repoUrl)) {
+			githubButton.addClass('qp:opacity-50', 'qp:cursor-not-allowed');
+			githubButton.disabled = true;
+		} else {
+			githubButton.addEventListener('click', () => {
+				window.open(repoUrl, '_blank');
+			});
+		}
+
+		// 배포 사이트 버튼
+		const siteButton = this.quickLinksContainerEl.createEl('button', {
+			cls: 'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-[--background-modifier-hover] qp:text-[--text-normal] hover:qp:bg-[--background-modifier-active-hover]',
+		});
+		siteButton.createSpan({ text: t('settings.quickLinks.site') });
+
+		if (!baseUrl) {
+			siteButton.addClass('qp:opacity-50', 'qp:cursor-not-allowed');
+			siteButton.disabled = true;
+		} else {
+			siteButton.addEventListener('click', () => {
+				window.open(normalizeBaseUrl(baseUrl), '_blank');
+			});
+		}
 	}
 
 	/**
@@ -567,6 +626,13 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.pendingChangesManager = new PendingChangesManager();
 		this.pendingChangesManager.initialize(siteConfig, sha);
+
+		// quartzSiteConfig 캐시 저장
+		this.plugin.settings.quartzSiteConfig = siteConfig;
+		this.plugin.saveSettings();
+
+		// 바로가기 버튼 업데이트 (baseUrl이 로드되었으므로)
+		this.renderQuickLinksButtons();
 
 		// Advanced Config 컨테이너
 		this.advancedConfigContainerEl = this.quartzSettingsContainerEl.createDiv({

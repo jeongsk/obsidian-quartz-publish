@@ -7,6 +7,7 @@ import { StatusService } from './services/status';
 import { NetworkService } from './services/network';
 import { DashboardModal } from './ui/dashboard-modal';
 import { initI18n, t } from './i18n';
+import { isValidGitHubUrl, normalizeBaseUrl } from './utils/url';
 
 /**
  * Quartz Publish Plugin
@@ -61,6 +62,34 @@ export default class QuartzPublishPlugin extends Plugin {
 			name: t('command.openDashboard'),
 			callback: () => {
 				this.openDashboard();
+			},
+		});
+
+		// 커맨드 등록: GitHub 저장소 열기
+		this.addCommand({
+			id: 'open-github-repo',
+			name: t('command.openGitHubRepo'),
+			callback: () => {
+				const repoUrl = this.settings.repoUrl;
+				if (repoUrl && isValidGitHubUrl(repoUrl)) {
+					window.open(repoUrl, '_blank');
+				} else {
+					new Notice(t('notice.noGitHubRepo'));
+				}
+			},
+		});
+
+		// 커맨드 등록: 배포 사이트 열기
+		this.addCommand({
+			id: 'open-deployed-site',
+			name: t('command.openDeployedSite'),
+			callback: () => {
+				const baseUrl = this.settings.quartzSiteConfig?.baseUrl;
+				if (baseUrl) {
+					window.open(normalizeBaseUrl(baseUrl), '_blank');
+				} else {
+					new Notice(t('notice.noBaseUrl'));
+				}
 			},
 		});
 
