@@ -311,13 +311,13 @@ export class ContentTransformer {
 
 	/**
 	 * 위키 링크 변환
-	 * - 발행된 노트: [[note]] → [note](note.md)
-	 * - 발행되지 않은 노트: [[note]] → note (링크 제거)
+	 * - 위키링크 형식 유지 (Quartz 호환)
+	 * - 파일이 존재하면 파일명으로 정규화
 	 */
 	private transformWikiLinks(
 		content: string,
 		sourcePath: string,
-		publishedNotes: Set<string>
+		_publishedNotes: Set<string>
 	): string {
 		// [[note|alias]] 또는 [[note]] 패턴
 		const wikiLinkRegex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
@@ -327,22 +327,19 @@ export class ContentTransformer {
 
 			// Obsidian API를 사용하여 링크 대상 파일 찾기
 			const targetFile = this.metadataCache.getFirstLinkpathDest(linkTarget, sourcePath);
-			
-			// 파일이 존재하면 해당 파일의 경로 사용, 없으면 원본 타겟 사용
-			const targetPath = targetFile ? targetFile.path : linkTarget;
-			const normalizedTarget = this.normalizeNotePath(targetPath);
 
-			// 발행된 노트인지 확인
-			if (publishedNotes.has(normalizedTarget)) {
-				// 마크다운 링크로 변환
-				const linkPath = normalizedTarget.endsWith('.md')
-					? normalizedTarget
-					: `${normalizedTarget}.md`;
-				return `[${displayText}](${linkPath})`;
+			// 파일이 존재하면 파일명으로 정규화된 위키링크 반환
+			if (targetFile) {
+				const basename = targetFile.basename; // 확장자 제외한 파일명
+				// 별칭이 있거나 링크 대상과 파일명이 다른 경우
+				if (alias || linkTarget !== basename) {
+					return `[[${basename}|${displayText}]]`;
+				}
+				return `[[${basename}]]`;
 			}
 
-			// 발행되지 않은 노트는 텍스트만 유지
-			return displayText;
+			// 파일을 찾지 못한 경우 원본 위키링크 유지
+			return match;
 		});
 	}
 

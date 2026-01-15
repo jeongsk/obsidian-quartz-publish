@@ -19,7 +19,7 @@ describe('ContentTransformer', () => {
 	});
 
 	describe('transformWikiLinks', () => {
-		it('should strip links to notes that are NOT in publishedNotes', () => {
+		it('should keep wikilinks when file is not found', () => {
 			const file = vault._addFile('folder/Note A.md', 'Link to [[Note B]]');
 			const publishedNotes = new Set<string>();
 
@@ -29,15 +29,15 @@ describe('ContentTransformer', () => {
 				publishedNotes
 			);
 
-			expect(result.content).toBe('Link to Note B');
+			expect(result.content).toBe('Link to [[Note B]]');
 		});
 
-		it('should transform links to notes that ARE in publishedNotes (exact match)', () => {
+		it('should keep wikilink format when file exists (exact match)', () => {
 			const file = vault._addFile('folder/Note A.md', 'Link to [[Note B]]');
-			const publishedNotes = new Set<string>(['Note B']); 
+			const publishedNotes = new Set<string>(['Note B']);
 
 			const noteB = vault._addFile('Note B.md', 'Content');
-            vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(noteB);
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(noteB);
 
 			const result = transformer.transform(
 				'Link to [[Note B]]',
@@ -45,23 +45,39 @@ describe('ContentTransformer', () => {
 				publishedNotes
 			);
 
-			expect(result.content).toContain('[Note B](Note B.md)');
+			expect(result.content).toContain('[[Note B]]');
 		});
 
-		it('should correctly resolve short links to full paths', () => {
+		it('should normalize wikilink with alias when link target differs from filename', () => {
 			const file = vault._addFile('folder/Note A.md', 'Link to [[Note B]]');
-			const publishedNotes = new Set<string>(['folder/Note B']); 
+			const publishedNotes = new Set<string>(['folder/Note B']);
 			const noteB = vault._addFile('folder/Note B.md', 'Content');
-            
-            vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(noteB);
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(noteB);
 
 			const result = transformer.transform(
 				'Link to [[Note B]]',
 				file as unknown as import('obsidian').TFile,
 				publishedNotes
 			);
-            
-            expect(result.content).toContain('[Note B](folder/Note B.md)');
-        });
+
+			expect(result.content).toContain('[[Note B]]');
+		});
+
+		it('should preserve alias in wikilink', () => {
+			const file = vault._addFile('folder/Note A.md', 'Link to [[Note B|별칭]]');
+			const publishedNotes = new Set<string>(['Note B']);
+			const noteB = vault._addFile('Note B.md', 'Content');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(noteB);
+
+			const result = transformer.transform(
+				'Link to [[Note B|별칭]]',
+				file as unknown as import('obsidian').TFile,
+				publishedNotes
+			);
+
+			expect(result.content).toContain('[[Note B|별칭]]');
+		});
 	});
 });
