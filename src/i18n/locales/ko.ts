@@ -292,6 +292,9 @@ const ko: { [K in TranslationKeys]?: string } = {
 	// Modals - Note Picker
 	'modal.notePicker.placeholder': '예시: 폴더/노트',
 
+	// Modals - Folder Picker
+	'modal.folderPicker.placeholder': '폴더 검색...',
+
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Quartz 저장소 생성',
 	'modal.createRepo.name': '저장소 이름',

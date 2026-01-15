@@ -288,6 +288,9 @@ export default {
 	// Modals - Note Picker
 	'modal.notePicker.placeholder': 'e.g. folder/note',
 
+	// Modals - Folder Picker
+	'modal.folderPicker.placeholder': 'Search folders...',
+
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Create Quartz Repository',
 	'modal.createRepo.name': 'Repository Name',
