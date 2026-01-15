@@ -1,4 +1,4 @@
-import { Modal, Setting, Notice } from 'obsidian';
+import { Modal, Setting, Notice, setIcon } from 'obsidian';
 import type { App } from 'obsidian';
 import { RepositoryCreatorService } from '../services/repository-creator';
 import type { CreatedRepository } from '../types';
@@ -116,8 +116,10 @@ export class CreateRepoModal extends Modal {
 					role: 'alert',
 				},
 			});
+			const warningIcon = warningEl.createSpan({ cls: 'qp:mr-1', attr: { 'aria-hidden': 'true' } });
+			setIcon(warningIcon, 'alert-triangle');
 			warningEl.createSpan({
-				text: '⚠️ ' + t('modal.createRepo.privateWarning')
+				text: t('modal.createRepo.privateWarning')
 			});
 		}
 
@@ -150,10 +152,12 @@ export class CreateRepoModal extends Modal {
 	private renderSuccess() {
 		const { contentEl } = this;
 
-		contentEl.createEl('h2', {
-			text: '✅ ' + t('modal.createRepo.success'),
-			cls: 'qp:text-lg qp:font-semibold qp:mb-4 qp:text-obs-text-success',
+		const successHeading = contentEl.createEl('h2', {
+			cls: 'qp:text-lg qp:font-semibold qp:mb-4 qp:text-obs-text-success qp:flex qp:items-center qp:gap-2',
 		});
+		const successIcon = successHeading.createSpan({ attr: { 'aria-hidden': 'true' } });
+		setIcon(successIcon, 'check-circle-2');
+		successHeading.createSpan({ text: t('modal.createRepo.success') });
 
 		if (this.createdRepository) {
 			const infoEl = contentEl.createDiv({
