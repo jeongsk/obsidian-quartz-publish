@@ -354,3 +354,52 @@ export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 /** GitHub API 기본 URL */
 export const GITHUB_API_BASE_URL = 'https://api.github.com';
+
+// ============================================================================
+// Dashboard Types (Phase 2)
+// ============================================================================
+
+/**
+ * 대시보드 탭 타입
+ */
+export type DashboardTab = 'new' | 'modified' | 'deleted' | 'synced';
+
+/**
+ * 탭 레이블 매핑
+ */
+export const TAB_LABELS: Record<DashboardTab, string> = {
+	new: '신규',
+	modified: '수정됨',
+	deleted: '삭제 필요',
+	synced: '최신',
+};
+
+/**
+ * 대시보드 상태
+ */
+export interface DashboardState {
+	/** 현재 활성 탭 */
+	activeTab: DashboardTab;
+	/** 선택된 파일 경로 목록 */
+	selectedPaths: Set<string>;
+	/** 상태 개요 */
+	statusOverview: StatusOverview | null;
+	/** 로딩 상태 */
+	isLoading: boolean;
+	/** 작업 진행 중 여부 */
+	isOperating: boolean;
+	/** 에러 메시지 */
+	error: string | null;
+}
+
+/**
+ * 대시보드 초기 상태
+ */
+export const INITIAL_DASHBOARD_STATE: DashboardState = {
+	activeTab: 'new',
+	selectedPaths: new Set(),
+	statusOverview: null,
+	isLoading: false,
+	isOperating: false,
+	error: null,
+};

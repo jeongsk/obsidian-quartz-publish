@@ -45,6 +45,8 @@ npm run lint:fix     # 린트 자동 수정
 ## Active Technologies
 - TypeScript 5.9+ + Obsidian API, fetch (built-in) (001-quartz-publish)
 - Obsidian Plugin Data (`data.json`) (001-quartz-publish)
+- TypeScript 5.9+ + Obsidian API (Modal, Notice, TFile, Vault, MetadataCache) (002-note-management)
+- Obsidian Plugin Data (`data.json` via `loadData`/`saveData`) (002-note-management)
 
 ## Recent Changes
 - 001-quartz-publish: Added TypeScript 5.9+ + Obsidian API, fetch (built-in)

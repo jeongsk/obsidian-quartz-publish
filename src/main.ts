@@ -1,8 +1,10 @@
 import { Plugin, TFile, Notice } from 'obsidian';
-import type { PluginSettings, PluginData, PublishRecord } from './types';
+import type { PluginSettings, PluginData, PublishRecord, BatchPublishResult, UnpublishResult } from './types';
 import { DEFAULT_SETTINGS } from './types';
 import { QuartzPublishSettingTab } from './ui/settings-tab';
 import { PublishService } from './services/publish';
+import { StatusService } from './services/status';
+import { DashboardModal } from './ui/dashboard-modal';
 
 /**
  * Quartz Publish Plugin
@@ -12,9 +14,19 @@ import { PublishService } from './services/publish';
 export default class QuartzPublishPlugin extends Plugin {
 	settings!: PluginSettings;
 	publishRecords!: Record<string, PublishRecord>;
+	private statusService!: StatusService;
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
+
+		// StatusService 초기화
+		this.statusService = new StatusService({
+			vault: this.app.vault,
+			metadataCache: this.app.metadataCache,
+			getPublishRecords: () => this.publishRecords,
+			contentPath: this.settings.contentPath,
+			staticPath: this.settings.staticPath,
+		});
 
 		// 설정 탭 등록
 		this.addSettingTab(new QuartzPublishSettingTab(this.app, this));
@@ -32,6 +44,15 @@ export default class QuartzPublishPlugin extends Plugin {
 					return true;
 				}
 				return false;
+			},
+		});
+
+		// 커맨드 등록: 대시보드 열기
+		this.addCommand({
+			id: 'open-publish-dashboard',
+			name: 'Open Publish Dashboard',
+			callback: () => {
+				this.openDashboard();
 			},
 		});
 
@@ -132,5 +153,84 @@ export default class QuartzPublishPlugin extends Plugin {
 			new Notice(`Publish error: ${message}`);
 			console.error('[QuartzPublish] Publish error:', error);
 		}
+	}
+
+	/**
+	 * 대시보드 모달 열기
+	 */
+	openDashboard(): void {
+		new DashboardModal(this.app, {
+			onPublish: async (files) => this.batchPublish(files),
+			onDelete: async (files) => this.batchUnpublish(files),
+			onLoadStatus: async (onProgress) =>
+				this.statusService.calculateStatusOverview(onProgress),
+		}).open();
+	}
+
+	/**
+	 * 여러 노트 일괄 발행
+	 */
+	async batchPublish(files: TFile[]): Promise<BatchPublishResult> {
+		const results: BatchPublishResult = {
+			total: files.length,
+			succeeded: 0,
+			failed: 0,
+			results: [],
+		};
+
+		if (!this.settings.githubToken || !this.settings.repoUrl) {
+			new Notice('Please configure GitHub settings first');
+			return results;
+		}
+
+		const publishService = new PublishService(
+			this.app.vault,
+			this.app.metadataCache,
+			this.settings,
+			this.publishRecords,
+			this.updatePublishRecord.bind(this),
+			this.removePublishRecord.bind(this)
+		);
+
+		return publishService.publishNotes(files);
+	}
+
+	/**
+	 * 여러 노트 일괄 발행 취소 (삭제)
+	 */
+	async batchUnpublish(files: TFile[]): Promise<UnpublishResult[]> {
+		const results: UnpublishResult[] = [];
+
+		if (!this.settings.githubToken || !this.settings.repoUrl) {
+			new Notice('Please configure GitHub settings first');
+			return results;
+		}
+
+		const publishService = new PublishService(
+			this.app.vault,
+			this.app.metadataCache,
+			this.settings,
+			this.publishRecords,
+			this.updatePublishRecord.bind(this),
+			this.removePublishRecord.bind(this)
+		);
+
+		for (const file of files) {
+			try {
+				const result = await publishService.unpublishNote(file);
+				results.push(result);
+
+				// Rate limiting (500ms delay)
+				await new Promise((resolve) => setTimeout(resolve, 500));
+			} catch (error) {
+				results.push({
+					success: false,
+					file,
+					error: error instanceof Error ? error.message : 'Unknown error',
+				});
+			}
+		}
+
+		return results;
 	}
 }
