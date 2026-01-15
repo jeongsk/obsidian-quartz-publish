@@ -57,6 +57,10 @@ slug: custom-url-path
 ---
 ```
 
+## 문서
+
+- [Quartz 날짜 처리 방식](docs/quartz-date-handling.md) - Quartz에서 작성일/수정일을 처리하는 방법
+
 ## 개발
 
 ### 요구 사항
