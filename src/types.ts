@@ -822,3 +822,113 @@ export const INITIAL_DASHBOARD_STATE: DashboardState = {
 	isOperating: false,
 	error: null,
 };
+
+// ============================================================================
+// Remote File Management Types (Phase 9)
+// ============================================================================
+
+/**
+ * 원격 저장소에 발행된 파일 정보
+ */
+export interface PublishedFile {
+	/** 파일 경로 (content/posts/hello.md) */
+	path: string;
+	/** 파일명 (hello.md) */
+	name: string;
+	/** GitHub blob SHA */
+	sha: string;
+	/** 파일 크기 (bytes) */
+	size: number;
+	/** 항목 타입 */
+	type: 'file' | 'dir';
+	/** GitHub 웹 URL */
+	htmlUrl: string;
+	/** 다운로드 URL */
+	downloadUrl: string | null;
+}
+
+/**
+ * 중복 파일 그룹 (동일 파일명이 여러 경로에 존재)
+ */
+export interface DuplicateGroup {
+	/** 중복 파일명 */
+	fileName: string;
+	/** 해당 파일명을 가진 파일 목록 */
+	files: PublishedFile[];
+	/** 중복 파일 수 */
+	count: number;
+}
+
+/**
+ * 파일 삭제 결과
+ */
+export interface DeleteResult {
+	/** 삭제 성공한 파일 목록 */
+	succeeded: PublishedFile[];
+	/** 삭제 실패한 파일 목록 및 오류 */
+	failed: Array<{ file: PublishedFile; error: string }>;
+	/** 전체 성공 여부 */
+	allSucceeded: boolean;
+	/** 삭제 소요 시간 (ms) */
+	duration: number;
+}
+
+/**
+ * 원격 파일 관리자 설정
+ */
+export interface RemoteFileManagerConfig {
+	/** 콘텐츠 경로 (기본값: 'content') */
+	contentPath: string;
+	/** 지원 파일 확장자 */
+	fileExtensions: string[];
+	/** 일괄 삭제 최대 파일 수 (기본값: 50) */
+	maxBatchDelete: number;
+	/** 삭제 요청 간 딜레이 (ms, 기본값: 100) */
+	deleteDelayMs: number;
+}
+
+/**
+ * 기본 원격 파일 관리자 설정
+ */
+export const DEFAULT_REMOTE_FILE_MANAGER_CONFIG: RemoteFileManagerConfig = {
+	contentPath: 'content',
+	fileExtensions: ['.md'],
+	maxBatchDelete: 50,
+	deleteDelayMs: 100,
+};
+
+/**
+ * 파일 목록 상태 (UI 상태 관리용)
+ */
+export interface FileListState {
+	/** 전체 파일 목록 */
+	files: PublishedFile[];
+	/** 선택된 파일 경로 집합 */
+	selectedFiles: Set<string>;
+	/** 검색어 */
+	searchQuery: string;
+	/** 필터링된 파일 목록 */
+	filteredFiles: PublishedFile[];
+	/** 중복 파일 그룹 */
+	duplicateGroups: DuplicateGroup[];
+	/** 로딩 상태 */
+	isLoading: boolean;
+	/** 삭제 진행 중 여부 */
+	isDeleting: boolean;
+	/** 오류 메시지 */
+	error: string | null;
+}
+
+/**
+ * 파일 목록 초기 상태
+ */
+export const INITIAL_FILE_LIST_STATE: FileListState = {
+	files: [],
+	selectedFiles: new Set(),
+	searchQuery: '',
+	filteredFiles: [],
+	duplicateGroups: [],
+	isLoading: true,
+	isDeleting: false,
+	error: null,
+};
