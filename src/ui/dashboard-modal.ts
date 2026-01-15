@@ -508,9 +508,21 @@ export class DashboardModal extends Modal {
 	 */
 	private renderLoading(): void {
 		const { contentEl } = this;
-		const loadingEl = contentEl.createDiv({ cls: 'quartz-publish-loading' });
+		const loadingEl = contentEl.createDiv({
+			cls: 'quartz-publish-loading',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+				'aria-busy': 'true',
+			},
+		});
 
-		loadingEl.createDiv({ cls: 'quartz-publish-loading-spinner' });
+		loadingEl.createDiv({
+			cls: 'quartz-publish-loading-spinner',
+			attr: {
+				'aria-hidden': 'true',
+			},
+		});
 		loadingEl.createDiv({
 			cls: 'quartz-publish-loading-text',
 			text: t('dashboard.status.loading'),

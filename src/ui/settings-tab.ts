@@ -1111,8 +1111,18 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.upgradeContainerEl.empty();
 		const loadingContainer = this.upgradeContainerEl.createDiv({
 			cls: 'quartz-publish-version-loading',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+				'aria-busy': 'true',
+			},
 		});
-		loadingContainer.createDiv({ cls: 'quartz-publish-loading-spinner' });
+		loadingContainer.createDiv({
+			cls: 'quartz-publish-loading-spinner',
+			attr: {
+				'aria-hidden': 'true',
+			},
+		});
 		loadingContainer.createEl('span', {
 			text: t('upgrade.checking'),
 			cls: 'quartz-publish-version-loading-text',
