@@ -56,6 +56,21 @@ export default class QuartzPublishPlugin extends Plugin {
 			},
 		});
 
+		// 리본 아이콘 등록: 대시보드 열기
+		this.addRibbonIcon('layout-dashboard', 'Open Publish Dashboard', () => {
+			this.openDashboard();
+		});
+
+		// 리본 아이콘 등록: 현재 노트 발행
+		this.addRibbonIcon('upload', 'Publish current note to Quartz', () => {
+			const file = this.app.workspace.getActiveFile();
+			if (file && file.extension === 'md') {
+				this.publishNote(file);
+			} else {
+				new Notice('No markdown file is active');
+			}
+		});
+
 		// 파일 메뉴: Publish to Quartz
 		this.registerEvent(
 			this.app.workspace.on('file-menu', (menu, file) => {
