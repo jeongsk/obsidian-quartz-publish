@@ -3,6 +3,10 @@
 		"obsidian-developer-docs Docs": {
 			"type": "sse",
 			"url": "https://gitmcp.io/obsidianmd/obsidian-developer-docs"
+		},
+		"linear-server": {
+			"type": "http",
+			"url": "https://mcp.linear.app/mcp"
 		}
 	}
 }

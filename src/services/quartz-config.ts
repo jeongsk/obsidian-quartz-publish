@@ -7,9 +7,12 @@
 import type { GitHubService } from './github';
 import {
 	DEFAULT_QUARTZ_SITE_CONFIG,
+	DEFAULT_COMMENTS_CONFIG,
 	type QuartzConfigFile,
 	type QuartzSiteConfig,
 	type AnalyticsConfig,
+	type CommentsConfig,
+	type GiscusConfig,
 	type ConfigUpdateResult,
 } from '../types';
 
@@ -45,6 +48,8 @@ export interface ExtendedParsedConfig extends ParsedQuartzConfig {
 	defaultDateType: 'created' | 'modified' | 'published';
 	/** 애널리틱스 설정 */
 	analytics: AnalyticsConfig;
+	/** 댓글 설정 */
+	comments: CommentsConfig;
 }
 
 /**
@@ -438,9 +443,67 @@ export class QuartzConfigService {
 		return 'created';
 	}
 
-	/**
-	 * analytics 설정 추출
-	 */
+	private parseComments(content: string): CommentsConfig {
+		const commentsMatch = content.match(/Component\.Comments\s*\(\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}\s*\)/s);
+
+		if (!commentsMatch) {
+			return DEFAULT_COMMENTS_CONFIG;
+		}
+
+		const commentsBlock = commentsMatch[1];
+
+		const providerMatch = commentsBlock.match(/provider\s*:\s*["'](\w+)["']/);
+		const provider = providerMatch?.[1] ?? 'null';
+
+		if (provider !== 'giscus') {
+			return DEFAULT_COMMENTS_CONFIG;
+		}
+
+		const optionsMatch = commentsBlock.match(/options\s*:\s*\{([^}]*)\}/s);
+		if (!optionsMatch) {
+			return DEFAULT_COMMENTS_CONFIG;
+		}
+
+		const optionsBlock = optionsMatch[1];
+
+		const repo = this.extractStringValue(optionsBlock, 'repo') ?? '';
+		const repoId = this.extractStringValue(optionsBlock, 'repoId') ?? '';
+		const category = this.extractStringValue(optionsBlock, 'category') ?? '';
+		const categoryId = this.extractStringValue(optionsBlock, 'categoryId') ?? '';
+
+		if (!repo || !repoId || !category || !categoryId) {
+			return DEFAULT_COMMENTS_CONFIG;
+		}
+
+		const giscusConfig: GiscusConfig = {
+			repo: repo as `${string}/${string}`,
+			repoId,
+			category,
+			categoryId,
+			themeUrl: this.extractStringValue(optionsBlock, 'themeUrl'),
+			lightTheme: this.extractStringValue(optionsBlock, 'lightTheme'),
+			darkTheme: this.extractStringValue(optionsBlock, 'darkTheme'),
+			mapping: this.extractStringValue(optionsBlock, 'mapping') as GiscusConfig['mapping'],
+			strict: this.extractBooleanValue(optionsBlock, 'strict'),
+			reactionsEnabled: this.extractBooleanValue(optionsBlock, 'reactionsEnabled'),
+			inputPosition: this.extractStringValue(optionsBlock, 'inputPosition') as GiscusConfig['inputPosition'],
+			lang: this.extractStringValue(optionsBlock, 'lang'),
+		};
+
+		return { provider: 'giscus', options: giscusConfig };
+	}
+
+	private extractStringValue(block: string, key: string): string | undefined {
+		const match = block.match(new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`));
+		return match?.[1];
+	}
+
+	private extractBooleanValue(block: string, key: string): boolean | undefined {
+		const match = block.match(new RegExp(`${key}\\s*:\\s*(true|false)`));
+		if (!match) return undefined;
+		return match[1] === 'true';
+	}
+
 	private parseAnalytics(content: string): AnalyticsConfig {
 		// analytics: { provider: "...", ... } 블록 찾기
 		const analyticsMatch = content.match(
@@ -520,6 +583,7 @@ export class QuartzConfigService {
 			enablePopovers: this.parseEnablePopovers(content),
 			defaultDateType: this.parseDefaultDateType(content),
 			analytics: this.parseAnalytics(content),
+			comments: this.parseComments(content),
 		};
 	}
 
@@ -535,6 +599,7 @@ export class QuartzConfigService {
 			enablePopovers: parsed.enablePopovers,
 			defaultDateType: parsed.defaultDateType,
 			analytics: parsed.analytics,
+			comments: parsed.comments,
 			explicitPublish: parsed.explicitPublish,
 			ignorePatterns: parsed.ignorePatterns,
 			urlStrategy: parsed.urlStrategy,
@@ -582,6 +647,9 @@ export class QuartzConfigService {
 
 		// analytics 업데이트
 		content = this.updateAnalytics(content, config.analytics);
+
+		// comments 업데이트
+		content = this.updateComments(content, config.comments);
 
 		// 기존 설정 업데이트 (ExplicitPublish)
 		const explicitResult = this.setExplicitPublish(
@@ -675,6 +743,49 @@ export class QuartzConfigService {
 		const analyticsPattern = /analytics\s*:\s*\{[^}]*\}/s;
 		if (analyticsPattern.test(content)) {
 			return content.replace(analyticsPattern, analyticsStr);
+		}
+
+		return content;
+	}
+
+	private updateComments(content: string, comments: CommentsConfig): string {
+		if (comments.provider === 'null') {
+			const commentsPattern = /Component\.Comments\s*\([^)]*(?:\([^)]*\)[^)]*)*\)\s*,?\s*/s;
+			return content.replace(commentsPattern, '');
+		}
+
+		const opts = comments.options;
+		const optionalFields: string[] = [];
+
+		if (opts.themeUrl) optionalFields.push(`themeUrl: "${opts.themeUrl}"`);
+		if (opts.lightTheme) optionalFields.push(`lightTheme: "${opts.lightTheme}"`);
+		if (opts.darkTheme) optionalFields.push(`darkTheme: "${opts.darkTheme}"`);
+		if (opts.mapping) optionalFields.push(`mapping: "${opts.mapping}"`);
+		if (opts.strict !== undefined) optionalFields.push(`strict: ${opts.strict}`);
+		if (opts.reactionsEnabled !== undefined) optionalFields.push(`reactionsEnabled: ${opts.reactionsEnabled}`);
+		if (opts.inputPosition) optionalFields.push(`inputPosition: "${opts.inputPosition}"`);
+		if (opts.lang) optionalFields.push(`lang: "${opts.lang}"`);
+
+		const optionalStr = optionalFields.length > 0 ? `\n        ${optionalFields.join(',\n        ')},` : '';
+
+		const commentsStr = `Component.Comments({
+      provider: 'giscus',
+      options: {
+        repo: '${opts.repo}',
+        repoId: '${opts.repoId}',
+        category: '${opts.category}',
+        categoryId: '${opts.categoryId}',${optionalStr}
+      },
+    })`;
+
+		const existingPattern = /Component\.Comments\s*\([^)]*(?:\([^)]*\)[^)]*)*\)/s;
+		if (existingPattern.test(content)) {
+			return content.replace(existingPattern, commentsStr);
+		}
+
+		const afterBodyPattern = /(afterBody\s*:\s*\[)/;
+		if (afterBodyPattern.test(content)) {
+			return content.replace(afterBodyPattern, `$1\n    ${commentsStr},`);
 		}
 
 		return content;

@@ -427,6 +427,58 @@ export type AnalyticsConfig =
 	| { provider: 'plausible'; host?: string }
 	| { provider: 'umami'; websiteId: string; host: string };
 
+// ============================================================================
+// Comments Config (Giscus)
+// ============================================================================
+
+/**
+ * Giscus 댓글 설정
+ * @see https://quartz.jzhao.xyz/features/comments
+ */
+export interface GiscusConfig {
+	/** GitHub 저장소 (owner/repo 형식) */
+	repo: `${string}/${string}`;
+	/** 저장소 ID (data-repo-id) */
+	repoId: string;
+	/** Discussion 카테고리 이름 */
+	category: string;
+	/** 카테고리 ID (data-category-id) */
+	categoryId: string;
+
+	// === Optional Settings ===
+	/** 커스텀 테마 URL (기본: https://${cfg.baseUrl}/static/giscus) */
+	themeUrl?: string;
+	/** 라이트 테마 파일명 (기본: 'light') */
+	lightTheme?: string;
+	/** 다크 테마 파일명 (기본: 'dark') */
+	darkTheme?: string;
+	/** 페이지-Discussion 매핑 방식 (기본: 'url') */
+	mapping?: 'url' | 'title' | 'og:title' | 'specific' | 'number' | 'pathname';
+	/** 엄격한 제목 매칭 (기본: true) */
+	strict?: boolean;
+	/** 메인 포스트 리액션 활성화 (기본: true) */
+	reactionsEnabled?: boolean;
+	/** 댓글 입력창 위치 (기본: 'bottom') */
+	inputPosition?: 'top' | 'bottom';
+	/** 언어 설정 (기본: 'en') */
+	lang?: string;
+}
+
+/**
+ * 댓글 설정 타입 (Provider별 유니온)
+ * 현재는 Giscus만 지원
+ */
+export type CommentsConfig =
+	| { provider: 'giscus'; options: GiscusConfig }
+	| { provider: 'null' };
+
+/**
+ * 기본 댓글 설정값
+ */
+export const DEFAULT_COMMENTS_CONFIG: CommentsConfig = {
+	provider: 'null',
+};
+
 /**
  * Quartz 사이트 전체 설정 (고급 설정 포함)
  */
@@ -451,6 +503,10 @@ export interface QuartzSiteConfig {
 	/** 애널리틱스 설정 */
 	analytics: AnalyticsConfig;
 
+	// === Comments ===
+	/** 댓글 설정 */
+	comments: CommentsConfig;
+
 	// === Publishing (기존 설정) ===
 	/** ExplicitPublish 필터 활성화 여부 */
 	explicitPublish: boolean;
@@ -471,6 +527,7 @@ export const DEFAULT_QUARTZ_SITE_CONFIG: QuartzSiteConfig = {
 	enablePopovers: true,
 	defaultDateType: 'created',
 	analytics: { provider: 'null' },
+	comments: { provider: 'null' },
 	explicitPublish: false,
 	ignorePatterns: ['private', 'templates'],
 	urlStrategy: 'shortest',

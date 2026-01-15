@@ -18,6 +18,7 @@ import { DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS, DEFAULT_VA
 import { SiteInfoSection } from './sections/site-info-section';
 import { BehaviorSection } from './sections/behavior-section';
 import { AnalyticsSection } from './sections/analytics-section';
+import { CommentsSection } from './sections/comments-section';
 import { PublishingSection } from './sections/publishing-section';
 import { PublishFilterSection } from './sections/publish-filter-section';
 import { ApplyButton } from './components/apply-button';
@@ -55,6 +56,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	// Phase 5-7: Additional Sections (T043-T057)
 	private behaviorSection: BehaviorSection | null = null;
 	private analyticsSection: AnalyticsSection | null = null;
+	private commentsSection: CommentsSection | null = null;
 
 	// Phase 8: Publishing Section (T058-T063)
 	private publishingSection: PublishingSection | null = null;
@@ -90,6 +92,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.siteInfoSection = null;
 		this.behaviorSection = null;
 		this.analyticsSection = null;
+		this.commentsSection = null;
 		this.publishingSection = null;
 		this.publishFilterSection = null;
 		this.applyButton = null;
@@ -797,6 +800,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			},
 		});
 
+		// Comments Section 렌더링
+		this.commentsSection = new CommentsSection(this.advancedConfigContainerEl, {
+			config: extendedConfig.comments,
+			onChange: (field, value) => {
+				this.handleAdvancedConfigChange(field, value);
+			},
+		});
+
 		// Publishing Section 렌더링 (T058-T063)
 		this.publishingSection = new PublishingSection(this.advancedConfigContainerEl, {
 			config: {
@@ -876,6 +887,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		});
 
 		this.analyticsSection?.updateValues(originalConfig.analytics);
+
+		this.commentsSection?.updateValues(originalConfig.comments);
 
 		this.publishingSection?.updateValues({
 			explicitPublish: originalConfig.explicitPublish,
