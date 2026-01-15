@@ -18,8 +18,10 @@ export type ApplyButtonState = 'disabled' | 'enabled' | 'loading';
  * ApplyButton 옵션
  */
 export interface ApplyButtonOptions {
-	/** 클릭 핸들러 */
+	/** 적용 버튼 클릭 핸들러 */
 	onClick: () => Promise<void>;
+	/** Refresh 버튼 클릭 핸들러 */
+	onRefresh?: () => Promise<void>;
 	/** 초기 상태 */
 	initialState?: ApplyButtonState;
 }
@@ -40,21 +42,26 @@ export class ApplyButton {
 		this.render();
 	}
 
-	/**
-	 * 버튼 렌더링
-	 */
 	private render(): void {
-		// 버튼 컨테이너
 		const wrapper = this.containerEl.createDiv({
-			cls: 'quartz-publish-apply-button-wrapper qp:mt-4 qp:flex qp:justify-end',
+			cls: 'quartz-publish-apply-button-wrapper qp:mt-4 qp:mb-6 qp:flex qp:justify-end qp:gap-2',
 		});
 
-		// 버튼 생성
+		if (this.options.onRefresh) {
+			const refreshBtn = wrapper.createEl('button', {
+				cls: 'quartz-publish-refresh-button',
+			});
+			refreshBtn.createSpan({ text: 'Refresh' });
+			refreshBtn.setAttribute('aria-label', 'Reload settings from GitHub');
+			refreshBtn.addEventListener('click', async () => {
+				await this.options.onRefresh?.();
+			});
+		}
+
 		this.buttonEl = wrapper.createEl('button', {
 			cls: 'mod-cta quartz-publish-apply-button',
 		});
 
-		// 아이콘 + 텍스트
 		const iconSpan = this.buttonEl.createSpan({
 			cls: 'quartz-publish-apply-button-icon qp:mr-2',
 		});
@@ -65,7 +72,6 @@ export class ApplyButton {
 			cls: 'quartz-publish-apply-button-text',
 		});
 
-		// 클릭 핸들러
 		this.buttonEl.addEventListener('click', async () => {
 			if (this.state === 'disabled' || this.state === 'loading') {
 				return;
@@ -73,7 +79,6 @@ export class ApplyButton {
 			await this.options.onClick();
 		});
 
-		// 초기 상태 적용
 		this.updateState(this.state);
 	}
 

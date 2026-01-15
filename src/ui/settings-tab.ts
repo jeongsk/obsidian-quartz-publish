@@ -13,7 +13,6 @@ import {
 } from '../services/quartz-config';
 import { QuartzUpgradeService } from '../services/quartz-upgrade';
 import { PendingChangesManager } from '../services/pending-changes';
-import { validateGlobPattern } from '../utils/glob-validator';
 import type { QuartzVersionInfo, QuartzUpgradeProgress, QuartzSiteConfig } from '../types';
 import { DEFAULT_AUTO_DATE_SETTINGS } from '../types';
 import { SiteInfoSection } from './sections/site-info-section';
@@ -495,31 +494,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.quartzSettingsContainerEl.empty();
 
-		// Advanced Config 섹션 (Phase 4: Site Information - T031, T032)
 		this.renderAdvancedConfigSection(config);
 
-		// ExplicitPublish 토글 (US1)
-		this.renderExplicitPublishToggle(config);
-
-		// 제외 패턴 설정 (US2)
-		this.renderIgnorePatternsSettings(config);
-
-		// URL 전략 설정 (US3)
-		this.renderUrlStrategySettings(config);
-
-		// Quartz 업그레이드 섹션 (US4)
 		this.renderUpgradeSection();
-
-		// 새로고침 버튼
-		new Setting(this.quartzSettingsContainerEl).addButton((button) =>
-			button
-				.setButtonText('Refresh')
-				.setTooltip('Reload settings from GitHub')
-				.onClick(async () => {
-					this.quartzConfigService?.invalidateCache();
-					await this.loadQuartzSettings();
-				})
-		);
 	}
 
 	/**
@@ -597,10 +574,13 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			},
 		});
 
-		// Apply Button (T033-T034, T042)
 		this.applyButton = new ApplyButton(this.advancedConfigContainerEl, {
 			onClick: async () => {
 				await this.handleApplyChanges();
+			},
+			onRefresh: async () => {
+				this.quartzConfigService?.invalidateCache();
+				await this.loadQuartzSettings();
 			},
 			initialState: 'disabled',
 		});
@@ -768,343 +748,35 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		}
 	}
 
-	/**
-	 * ExplicitPublish 토글 렌더링 (User Story 1)
-	 */
-	private renderExplicitPublishToggle(config: ParsedQuartzConfig): void {
-		if (!this.quartzSettingsContainerEl) return;
-
-		const setting = new Setting(this.quartzSettingsContainerEl)
-			.setName('Selective Publishing')
-			.setDesc(
-				'Only publish notes with "publish: true" in frontmatter. When disabled, all notes except drafts are published.'
-			)
-			.addToggle((toggle) => {
-				toggle.setValue(config.explicitPublish).onChange(async (value) => {
-					await this.updateExplicitPublish(value, toggle.toggleEl);
-				});
-			});
-
-		// 상태 표시 영역
-		setting.descEl.createDiv({
-			cls: 'quartz-publish-setting-status',
-		});
-	}
-
-	/**
-	 * ExplicitPublish 설정 업데이트
-	 */
-	private async updateExplicitPublish(
-		enabled: boolean,
-		toggleEl: HTMLElement
-	): Promise<void> {
-		if (!this.quartzConfigService) {
-			new Notice('Config service not initialized');
-			return;
-		}
-
-		// 로딩 상태 표시
-		toggleEl.addClass('is-loading');
-		const statusEl = toggleEl
-			.closest('.setting-item')
-			?.querySelector('.quartz-publish-setting-status');
-
-		if (statusEl) {
-			statusEl.textContent = 'Saving...';
-			statusEl.className = 'quartz-publish-setting-status qp:text-obs-text-muted';
-		}
-
-		try {
-			// 현재 설정 가져오기
-			const configFile = await this.quartzConfigService.fetchQuartzConfig(true);
-			if (!configFile) {
-				throw new Error('Failed to fetch config');
-			}
-
-			// 설정 변경
-			const result = this.quartzConfigService.setExplicitPublish(
-				configFile.content,
-				enabled
-			);
-			if (!result.success || !result.newContent) {
-				throw new Error(result.error || 'Failed to update config');
-			}
-
-			// GitHub에 커밋
-			const commitMessage = enabled
-				? 'Enable ExplicitPublish filter'
-				: 'Disable ExplicitPublish filter (use RemoveDrafts)';
-
-			const commitResult = await this.quartzConfigService.commitConfigChange(
-				result.newContent,
-				commitMessage
-			);
-
-			if (!commitResult.success) {
-				throw new Error(commitResult.error || 'Failed to commit');
-			}
-
-			// 성공 표시
-			if (statusEl) {
-				statusEl.textContent = 'Saved!';
-				statusEl.className = 'quartz-publish-setting-status qp:text-obs-text-success';
-				setTimeout(() => {
-					statusEl.textContent = '';
-				}, 2000);
-			}
-
-			new Notice('Setting saved successfully');
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-
-			if (statusEl) {
-				statusEl.textContent = `Error: ${message}`;
-				statusEl.className = 'quartz-publish-setting-status qp:text-obs-text-error';
-			}
-
-			new Notice(`Failed to save: ${message}`);
-		} finally {
-			toggleEl.removeClass('is-loading');
-		}
-	}
-
-	/**
-	 * 제외 패턴 설정 렌더링 (User Story 2)
-	 */
-	private renderIgnorePatternsSettings(config: ParsedQuartzConfig): void {
-		if (!this.quartzSettingsContainerEl) return;
-
-		// 섹션 헤더
-		new Setting(this.quartzSettingsContainerEl)
-			.setName('Ignore Patterns')
-			.setDesc('Glob patterns for files/folders to exclude from publishing');
-
-		// 현재 패턴 목록
-		const patternsContainer = this.quartzSettingsContainerEl.createDiv({
-			cls: 'quartz-publish-patterns-list',
-		});
-
-		const patterns = [...config.ignorePatterns];
-
-		const renderPatternsList = () => {
-			patternsContainer.empty();
-
-			if (patterns.length === 0) {
-				patternsContainer.createEl('p', {
-					text: 'No patterns configured',
-					cls: 'qp:text-obs-text-muted qp:text-sm',
-				});
-			} else {
-				patterns.forEach((pattern, index) => {
-					const patternEl = patternsContainer.createDiv({
-						cls: 'quartz-publish-pattern-item qp:flex qp:items-center qp:gap-2 qp:mb-1',
-					});
-
-					patternEl.createEl('code', {
-						text: pattern,
-						cls: 'qp:flex-1',
-					});
-
-					const removeBtn = patternEl.createEl('button', {
-						cls: 'qp:text-obs-text-error',
-						attr: { 'aria-label': 'Remove pattern' },
-					});
-					removeBtn.textContent = '×';
-					removeBtn.onclick = async () => {
-						patterns.splice(index, 1);
-						renderPatternsList();
-						await this.updateIgnorePatterns(patterns);
-					};
-				});
-			}
-		};
-
-		renderPatternsList();
-
-		// 패턴 추가 입력
-		const addPatternContainer = this.quartzSettingsContainerEl.createDiv({
-			cls: 'quartz-publish-add-pattern qp:flex qp:gap-2 qp:mt-2',
-		});
-
-		const inputEl = addPatternContainer.createEl('input', {
-			type: 'text',
-			placeholder: 'e.g., private/*, **/*.draft.md',
-			cls: 'qp:flex-1',
-		});
-
-		const errorEl = this.quartzSettingsContainerEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1',
-		});
-
-		const addBtn = addPatternContainer.createEl('button', {
-			text: 'Add',
-		});
-
-		addBtn.onclick = async () => {
-			const newPattern = inputEl.value.trim();
-			if (!newPattern) return;
-
-			// 유효성 검사
-			const validation = validateGlobPattern(newPattern);
-			if (!validation.valid) {
-				errorEl.textContent = validation.error || 'Invalid pattern';
-				return;
-			}
-
-			// 중복 검사
-			if (patterns.includes(newPattern)) {
-				errorEl.textContent = 'Pattern already exists';
-				return;
-			}
-
-			errorEl.textContent = '';
-			patterns.push(newPattern);
-			inputEl.value = '';
-			renderPatternsList();
-			await this.updateIgnorePatterns(patterns);
-		};
-
-		// Enter 키 지원
-		inputEl.onkeydown = (e) => {
-			if (e.key === 'Enter') {
-				addBtn.click();
-			}
-		};
-	}
-
-	/**
-	 * 제외 패턴 업데이트
-	 */
-	private async updateIgnorePatterns(patterns: string[]): Promise<void> {
-		if (!this.quartzConfigService) {
-			new Notice('Config service not initialized');
-			return;
-		}
-
-		try {
-			const configFile = await this.quartzConfigService.fetchQuartzConfig(true);
-			if (!configFile) {
-				throw new Error('Failed to fetch config');
-			}
-
-			const result = this.quartzConfigService.setIgnorePatterns(
-				configFile.content,
-				patterns
-			);
-			if (!result.success || !result.newContent) {
-				throw new Error(result.error || 'Failed to update config');
-			}
-
-			const commitResult = await this.quartzConfigService.commitConfigChange(
-				result.newContent,
-				`Update ignorePatterns: ${patterns.length} patterns`
-			);
-
-			if (!commitResult.success) {
-				throw new Error(commitResult.error || 'Failed to commit');
-			}
-
-			new Notice('Patterns updated successfully');
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			new Notice(`Failed to update patterns: ${message}`);
-		}
-	}
-
-	/**
-	 * URL 전략 설정 렌더링 (User Story 3)
-	 */
-	private renderUrlStrategySettings(config: ParsedQuartzConfig): void {
-		if (!this.quartzSettingsContainerEl) return;
-
-		const setting = new Setting(this.quartzSettingsContainerEl)
-			.setName('URL Strategy')
-			.setDesc('How URLs are generated for your notes')
-			.addDropdown((dropdown) => {
-				dropdown
-					.addOption('shortest', 'Shortest (default)')
-					.addOption('absolute', 'Absolute paths')
-					.setValue(config.urlStrategy)
-					.onChange(async (value) => {
-						await this.updateUrlStrategy(value as 'shortest' | 'absolute');
-					});
-			});
-
-		// 상태 표시 영역
-		setting.descEl.createDiv({
-			cls: 'quartz-publish-setting-status',
-		});
-	}
-
-	/**
-	 * URL 전략 업데이트
-	 */
-	private async updateUrlStrategy(
-		strategy: 'shortest' | 'absolute'
-	): Promise<void> {
-		if (!this.quartzConfigService) {
-			new Notice('Config service not initialized');
-			return;
-		}
-
-		try {
-			const configFile = await this.quartzConfigService.fetchQuartzConfig(true);
-			if (!configFile) {
-				throw new Error('Failed to fetch config');
-			}
-
-			const result = this.quartzConfigService.setUrlStrategy(
-				configFile.content,
-				strategy
-			);
-			if (!result.success || !result.newContent) {
-				throw new Error(result.error || 'Failed to update config');
-			}
-
-			const commitResult = await this.quartzConfigService.commitConfigChange(
-				result.newContent,
-				`Set urlStrategy to "${strategy}"`
-			);
-
-			if (!commitResult.success) {
-				throw new Error(commitResult.error || 'Failed to commit');
-			}
-
-			new Notice('URL strategy updated successfully');
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			new Notice(`Failed to update URL strategy: ${message}`);
-		}
-	}
-
 	// ============================================================================
 	// Quartz Upgrade Section (User Story 4)
 	// ============================================================================
 
-	/**
-	 * 업그레이드 섹션 렌더링
-	 */
 	private renderUpgradeSection(): void {
 		if (!this.quartzSettingsContainerEl) return;
 
-		// 섹션 헤더
-		new Setting(this.quartzSettingsContainerEl)
-			.setName('Quartz Version')
-			.setDesc('Check for updates and upgrade Quartz core files');
+		new Setting(this.quartzSettingsContainerEl).setName('Quartz Version').setHeading();
 
-		// 업그레이드 컨테이너
 		this.upgradeContainerEl = this.quartzSettingsContainerEl.createDiv({
-			cls: 'quartz-publish-upgrade-container',
+			cls: 'quartz-publish-version-card',
 		});
 
-		// 버전 확인 버튼
-		new Setting(this.upgradeContainerEl)
-			.setName('Check for Updates')
-			.addButton((button) =>
-				button.setButtonText('Check').onClick(async () => {
-					await this.checkForUpdates();
-				})
-			);
+		const promptContainer = this.upgradeContainerEl.createDiv({
+			cls: 'quartz-publish-version-check-prompt',
+		});
+
+		promptContainer.createEl('p', {
+			text: 'Check for updates and upgrade Quartz core files',
+			cls: 'quartz-publish-version-check-prompt-text',
+		});
+
+		const checkButton = promptContainer.createEl('button', {
+			text: 'Check for Updates',
+			cls: 'mod-cta',
+		});
+		checkButton.addEventListener('click', async () => {
+			await this.checkForUpdates();
+		});
 	}
 
 	/**
@@ -1119,11 +791,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			return;
 		}
 
-		// 로딩 표시
 		this.upgradeContainerEl.empty();
-		this.upgradeContainerEl.createEl('p', {
+		const loadingContainer = this.upgradeContainerEl.createDiv({
+			cls: 'quartz-publish-version-loading',
+		});
+		loadingContainer.createDiv({ cls: 'quartz-publish-loading-spinner' });
+		loadingContainer.createEl('span', {
 			text: 'Checking for updates...',
-			cls: 'qp:text-obs-text-muted qp:text-sm',
+			cls: 'quartz-publish-version-loading-text',
 		});
 
 		try {
@@ -1135,17 +810,21 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		} catch (error) {
 			this.upgradeContainerEl.empty();
 			const message = error instanceof Error ? error.message : 'Unknown error';
-			this.upgradeContainerEl.createEl('p', {
+
+			const errorContainer = this.upgradeContainerEl.createDiv({
+				cls: 'quartz-publish-version-error',
+			});
+			errorContainer.createEl('p', {
 				text: `Failed to check updates: ${message}`,
-				cls: 'qp:text-obs-text-error qp:text-sm',
+				cls: 'quartz-publish-version-error-text',
 			});
 
-			// 재시도 버튼
-			new Setting(this.upgradeContainerEl).addButton((button) =>
-				button.setButtonText('Retry').onClick(async () => {
-					await this.checkForUpdates();
-				})
-			);
+			const retryButton = errorContainer.createEl('button', {
+				text: 'Retry',
+			});
+			retryButton.addEventListener('click', async () => {
+				await this.checkForUpdates();
+			});
 		}
 	}
 
@@ -1157,67 +836,81 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.upgradeContainerEl.empty();
 
-		// 현재 버전 표시
-		const currentVersionEl = this.upgradeContainerEl.createDiv({
-			cls: 'quartz-publish-version-info qp:mb-2',
+		const headerEl = this.upgradeContainerEl.createDiv({
+			cls: 'quartz-publish-version-card-header',
 		});
-		currentVersionEl.createEl('span', {
-			text: 'Current version: ',
-			cls: 'qp:text-obs-text-muted',
+		headerEl.createEl('span', {
+			text: 'Version Info',
+			cls: 'quartz-publish-version-card-title',
 		});
-		currentVersionEl.createEl('code', {
+
+		const badgeEl = headerEl.createEl('span', {
+			cls: `quartz-publish-version-badge ${versionInfo.hasUpdate ? 'quartz-publish-version-badge--warning' : 'quartz-publish-version-badge--success'}`,
+		});
+		badgeEl.textContent = versionInfo.hasUpdate ? '⚠ Update' : '✓ Up to date';
+
+		const gridEl = this.upgradeContainerEl.createDiv({
+			cls: 'quartz-publish-version-grid',
+		});
+
+		const currentItem = gridEl.createDiv({ cls: 'quartz-publish-version-item' });
+		currentItem.createEl('span', { text: 'Current', cls: 'quartz-publish-version-label' });
+		currentItem.createEl('span', {
 			text: versionInfo.current ?? 'Unknown',
+			cls: 'quartz-publish-version-value',
 		});
 
-		// 최신 버전 표시
-		const latestVersionEl = this.upgradeContainerEl.createDiv({
-			cls: 'quartz-publish-version-info qp:mb-2',
-		});
-		latestVersionEl.createEl('span', {
-			text: 'Latest version: ',
-			cls: 'qp:text-obs-text-muted',
-		});
-		latestVersionEl.createEl('code', {
+		const latestItem = gridEl.createDiv({ cls: 'quartz-publish-version-item' });
+		latestItem.createEl('span', { text: 'Latest', cls: 'quartz-publish-version-label' });
+		latestItem.createEl('span', {
 			text: versionInfo.latest ?? 'Unknown',
+			cls: 'quartz-publish-version-value',
 		});
 
-		// 업데이트 상태 및 버튼
-		if (versionInfo.hasUpdate) {
-			const updateAvailableEl = this.upgradeContainerEl.createDiv({
-				cls: 'quartz-publish-update-available qp:p-2 qp:rounded qp:mb-2',
-			});
-			updateAvailableEl.createEl('p', {
-				text: `Update available: ${versionInfo.current} → ${versionInfo.latest}`,
-				cls: 'qp:text-obs-text-accent qp:font-medium',
-			});
+		const statusEl = this.upgradeContainerEl.createDiv({
+			cls: `quartz-publish-version-status ${versionInfo.hasUpdate ? 'quartz-publish-version-status--warning' : 'quartz-publish-version-status--success'}`,
+		});
 
-			new Setting(this.upgradeContainerEl)
-				.setName('Upgrade Quartz')
-				.setDesc('Download and apply the latest Quartz core files')
-				.addButton((button) =>
-					button
-						.setButtonText('Upgrade')
-						.setCta()
-						.onClick(async () => {
-							await this.performUpgrade();
-						})
-				);
+		if (versionInfo.hasUpdate) {
+			statusEl.createEl('span', {
+				text: '⚠',
+				cls: 'quartz-publish-version-status-icon',
+			});
+			statusEl.createEl('span', {
+				text: `Update available: ${versionInfo.current} → ${versionInfo.latest}`,
+				cls: 'quartz-publish-version-status-text',
+			});
 		} else {
-			this.upgradeContainerEl.createEl('p', {
-				text: '✓ You are using the latest version',
-				cls: 'qp:text-obs-text-success qp:text-sm',
+			statusEl.createEl('span', {
+				text: '✓',
+				cls: 'quartz-publish-version-status-icon',
+			});
+			statusEl.createEl('span', {
+				text: 'You are using the latest version',
+				cls: 'quartz-publish-version-status-text',
 			});
 		}
 
-		// 다시 확인 버튼
-		new Setting(this.upgradeContainerEl).addButton((button) =>
-			button
-				.setButtonText('Check Again')
-				.setTooltip('Refresh version information')
-				.onClick(async () => {
-					await this.checkForUpdates();
-				})
-		);
+		const footerEl = this.upgradeContainerEl.createDiv({
+			cls: 'quartz-publish-version-card-footer',
+		});
+
+		const checkAgainButton = footerEl.createEl('button', {
+			text: 'Check Again',
+		});
+		checkAgainButton.addEventListener('click', async () => {
+			await this.checkForUpdates();
+		});
+
+		if (versionInfo.hasUpdate) {
+			const upgradeButton = footerEl.createEl('button', {
+				text: 'Upgrade',
+				cls: 'mod-cta',
+			});
+			upgradeButton.addEventListener('click', async () => {
+				await this.performUpgrade();
+			});
+		}
 	}
 
 	/**

@@ -421,3 +421,159 @@
 	background-color: var(--background-modifier-error);
 	color: var(--text-error);
 }
+
+/* Quartz Version Card */
+.quartz-publish-version-card {
+	background-color: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: 1rem;
+	margin-bottom: 0.5rem;
+}
+
+.quartz-publish-version-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.quartz-publish-version-card-title {
+	font-weight: 600;
+	font-size: var(--font-ui-medium);
+	color: var(--text-normal);
+	margin: 0;
+}
+
+.quartz-publish-version-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.25rem 0.625rem;
+	font-size: var(--font-smallest);
+	font-weight: 500;
+	border-radius: var(--radius-m);
+}
+
+.quartz-publish-version-badge--success {
+	background-color: var(--background-modifier-success);
+	color: var(--text-success);
+}
+
+.quartz-publish-version-badge--warning {
+	background-color: var(--background-modifier-message);
+	color: var(--text-warning);
+}
+
+.quartz-publish-version-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.quartz-publish-version-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.quartz-publish-version-label {
+	font-size: var(--font-smallest);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.quartz-publish-version-value {
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-medium);
+	color: var(--text-normal);
+	font-weight: 500;
+}
+
+.quartz-publish-version-status {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	background-color: var(--background-primary);
+	border-radius: var(--radius-s);
+	margin-bottom: 1rem;
+}
+
+.quartz-publish-version-status--success {
+	color: var(--text-success);
+}
+
+.quartz-publish-version-status--warning {
+	color: var(--text-warning);
+}
+
+.quartz-publish-version-status-icon {
+	flex-shrink: 0;
+	font-size: 1rem;
+}
+
+.quartz-publish-version-status-text {
+	font-size: var(--font-ui-small);
+}
+
+.quartz-publish-version-card-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.quartz-publish-version-update-info {
+	background-color: var(--background-modifier-message);
+	border-radius: var(--radius-s);
+	padding: 0.5rem 0.75rem;
+	margin-bottom: 1rem;
+	font-size: var(--font-ui-small);
+	color: var(--text-warning);
+}
+
+.quartz-publish-version-check-prompt {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 1.5rem;
+	text-align: center;
+	gap: 1rem;
+}
+
+.quartz-publish-version-check-prompt-text {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.quartz-publish-version-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	padding: 1.5rem;
+}
+
+.quartz-publish-version-loading-text {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.quartz-publish-version-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 1rem;
+	text-align: center;
+}
+
+.quartz-publish-version-error-text {
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}

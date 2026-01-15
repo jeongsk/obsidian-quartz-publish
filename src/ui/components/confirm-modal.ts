@@ -59,11 +59,7 @@ export class ConfirmModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		// 제목
-		contentEl.createEl('h2', {
-			text: this.options.title,
-			cls: 'quartz-publish-confirm-modal-title',
-		});
+		this.setTitle(this.options.title);
 
 		// 메시지
 		contentEl.createEl('p', {
