@@ -114,6 +114,8 @@ export interface PluginSettings {
 	autoDateSettings?: AutoDateSettings;
 	/** 발행 필터링 설정 (Phase 8) */
 	publishFilterSettings?: PublishFilterSettings;
+	/** Quartz 사이트 설정 (캐시됨) */
+	quartzSiteConfig?: QuartzSiteConfig;
 }
 
 /**

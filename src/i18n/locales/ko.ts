@@ -18,6 +18,10 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.github.newToQuartz': 'Quartz가 처음이신가요?',
 	'settings.github.newToQuartzDesc': '템플릿으로 새 Quartz 저장소 생성',
 
+	// Settings - Quick Links
+	'settings.quickLinks.github': 'GitHub 저장소 열기',
+	'settings.quickLinks.site': '배포 사이트 열기',
+
 	// Settings - Auto Date
 	'settings.autoDate.title': '자동 날짜 필드',
 	'settings.autoDate.desc': '발행 시 프론트매터에 날짜 필드를 자동으로 추가합니다. 기존 필드는 유지됩니다.',
@@ -144,10 +148,14 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'notice.settings.reloaded': '설정이 다시 로드되었습니다. 변경 사항을 다시 적용해 주세요.',
 	'notice.noActiveFile': '활성화된 마크다운 파일이 없습니다',
 	'notice.configureFirst': '먼저 GitHub 설정을 구성해 주세요',
+	'notice.noGitHubRepo': 'GitHub 저장소가 설정되지 않았습니다',
+	'notice.noBaseUrl': '배포 사이트 URL이 설정되지 않았습니다',
 
 	// Commands
 	'command.publishNote': '현재 노트를 Quartz에 발행',
 	'command.openDashboard': '발행 대시보드 열기',
+	'command.openGitHubRepo': 'GitHub 저장소 열기',
+	'command.openDeployedSite': '배포 사이트 열기',
 
 	// Menus
 	'menu.publishToQuartz': 'Quartz에 발행',

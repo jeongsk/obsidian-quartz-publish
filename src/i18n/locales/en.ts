@@ -14,6 +14,10 @@ export default {
 	'settings.github.newToQuartz': 'New to Quartz?',
 	'settings.github.newToQuartzDesc': 'Create a new Quartz repository from template',
 
+	// Settings - Quick Links
+	'settings.quickLinks.github': 'Open GitHub Repository',
+	'settings.quickLinks.site': 'Open Deployed Site',
+
 	// Settings - Auto Date
 	'settings.autoDate.title': 'Auto Date Fields',
 	'settings.autoDate.desc': 'Automatically add date fields to frontmatter when publishing. Existing fields are preserved.',
@@ -140,10 +144,14 @@ export default {
 	'notice.settings.reloaded': 'Settings reloaded. Please apply your changes again.',
 	'notice.noActiveFile': 'No markdown file is active',
 	'notice.configureFirst': 'Please configure GitHub settings first',
+	'notice.noGitHubRepo': 'GitHub repository is not configured',
+	'notice.noBaseUrl': 'Deployed site URL is not configured',
 
 	// Commands
 	'command.publishNote': 'Publish current note to Quartz',
 	'command.openDashboard': 'Open Publish Dashboard',
+	'command.openGitHubRepo': 'Open GitHub Repository',
+	'command.openDeployedSite': 'Open Deployed Site',
 
 	// Menus
 	'menu.publishToQuartz': 'Publish to Quartz',
