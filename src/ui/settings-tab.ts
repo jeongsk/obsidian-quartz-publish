@@ -26,6 +26,7 @@ import { ConfirmModal } from './components/confirm-modal';
 import { ConflictModal } from './components/conflict-modal';
 import { CreateRepoModal } from './create-repo-modal';
 import { DeployGuideModal } from './deploy-guide-modal';
+import { RemoteFileManagerModal } from './remote-file-manager-modal';
 import { t } from '../i18n';
 
 /**
@@ -205,6 +206,37 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.connectionStatusEl = testConnectionSetting.descEl.createDiv({
 			cls: 'quartz-publish-connection-status',
 		});
+
+		// 발행된 파일 관리 버튼
+		new Setting(containerEl)
+			.setName(t('settings.github.manageFiles'))
+			.setDesc(t('settings.github.manageFilesDesc'))
+			.addButton((button) => {
+				button
+					.setButtonText(t('settings.github.manageFiles'))
+					.onClick(() => {
+						this.openRemoteFileManagerModal();
+					});
+			});
+	}
+
+	/**
+	 * 원격 파일 관리 모달 열기
+	 */
+	private openRemoteFileManagerModal(): void {
+		const { githubToken, repoUrl, defaultBranch, contentPath } = this.plugin.settings;
+
+		if (!githubToken || !repoUrl) {
+			new Notice(t('notice.configureFirst'));
+			return;
+		}
+
+		const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+		const modal = new RemoteFileManagerModal(this.app, {
+			gitHubService: github,
+			contentPath: contentPath || 'content',
+		});
+		modal.open();
 	}
 
 	/**
