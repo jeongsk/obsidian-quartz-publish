@@ -211,8 +211,15 @@ describe('QuartzUpgradeService', () => {
 			vi.mocked(mockGitHub.getExternalTree).mockResolvedValue([
 				{ path: 'quartz/file1.ts', mode: '100644', type: 'blob', sha: 'sha1' },
 			]);
-			vi.mocked(mockGitHub.getExternalFileContent).mockResolvedValue(
-				'file content'
+			// getLatestVersion()에서 v4 브랜치의 package.json을 가져올 때와
+			// upgrade()에서 파일 내용을 가져올 때를 구분
+			vi.mocked(mockGitHub.getExternalFileContent).mockImplementation(
+				async (_owner, _repo, path, _ref) => {
+					if (path === 'package.json') {
+						return '{"version": "4.0.8"}';
+					}
+					return 'file content';
+				}
 			);
 			vi.mocked(mockGitHub.commitMultipleFiles).mockResolvedValue({
 				success: true,
@@ -271,6 +278,8 @@ describe('QuartzUpgradeService', () => {
 		});
 
 		it('최신 버전을 가져올 수 없으면 에러를 반환한다', async () => {
+			// getExternalFileContent도 null 반환하여 getLatestVersion이 실패하도록 설정
+			vi.mocked(mockGitHub.getExternalFileContent).mockResolvedValue(null);
 			vi.mocked(mockGitHub.getLatestRelease).mockResolvedValue(null);
 
 			const result = await service.upgrade();
@@ -297,8 +306,13 @@ describe('QuartzUpgradeService', () => {
 			vi.mocked(mockGitHub.getExternalTree).mockResolvedValue([
 				{ path: 'quartz/file1.ts', mode: '100644', type: 'blob', sha: 'sha1' },
 			]);
+			// getLatestVersion()에서 v4 브랜치의 package.json을 가져올 때와
+			// upgrade()에서 파일 내용을 가져올 때를 구분 (지연 포함)
 			vi.mocked(mockGitHub.getExternalFileContent).mockImplementation(
-				async () => {
+				async (_owner, _repo, path, _ref) => {
+					if (path === 'package.json') {
+						return '{"version": "4.0.8"}';
+					}
 					// 지연을 시뮬레이션
 					await new Promise((resolve) => setTimeout(resolve, 100));
 					return 'content';
