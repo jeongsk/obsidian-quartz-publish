@@ -85,12 +85,26 @@ export class PublishingSection {
 	 * Ignore Patterns 입력 렌더링 (T060)
 	 */
 	private renderIgnorePatternsInput(): void {
-		new Setting(this.containerEl)
-			.setName(t('publishing.ignorePatterns.name'))
-			.setDesc(t('publishing.ignorePatterns.desc'));
+		// 전체 컨테이너 (외부 박스)
+		const containerEl = this.containerEl.createDiv({
+			cls: 'quartz-publish-patterns-container qp:bg-obs-bg-secondary qp:rounded-lg qp:p-4 qp:mt-4',
+		});
 
-		this.patternsContainerEl = this.containerEl.createDiv({
-			cls: 'quartz-publish-patterns-list qp:mb-2',
+		// 헤더 (제목)
+		containerEl.createEl('div', {
+			text: t('publishing.ignorePatterns.name'),
+			cls: 'qp:font-medium qp:text-obs-text-normal',
+		});
+
+		// 설명
+		containerEl.createEl('div', {
+			text: t('publishing.ignorePatterns.desc'),
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:mt-1 qp:mb-3',
+		});
+
+		// 패턴 목록 컨테이너
+		this.patternsContainerEl = containerEl.createDiv({
+			cls: 'quartz-publish-patterns-list',
 		});
 
 		this.renderPatternsList();
