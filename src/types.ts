@@ -7,6 +7,31 @@
 import type { TFile } from 'obsidian';
 
 // ============================================================================
+// Auto Date Settings
+// ============================================================================
+
+/**
+ * 날짜 자동 추가 설정
+ */
+export interface AutoDateSettings {
+	/** created 필드 자동 추가 활성화 */
+	enableCreated: boolean;
+	/** modified 필드 자동 추가 활성화 */
+	enableModified: boolean;
+	/** published 필드 자동 추가 활성화 */
+	enablePublished: boolean;
+}
+
+/**
+ * 기본 날짜 자동 추가 설정값
+ */
+export const DEFAULT_AUTO_DATE_SETTINGS: AutoDateSettings = {
+	enableCreated: true,
+	enableModified: true,
+	enablePublished: false,
+};
+
+// ============================================================================
 // Plugin Settings
 // ============================================================================
 
@@ -26,6 +51,8 @@ export interface PluginSettings {
 	staticPath: string;
 	/** Quartz 설정 (Phase 3) */
 	quartzSettings?: QuartzSettings;
+	/** 날짜 자동 추가 설정 */
+	autoDateSettings?: AutoDateSettings;
 }
 
 /**
@@ -37,6 +64,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	defaultBranch: 'main',
 	contentPath: 'content',
 	staticPath: 'static',
+	autoDateSettings: DEFAULT_AUTO_DATE_SETTINGS,
 };
 
 // ============================================================================
