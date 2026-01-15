@@ -41,3 +41,10 @@ npm run lint:fix     # 린트 자동 수정
 - TailwindCSS를 적극 사용합니다. 모든 클래스에 `hn:` 프리픽스를 사용합니다. (예: `hn:bg-obs-bg`, `hn:text-obs-text`)
 - Obsidian 기본 디자인 가이드라인을 반드시 준수합니다.
 - Obsidian CSS 변수를 활용하여 테마 호환성을 유지합니다.
+
+## Active Technologies
+- TypeScript 5.9+ + Obsidian API, fetch (built-in) (001-quartz-publish)
+- Obsidian Plugin Data (`data.json`) (001-quartz-publish)
+
+## Recent Changes
+- 001-quartz-publish: Added TypeScript 5.9+ + Obsidian API, fetch (built-in)

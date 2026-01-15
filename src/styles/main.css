@@ -1,0 +1,177 @@
+/**
+ * Quartz Publish Plugin - TailwindCSS v4 Styles
+ *
+ * 모든 클래스에 `hn:` 프리픽스를 사용합니다.
+ * Obsidian CSS 변수를 활용하여 테마 호환성을 유지합니다.
+ */
+
+@import 'tailwindcss' prefix(hn);
+
+/*
+ * Obsidian CSS 변수를 TailwindCSS에서 사용할 수 있도록 정의
+ * https://docs.obsidian.md/Reference/CSS+variables/CSS+variables
+ */
+@theme {
+	/* Background colors */
+	--color-obs-bg-primary: var(--background-primary);
+	--color-obs-bg-secondary: var(--background-secondary);
+	--color-obs-bg-modifier-hover: var(--background-modifier-hover);
+	--color-obs-bg-modifier-active-hover: var(--background-modifier-active-hover);
+	--color-obs-bg-modifier-border: var(--background-modifier-border);
+	--color-obs-bg-modifier-border-hover: var(--background-modifier-border-hover);
+	--color-obs-bg-modifier-border-focus: var(--background-modifier-border-focus);
+	--color-obs-bg-modifier-error: var(--background-modifier-error);
+	--color-obs-bg-modifier-error-hover: var(--background-modifier-error-hover);
+	--color-obs-bg-modifier-success: var(--background-modifier-success);
+	--color-obs-bg-modifier-message: var(--background-modifier-message);
+
+	/* Text colors */
+	--color-obs-text-normal: var(--text-normal);
+	--color-obs-text-muted: var(--text-muted);
+	--color-obs-text-faint: var(--text-faint);
+	--color-obs-text-on-accent: var(--text-on-accent);
+	--color-obs-text-on-accent-inverted: var(--text-on-accent-inverted);
+	--color-obs-text-error: var(--text-error);
+	--color-obs-text-success: var(--text-success);
+	--color-obs-text-warning: var(--text-warning);
+	--color-obs-text-accent: var(--text-accent);
+	--color-obs-text-accent-hover: var(--text-accent-hover);
+
+	/* Interactive colors */
+	--color-obs-interactive-normal: var(--interactive-normal);
+	--color-obs-interactive-hover: var(--interactive-hover);
+	--color-obs-interactive-accent: var(--interactive-accent);
+	--color-obs-interactive-accent-hovered: var(--interactive-accent-hovered);
+	--color-obs-interactive-accent-active: var(--interactive-accent-active);
+
+	/* Icon colors */
+	--color-obs-icon: var(--icon-color);
+	--color-obs-icon-hover: var(--icon-color-hover);
+	--color-obs-icon-active: var(--icon-color-active);
+	--color-obs-icon-focused: var(--icon-color-focused);
+
+	/* Status colors */
+	--color-obs-status-new: var(--color-green);
+	--color-obs-status-modified: var(--color-yellow);
+	--color-obs-status-synced: var(--text-muted);
+	--color-obs-status-deleted: var(--color-red);
+
+	/* Font family */
+	--font-sans: var(--font-text);
+	--font-mono: var(--font-monospace);
+}
+
+/*
+ * 플러그인 전용 커스텀 스타일
+ * Obsidian 기본 디자인 가이드라인을 준수합니다.
+ */
+
+/* Dashboard Modal */
+.quartz-publish-dashboard {
+	max-height: 70vh;
+}
+
+/* Settings Tab */
+.quartz-publish-settings {
+	/* 기본 스타일 - Obsidian Setting 컴포넌트 활용 */
+}
+
+/* Connection Status Indicator */
+.quartz-publish-connection-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.quartz-publish-connection-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
+.quartz-publish-connection-dot--connected {
+	background-color: var(--color-green);
+}
+
+.quartz-publish-connection-dot--disconnected {
+	background-color: var(--text-muted);
+}
+
+.quartz-publish-connection-dot--error {
+	background-color: var(--color-red);
+}
+
+.quartz-publish-connection-dot--connecting {
+	background-color: var(--color-yellow);
+	animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+/* Progress Bar */
+.quartz-publish-progress {
+	width: 100%;
+	height: 4px;
+	background-color: var(--background-modifier-border);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.quartz-publish-progress-bar {
+	height: 100%;
+	background-color: var(--interactive-accent);
+	transition: width 0.3s ease;
+}
+
+/* Note List Item */
+.quartz-publish-note-item {
+	display: flex;
+	align-items: center;
+	padding: 0.5rem;
+	border-radius: var(--radius-s);
+}
+
+.quartz-publish-note-item:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.quartz-publish-note-item--selected {
+	background-color: var(--background-modifier-active-hover);
+}
+
+/* Status Badge */
+.quartz-publish-status-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.125rem 0.5rem;
+	font-size: var(--font-smallest);
+	border-radius: var(--radius-s);
+}
+
+.quartz-publish-status-badge--new {
+	background-color: var(--background-modifier-success);
+	color: var(--text-success);
+}
+
+.quartz-publish-status-badge--modified {
+	background-color: rgba(var(--color-yellow-rgb), 0.2);
+	color: var(--text-warning);
+}
+
+.quartz-publish-status-badge--synced {
+	background-color: var(--background-secondary);
+	color: var(--text-muted);
+}
+
+.quartz-publish-status-badge--deleted {
+	background-color: var(--background-modifier-error);
+	color: var(--text-error);
+}
