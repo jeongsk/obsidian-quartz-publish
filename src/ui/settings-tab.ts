@@ -14,11 +14,12 @@ import {
 import { QuartzUpgradeService } from '../services/quartz-upgrade';
 import { PendingChangesManager } from '../services/pending-changes';
 import type { QuartzVersionInfo, QuartzUpgradeProgress, QuartzSiteConfig } from '../types';
-import { DEFAULT_AUTO_DATE_SETTINGS } from '../types';
+import { DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
 import { SiteInfoSection } from './sections/site-info-section';
 import { BehaviorSection } from './sections/behavior-section';
 import { AnalyticsSection } from './sections/analytics-section';
 import { PublishingSection } from './sections/publishing-section';
+import { PublishFilterSection } from './sections/publish-filter-section';
 import { ApplyButton } from './components/apply-button';
 import { UnsavedWarning } from './components/unsaved-warning';
 import { ConfirmModal } from './components/confirm-modal';
@@ -56,6 +57,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	// Phase 8: Publishing Section (T058-T063)
 	private publishingSection: PublishingSection | null = null;
 
+	// Phase 8 (Feature 008): Publish Filter Section
+	private publishFilterSection: PublishFilterSection | null = null;
+
 	constructor(app: App, plugin: QuartzPublishPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
@@ -82,6 +86,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.behaviorSection = null;
 		this.analyticsSection = null;
 		this.publishingSection = null;
+		this.publishFilterSection = null;
 		this.applyButton = null;
 		this.unsavedWarning = null;
 	}
@@ -95,6 +100,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 날짜 자동 추가 섹션
 		this.createAutoDateSection(containerEl);
+
+		// 발행 필터 섹션
+		this.createPublishFilterSection(containerEl);
 
 		// Quartz 설정 섹션
 		this.createQuartzSettingsSection(containerEl);
@@ -258,9 +266,22 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			);
 	}
 
-	/**
-	 * 연결 테스트 실행
-	 */
+	private createPublishFilterSection(containerEl: HTMLElement): void {
+		const filterSettings = this.plugin.settings.publishFilterSettings ?? DEFAULT_PUBLISH_FILTER_SETTINGS;
+
+		this.publishFilterSection = new PublishFilterSection(containerEl, {
+			config: filterSettings,
+			vault: this.app.vault,
+			onChange: async (field, value) => {
+				if (!this.plugin.settings.publishFilterSettings) {
+					this.plugin.settings.publishFilterSettings = { ...DEFAULT_PUBLISH_FILTER_SETTINGS };
+				}
+				this.plugin.settings.publishFilterSettings[field] = value;
+				await this.plugin.saveSettings();
+			},
+		});
+	}
+
 	private async testConnection(): Promise<void> {
 		if (!this.connectionStatusEl) return;
 
