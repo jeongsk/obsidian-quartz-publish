@@ -119,6 +119,10 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'dashboard.empty.modified': '수정된 노트가 없습니다.',
 	'dashboard.empty.deleted': '삭제할 노트가 없습니다.',
 	'dashboard.empty.synced': '동기화된 노트가 없습니다.',
+	'dashboard.tabDescription.new': '아직 발행되지 않은 새 노트입니다',
+	'dashboard.tabDescription.modified': '발행 후 내용이 변경된 노트입니다',
+	'dashboard.tabDescription.deleted': '로컬에서 삭제되었거나 발행 해제된 노트입니다',
+	'dashboard.tabDescription.synced': '원격과 동기화된 최신 상태의 노트입니다',
 
 	// Notices
 	'notice.publish.start': '{{filename}} 발행 중...',

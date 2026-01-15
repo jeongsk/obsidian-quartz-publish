@@ -709,6 +709,35 @@ export class DashboardModal extends Modal {
 				this.handleTabKeydown(e, index);
 			});
 		});
+
+		// 탭 설명 추가
+		this.renderTabDescription();
+	}
+
+	/**
+	 * 현재 선택된 탭의 설명을 렌더링합니다.
+	 */
+	private renderTabDescription(): void {
+		const { contentEl } = this;
+		const description = this.getTabDescription();
+
+		contentEl.createDiv({
+			cls: 'quartz-publish-tab-description',
+			text: description,
+		});
+	}
+
+	/**
+	 * 현재 선택된 탭의 설명을 반환합니다.
+	 */
+	private getTabDescription(): string {
+		const descriptions: Record<DashboardTab, string> = {
+			new: t('dashboard.tabDescription.new'),
+			modified: t('dashboard.tabDescription.modified'),
+			deleted: t('dashboard.tabDescription.deleted'),
+			synced: t('dashboard.tabDescription.synced'),
+		};
+		return descriptions[this.state.activeTab];
 	}
 
 	/**

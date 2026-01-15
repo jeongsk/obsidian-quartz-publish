@@ -115,6 +115,10 @@ export default {
 	'dashboard.empty.modified': 'No modified notes.',
 	'dashboard.empty.deleted': 'No notes to delete.',
 	'dashboard.empty.synced': 'No synced notes.',
+	'dashboard.tabDescription.new': 'New notes that haven\'t been published yet',
+	'dashboard.tabDescription.modified': 'Notes modified after publishing',
+	'dashboard.tabDescription.deleted': 'Notes deleted locally or unpublished',
+	'dashboard.tabDescription.synced': 'Notes synced with remote',
 
 	// Notices
 	'notice.publish.start': 'Publishing {{filename}}...',

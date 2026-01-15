@@ -194,7 +194,9 @@ export class PublishService {
 			);
 
 			// 11. 발행 기록 저장
-			const contentHash = await this.calculateHash(transformed.content);
+			// content 변수는 프론트매터 자동 수정 후의 로컬 파일 콘텐츠입니다.
+			// status.ts에서 로컬 파일의 해시와 비교하므로, 변환 전 콘텐츠의 해시를 저장합니다.
+			const contentHash = await this.calculateHash(content);
 			const record: PublishRecord = {
 				id: await this.calculateHash(file.path),
 				localPath: file.path,

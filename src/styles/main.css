@@ -150,6 +150,14 @@
 	color: var(--text-on-accent);
 }
 
+/* Tab Description */
+.quartz-publish-tab-description {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	margin-bottom: var(--size-4-3);
+	padding: 0 var(--size-4-1);
+}
+
 /* Note List */
 .quartz-publish-note-list {
 	flex: 1;
