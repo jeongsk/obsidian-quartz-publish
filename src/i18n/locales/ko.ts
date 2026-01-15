@@ -31,6 +31,23 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.autoDate.modifiedDesc': '파일 수정일 추가 (형식: YYYY-MM-DD)',
 	'settings.autoDate.published': '발행일 추가',
 	'settings.autoDate.publishedDesc': '현재 날짜를 발행일로 추가 (형식: YYYY-MM-DD)',
+	'settings.autoDate.title_field': 'Title 자동 추가',
+	'settings.autoDate.title_fieldDesc': '파일명에서 title 필드 자동 생성',
+	'settings.autoDate.description_field': 'Description 자동 추가',
+	'settings.autoDate.description_fieldDesc': '첫 문단에서 description 필드 자동 생성',
+
+	// Settings - Frontmatter
+	'settings.frontmatter.title': 'Frontmatter 설정',
+	'settings.frontmatter.editor': '발행 전 편집기 표시',
+	'settings.frontmatter.editorDesc': '발행 전 frontmatter를 편집할 수 있는 모달 표시',
+	'settings.frontmatter.validation': '검증 활성화',
+	'settings.frontmatter.validationDesc': 'Frontmatter 필수 필드 검증',
+	'settings.frontmatter.requireTitle': 'Title 필수',
+	'settings.frontmatter.requireTitleDesc': 'title 필드가 없으면 경고',
+	'settings.frontmatter.requireDescription': 'Description 필수',
+	'settings.frontmatter.requireDescriptionDesc': 'description 필드가 없으면 경고',
+	'settings.frontmatter.requireTags': 'Tags 필수',
+	'settings.frontmatter.requireTagsDesc': 'tags 필드가 없으면 경고',
 
 	// Settings - Quartz
 	'settings.quartz.title': 'Quartz 설정',
@@ -133,6 +150,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'notice.publish.success': '발행 완료: {{filename}} → {{path}}',
 	'notice.publish.failed': '발행 실패: {{filename}} ({{error}})',
 	'notice.publish.error': '발행 오류: {{message}}',
+	'notice.publish.cancelled': '발행이 취소되었습니다.',
 	'notice.batch.success': '{{count}}개 노트가 발행되었습니다.',
 	'notice.batch.partial': '발행: {{succeeded}}개 성공, {{failed}}개 실패',
 	'notice.delete.success': '{{count}}개 노트가 삭제되었습니다.',
@@ -182,6 +200,19 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'modal.largeFile.title': '대용량 파일 경고',
 	'modal.largeFile.message': '{{count}}개 파일이 {{size}}를 초과합니다. 대용량 파일은 발행에 문제가 발생할 수 있습니다.',
 	'modal.largeFile.continue': '계속 진행',
+
+	// Modals - Frontmatter Editor
+	'modal.frontmatter.title': 'Frontmatter 편집',
+	'modal.frontmatter.titleDesc': '페이지 제목 (없으면 파일명 사용)',
+	'modal.frontmatter.descriptionDesc': '페이지 설명 (링크 미리보기에 표시)',
+	'modal.frontmatter.descriptionPlaceholder': '이 페이지에 대한 설명을 입력하세요...',
+	'modal.frontmatter.tagsDesc': '태그를 쉼표로 구분하여 입력',
+	'modal.frontmatter.draftDesc': '활성화하면 페이지가 비공개됩니다',
+	'modal.frontmatter.permalinkDesc': '커스텀 URL 경로 (파일 이동해도 유지)',
+	'modal.frontmatter.tocDesc': '목차(Table of Contents) 표시 여부',
+	'modal.frontmatter.cssDesc': '페이지에 적용할 CSS 클래스',
+	'modal.frontmatter.save': '저장 후 발행',
+	'modal.frontmatter.validationSuccess': '모든 검증을 통과했습니다',
 
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Quartz 저장소 생성',

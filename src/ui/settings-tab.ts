@@ -14,7 +14,7 @@ import {
 import { QuartzUpgradeService } from '../services/quartz-upgrade';
 import { PendingChangesManager } from '../services/pending-changes';
 import type { QuartzVersionInfo, QuartzUpgradeProgress, QuartzSiteConfig } from '../types';
-import { DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
+import { DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS, DEFAULT_VALIDATION_SETTINGS } from '../types';
 import { SiteInfoSection } from './sections/site-info-section';
 import { BehaviorSection } from './sections/behavior-section';
 import { AnalyticsSection } from './sections/analytics-section';
@@ -105,6 +105,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 날짜 자동 추가 섹션
 		this.createAutoDateSection(containerEl);
+
+		// Frontmatter 설정 섹션
+		this.createFrontmatterSection(containerEl);
 
 		// 발행 필터 섹션
 		this.createPublishFilterSection(containerEl);
@@ -352,6 +355,122 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 							this.plugin.settings.autoDateSettings = { ...DEFAULT_AUTO_DATE_SETTINGS };
 						}
 						this.plugin.settings.autoDateSettings.enablePublished = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Title 자동 추가 토글
+		new Setting(containerEl)
+			.setName(t('settings.autoDate.title_field'))
+			.setDesc(t('settings.autoDate.title_fieldDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoDateSettings?.enableTitle ?? DEFAULT_AUTO_DATE_SETTINGS.enableTitle)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.autoDateSettings) {
+							this.plugin.settings.autoDateSettings = { ...DEFAULT_AUTO_DATE_SETTINGS };
+						}
+						this.plugin.settings.autoDateSettings.enableTitle = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Description 자동 추가 토글
+		new Setting(containerEl)
+			.setName(t('settings.autoDate.description_field'))
+			.setDesc(t('settings.autoDate.description_fieldDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoDateSettings?.enableDescription ?? DEFAULT_AUTO_DATE_SETTINGS.enableDescription)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.autoDateSettings) {
+							this.plugin.settings.autoDateSettings = { ...DEFAULT_AUTO_DATE_SETTINGS };
+						}
+						this.plugin.settings.autoDateSettings.enableDescription = value;
+						await this.plugin.saveSettings();
+					})
+			);
+	}
+
+	/**
+	 * Frontmatter 설정 섹션 생성
+	 */
+	private createFrontmatterSection(containerEl: HTMLElement): void {
+		new Setting(containerEl).setName(t('settings.frontmatter.title')).setHeading();
+
+		// 발행 전 편집기 표시
+		new Setting(containerEl)
+			.setName(t('settings.frontmatter.editor'))
+			.setDesc(t('settings.frontmatter.editorDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showFrontmatterEditor ?? false)
+					.onChange(async (value) => {
+						this.plugin.settings.showFrontmatterEditor = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// 검증 활성화
+		new Setting(containerEl)
+			.setName(t('settings.frontmatter.validation'))
+			.setDesc(t('settings.frontmatter.validationDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.validationSettings?.enabled ?? true)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.validationSettings) {
+							this.plugin.settings.validationSettings = { ...DEFAULT_VALIDATION_SETTINGS };
+						}
+						this.plugin.settings.validationSettings.enabled = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Title 필수
+		new Setting(containerEl)
+			.setName(t('settings.frontmatter.requireTitle'))
+			.setDesc(t('settings.frontmatter.requireTitleDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.validationSettings?.requireTitle ?? false)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.validationSettings) {
+							this.plugin.settings.validationSettings = { ...DEFAULT_VALIDATION_SETTINGS };
+						}
+						this.plugin.settings.validationSettings.requireTitle = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Description 필수
+		new Setting(containerEl)
+			.setName(t('settings.frontmatter.requireDescription'))
+			.setDesc(t('settings.frontmatter.requireDescriptionDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.validationSettings?.requireDescription ?? false)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.validationSettings) {
+							this.plugin.settings.validationSettings = { ...DEFAULT_VALIDATION_SETTINGS };
+						}
+						this.plugin.settings.validationSettings.requireDescription = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Tags 필수
+		new Setting(containerEl)
+			.setName(t('settings.frontmatter.requireTags'))
+			.setDesc(t('settings.frontmatter.requireTagsDesc'))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.validationSettings?.requireTags ?? false)
+					.onChange(async (value) => {
+						if (!this.plugin.settings.validationSettings) {
+							this.plugin.settings.validationSettings = { ...DEFAULT_VALIDATION_SETTINGS };
+						}
+						this.plugin.settings.validationSettings.requireTags = value;
 						await this.plugin.saveSettings();
 					})
 			);

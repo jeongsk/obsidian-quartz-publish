@@ -1,11 +1,13 @@
 import { Plugin, TFile, Notice } from 'obsidian';
-import type { PluginSettings, PluginData, PublishRecord, BatchPublishResult, UnpublishResult } from './types';
-import { DEFAULT_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from './types';
+import type { PluginSettings, PluginData, PublishRecord, BatchPublishResult, UnpublishResult, QuartzFrontmatter } from './types';
+import { DEFAULT_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS, DEFAULT_VALIDATION_SETTINGS } from './types';
 import { QuartzPublishSettingTab } from './ui/settings-tab';
 import { PublishService } from './services/publish';
 import { StatusService } from './services/status';
 import { NetworkService } from './services/network';
+import { ContentTransformer } from './services/transformer';
 import { DashboardModal } from './ui/dashboard-modal';
+import { FrontmatterEditorModal } from './ui/frontmatter-editor-modal';
 import { initI18n, t } from './i18n';
 import { isValidGitHubUrl, normalizeBaseUrl } from './utils/url';
 
@@ -189,6 +191,36 @@ export default class QuartzPublishPlugin extends Plugin {
 			return;
 		}
 
+		// Frontmatter 편집기 표시 (설정이 활성화된 경우)
+		let frontmatterOverride: QuartzFrontmatter | undefined;
+		if (this.settings.showFrontmatterEditor) {
+			const transformer = new ContentTransformer(
+				this.app.vault,
+				this.app.metadataCache,
+				this.settings.contentPath,
+				this.settings.staticPath
+			);
+			const currentFrontmatter = transformer.getFrontmatterFromCache(file);
+
+			const editorModal = new FrontmatterEditorModal(this.app, {
+				file,
+				frontmatter: currentFrontmatter,
+				validationSettings: this.settings.validationSettings ?? DEFAULT_VALIDATION_SETTINGS,
+				transformer,
+			});
+
+			const result = await editorModal.waitForResult();
+			if (!result.saved) {
+				// 사용자가 취소함
+				new Notice(t('notice.publish.cancelled'));
+				return;
+			}
+			frontmatterOverride = result.frontmatter;
+
+			// 편집된 frontmatter를 파일에 적용
+			await this.applyFrontmatterToFile(file, frontmatterOverride);
+		}
+
 		new Notice(t('notice.publish.start', { filename: file.basename }));
 
 		try {
@@ -213,6 +245,22 @@ export default class QuartzPublishPlugin extends Plugin {
 			new Notice(t('notice.publish.error', { message }));
 			console.error('[QuartzPublish] Publish error:', error);
 		}
+	}
+
+	/**
+	 * 파일에 frontmatter 적용
+	 */
+	private async applyFrontmatterToFile(file: TFile, frontmatter: QuartzFrontmatter): Promise<void> {
+		await this.app.fileManager.processFrontMatter(file, (fm) => {
+			// 기존 frontmatter 유지하면서 편집된 값만 업데이트
+			for (const [key, value] of Object.entries(frontmatter)) {
+				if (value === undefined) {
+					delete fm[key];
+				} else {
+					fm[key] = value;
+				}
+			}
+		});
 	}
 
 	/**

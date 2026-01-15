@@ -66,29 +66,169 @@ export const DEFAULT_PUBLISH_FILTER_SETTINGS: PublishFilterSettings = {
 };
 
 // ============================================================================
-// Auto Date Settings
+// Auto Frontmatter Settings
 // ============================================================================
 
 /**
- * 날짜 자동 추가 설정
+ * Frontmatter 자동 추가 설정
  */
 export interface AutoDateSettings {
+	// === 날짜 필드 ===
 	/** created 필드 자동 추가 활성화 */
 	enableCreated: boolean;
 	/** modified 필드 자동 추가 활성화 */
 	enableModified: boolean;
 	/** published 필드 자동 추가 활성화 */
 	enablePublished: boolean;
+
+	// === 메타데이터 필드 ===
+	/** title 필드 자동 추가 활성화 (파일명에서 생성) */
+	enableTitle: boolean;
+	/** description 필드 자동 추가 활성화 (첫 문단에서 생성) */
+	enableDescription: boolean;
+	/** description 최대 길이 */
+	descriptionMaxLength: number;
 }
 
 /**
- * 기본 날짜 자동 추가 설정값
+ * 기본 자동 추가 설정값
  */
 export const DEFAULT_AUTO_DATE_SETTINGS: AutoDateSettings = {
 	enableCreated: true,
 	enableModified: true,
 	enablePublished: false,
+	enableTitle: false,
+	enableDescription: false,
+	descriptionMaxLength: 160,
 };
+
+// ============================================================================
+// Frontmatter Validation
+// ============================================================================
+
+/**
+ * Frontmatter 검증 경고 심각도
+ */
+export type ValidationSeverity = 'error' | 'warning' | 'info';
+
+/**
+ * Frontmatter 검증 결과 항목
+ */
+export interface ValidationIssue {
+	/** 심각도 */
+	severity: ValidationSeverity;
+	/** 필드명 */
+	field: string;
+	/** 메시지 */
+	message: string;
+	/** 제안값 (있는 경우) */
+	suggestion?: string;
+}
+
+/**
+ * Frontmatter 검증 결과
+ */
+export interface FrontmatterValidationResult {
+	/** 검증 통과 여부 (error가 없으면 true) */
+	isValid: boolean;
+	/** 발견된 이슈 목록 */
+	issues: ValidationIssue[];
+	/** 에러 수 */
+	errorCount: number;
+	/** 경고 수 */
+	warningCount: number;
+}
+
+/**
+ * Frontmatter 검증 설정
+ */
+export interface FrontmatterValidationSettings {
+	/** 검증 활성화 여부 */
+	enabled: boolean;
+	/** title 필수 여부 */
+	requireTitle: boolean;
+	/** description 필수 여부 */
+	requireDescription: boolean;
+	/** tags 필수 여부 */
+	requireTags: boolean;
+	/** 경고 시 발행 차단 여부 */
+	blockOnWarning: boolean;
+}
+
+/**
+ * 기본 검증 설정
+ */
+export const DEFAULT_VALIDATION_SETTINGS: FrontmatterValidationSettings = {
+	enabled: true,
+	requireTitle: false,
+	requireDescription: false,
+	requireTags: false,
+	blockOnWarning: false,
+};
+
+// ============================================================================
+// Quartz Frontmatter (Authoring Content)
+// ============================================================================
+
+/**
+ * Quartz가 지원하는 frontmatter 속성
+ * @see https://quartz.jzhao.xyz/plugins/Frontmatter
+ * @see https://quartz.jzhao.xyz/authoring-content
+ */
+export interface QuartzFrontmatter {
+	// === 기본 메타데이터 ===
+	/** 페이지 제목 (없으면 파일명 사용) */
+	title?: string;
+	/** 페이지 설명 (링크 미리보기용) */
+	description?: string;
+	/** 태그 목록 */
+	tags?: string[];
+	/** 노트 별칭 목록 */
+	aliases?: string[];
+
+	// === 발행 제어 ===
+	/** 발행 여부 (true면 발행) */
+	publish?: boolean;
+	/** 초안 여부 (true면 비공개) */
+	draft?: boolean;
+
+	// === URL/라우팅 ===
+	/** 커스텀 URL (파일 경로 변경해도 유지) */
+	permalink?: string;
+	/** 커스텀 발행 경로 (플러그인 전용) */
+	path?: string;
+
+	// === 날짜 ===
+	/** 생성일 (YYYY-MM-DD) */
+	created?: string;
+	/** 수정일 (YYYY-MM-DD) */
+	modified?: string;
+	/** 발행일 (YYYY-MM-DD) */
+	published?: string;
+	/** 날짜 (created/published 대체) */
+	date?: string;
+
+	// === 기능 제어 ===
+	/** 목차(TOC) 활성화 여부 */
+	enableToc?: boolean;
+	/** 댓글 기능 활성화 여부 */
+	comments?: boolean;
+	/** 페이지 언어 설정 (BCP 47) */
+	lang?: string;
+
+	// === 스타일링 ===
+	/** 페이지에 적용할 CSS 클래스 */
+	cssclasses?: string[];
+
+	// === 소셜/SEO ===
+	/** 소셜 공유용 설명 */
+	socialDescription?: string;
+	/** 소셜 공유용 이미지 */
+	socialImage?: string;
+
+	// === 기타 커스텀 속성 ===
+	[key: string]: unknown;
+}
 
 // ============================================================================
 // Plugin Settings
@@ -116,6 +256,10 @@ export interface PluginSettings {
 	publishFilterSettings?: PublishFilterSettings;
 	/** Quartz 사이트 설정 (캐시됨) */
 	quartzSiteConfig?: QuartzSiteConfig;
+	/** Frontmatter 검증 설정 */
+	validationSettings?: FrontmatterValidationSettings;
+	/** 발행 전 Frontmatter 편집기 표시 여부 */
+	showFrontmatterEditor?: boolean;
 }
 
 /**
@@ -129,6 +273,8 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	staticPath: 'static',
 	autoDateSettings: DEFAULT_AUTO_DATE_SETTINGS,
 	publishFilterSettings: DEFAULT_PUBLISH_FILTER_SETTINGS,
+	validationSettings: DEFAULT_VALIDATION_SETTINGS,
+	showFrontmatterEditor: false,
 };
 
 // ============================================================================
@@ -664,7 +810,7 @@ export interface AttachmentRef {
  */
 export interface FrontmatterResult {
 	/** 파싱된 프론트매터 객체 */
-	frontmatter: Record<string, unknown>;
+	frontmatter: QuartzFrontmatter;
 	/** 프론트매터 제외한 본문 */
 	body: string;
 	/** 프론트매터 원본 (YAML) */

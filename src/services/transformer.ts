@@ -10,6 +10,10 @@ import type {
 	AttachmentRef,
 	FrontmatterResult,
 	AutoDateSettings,
+	QuartzFrontmatter,
+	FrontmatterValidationResult,
+	FrontmatterValidationSettings,
+	ValidationIssue,
 } from '../types';
 
 /**
@@ -31,6 +35,24 @@ export class ContentTransformer {
 		this.metadataCache = metadataCache;
 		this.contentPath = contentPath;
 		this.staticPath = staticPath;
+	}
+
+	/**
+	 * MetadataCache에서 frontmatter 가져오기
+	 * 배열, 중첩 객체 등 완전한 파싱 지원
+	 *
+	 * @param file 파일 객체
+	 * @returns 파싱된 frontmatter (없으면 빈 객체)
+	 */
+	getFrontmatterFromCache(file: TFile): QuartzFrontmatter {
+		const cache = this.metadataCache.getFileCache(file);
+		if (!cache?.frontmatter) {
+			return {};
+		}
+
+		// Obsidian의 frontmatter에서 position 속성 제거 (내부용)
+		const { position, ...frontmatter } = cache.frontmatter;
+		return frontmatter as QuartzFrontmatter;
 	}
 
 	/**
@@ -154,12 +176,26 @@ export class ContentTransformer {
 	 *
 	 * @param content 원본 마크다운 콘텐츠
 	 * @param file 파일 객체 (생성/수정 시간 참조)
-	 * @param autoDateSettings 날짜 자동 추가 설정
-	 * @returns 날짜 필드가 추가된 콘텐츠
+	 * @param autoDateSettings 자동 추가 설정
+	 * @returns 필드가 추가된 콘텐츠
 	 */
 	addDateFields(content: string, file: TFile, autoDateSettings: AutoDateSettings): string {
 		const { frontmatter, body, raw } = this.parseFrontmatter(content);
 		const newFields: string[] = [];
+
+		// title 필드 처리 (파일명에서 생성)
+		if (autoDateSettings.enableTitle && frontmatter.title === undefined) {
+			const title = this.generateTitle(file);
+			newFields.push(`title: "${this.escapeYamlString(title)}"`);
+		}
+
+		// description 필드 처리 (첫 문단에서 생성)
+		if (autoDateSettings.enableDescription && frontmatter.description === undefined) {
+			const description = this.generateDescription(body, autoDateSettings.descriptionMaxLength);
+			if (description) {
+				newFields.push(`description: "${this.escapeYamlString(description)}"`);
+			}
+		}
 
 		// created 필드 처리 (파일 생성 시간 사용)
 		if (autoDateSettings.enableCreated && frontmatter.created === undefined) {
@@ -196,9 +232,71 @@ export class ContentTransformer {
 	}
 
 	/**
+	 * 파일명에서 title 생성
+	 */
+	private generateTitle(file: TFile): string {
+		// 파일명에서 확장자 제거
+		return file.basename;
+	}
+
+	/**
+	 * 본문에서 description 생성 (첫 문단 추출)
+	 */
+	private generateDescription(body: string, maxLength: number): string {
+		// 빈 줄로 분리된 첫 문단 찾기
+		const paragraphs = body.trim().split(/\n\s*\n/);
+
+		for (const paragraph of paragraphs) {
+			// 헤딩, 리스트, 코드블록, 이미지 등 제외
+			const trimmed = paragraph.trim();
+			if (
+				trimmed.startsWith('#') ||
+				trimmed.startsWith('-') ||
+				trimmed.startsWith('*') ||
+				trimmed.startsWith('```') ||
+				trimmed.startsWith('![') ||
+				trimmed.startsWith('>')
+			) {
+				continue;
+			}
+
+			// 마크다운 문법 제거
+			let text = trimmed
+				.replace(/\*\*([^*]+)\*\*/g, '$1') // bold
+				.replace(/\*([^*]+)\*/g, '$1') // italic
+				.replace(/`([^`]+)`/g, '$1') // inline code
+				.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, '$2 || $1') // wiki links
+				.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // markdown links
+				.replace(/\n/g, ' ') // 줄바꿈 → 공백
+				.replace(/\s+/g, ' ') // 연속 공백 → 단일 공백
+				.trim();
+
+			if (text.length > 0) {
+				// maxLength 초과 시 자르기
+				if (text.length > maxLength) {
+					text = text.slice(0, maxLength - 3).trim() + '...';
+				}
+				return text;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * YAML 문자열 이스케이프
+	 */
+	private escapeYamlString(str: string): string {
+		return str
+			.replace(/\\/g, '\\\\')
+			.replace(/"/g, '\\"')
+			.replace(/\n/g, '\\n');
+	}
+
+	/**
 	 * 발행 경로 결정 (프론트매터 path > 볼트 구조)
 	 */
-	getRemotePath(file: TFile, frontmatter: Record<string, unknown>): string {
+	getRemotePath(file: TFile, frontmatter: QuartzFrontmatter): string {
 		// 1. 프론트매터의 path 우선
 		if (typeof frontmatter.path === 'string' && frontmatter.path.trim()) {
 			const customPath = frontmatter.path.trim();
@@ -304,5 +402,91 @@ export class ContentTransformer {
 		}
 
 		return attachments;
+	}
+
+	/**
+	 * Frontmatter 검증
+	 *
+	 * @param frontmatter 검증할 frontmatter
+	 * @param settings 검증 설정
+	 * @returns 검증 결과
+	 */
+	validateFrontmatter(
+		frontmatter: QuartzFrontmatter,
+		settings: FrontmatterValidationSettings
+	): FrontmatterValidationResult {
+		const issues: ValidationIssue[] = [];
+
+		if (!settings.enabled) {
+			return {
+				isValid: true,
+				issues: [],
+				errorCount: 0,
+				warningCount: 0,
+			};
+		}
+
+		// title 검증
+		if (settings.requireTitle && !frontmatter.title) {
+			issues.push({
+				severity: 'warning',
+				field: 'title',
+				message: 'title 필드가 없습니다. SEO와 접근성을 위해 추가를 권장합니다.',
+				suggestion: '파일명을 title로 사용할 수 있습니다.',
+			});
+		}
+
+		// description 검증
+		if (settings.requireDescription && !frontmatter.description) {
+			issues.push({
+				severity: 'warning',
+				field: 'description',
+				message: 'description 필드가 없습니다. 링크 미리보기에 표시됩니다.',
+				suggestion: '첫 문단을 description으로 사용할 수 있습니다.',
+			});
+		}
+
+		// tags 검증
+		if (settings.requireTags) {
+			const tags = frontmatter.tags;
+			if (!tags || (Array.isArray(tags) && tags.length === 0)) {
+				issues.push({
+					severity: 'warning',
+					field: 'tags',
+					message: 'tags 필드가 없습니다. 콘텐츠 분류에 도움이 됩니다.',
+				});
+			}
+		}
+
+		// draft와 publish 동시 설정 경고
+		if (frontmatter.draft === true && frontmatter.publish === true) {
+			issues.push({
+				severity: 'warning',
+				field: 'draft',
+				message: 'draft: true와 publish: true가 동시에 설정되어 있습니다.',
+				suggestion: 'draft를 제거하거나 false로 설정하세요.',
+			});
+		}
+
+		// description 길이 검증
+		if (frontmatter.description && typeof frontmatter.description === 'string') {
+			if (frontmatter.description.length > 160) {
+				issues.push({
+					severity: 'info',
+					field: 'description',
+					message: `description이 ${frontmatter.description.length}자입니다. 160자 이하를 권장합니다.`,
+				});
+			}
+		}
+
+		const errorCount = issues.filter((i) => i.severity === 'error').length;
+		const warningCount = issues.filter((i) => i.severity === 'warning').length;
+
+		return {
+			isValid: errorCount === 0,
+			issues,
+			errorCount,
+			warningCount,
+		};
 	}
 }

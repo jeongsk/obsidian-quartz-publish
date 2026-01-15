@@ -14,6 +14,7 @@ import type {
 	UnpublishResult,
 	AttachmentRecord,
 	PublishError,
+	QuartzFrontmatter,
 } from '../types';
 import { MAX_FILE_SIZE, DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
 import type { LargeFileInfo, FileValidationResult } from '../types';
@@ -107,7 +108,7 @@ export class PublishService {
 		return this.publishFilter.getPublishPath(file);
 	}
 
-	getRemotePath(file: TFile, frontmatter: Record<string, unknown>): string {
+	getRemotePath(file: TFile, frontmatter: QuartzFrontmatter): string {
 		if (this.publishFilter.isHomePage(file)) {
 			return `${this.settings.contentPath}/index.md`;
 		}
@@ -142,8 +143,8 @@ export class PublishService {
 		try {
 			let content = await this.vault.read(file);
 
-			// 2. 프론트매터 파싱
-			const { frontmatter } = this.transformer.parseFrontmatter(content);
+			// 2. 프론트매터 파싱 (MetadataCache 사용으로 배열/중첩 객체 완전 지원)
+			const frontmatter = this.transformer.getFrontmatterFromCache(file);
 
 			// 3. publish 플래그 확인 및 자동 추가
 			if (frontmatter.publish !== true) {

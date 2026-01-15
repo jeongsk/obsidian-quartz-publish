@@ -27,6 +27,23 @@ export default {
 	'settings.autoDate.modifiedDesc': 'Add file modification date (format: YYYY-MM-DD)',
 	'settings.autoDate.published': 'Add published date',
 	'settings.autoDate.publishedDesc': 'Add current date as published date (format: YYYY-MM-DD)',
+	'settings.autoDate.title_field': 'Auto-add Title',
+	'settings.autoDate.title_fieldDesc': 'Auto-generate title field from filename',
+	'settings.autoDate.description_field': 'Auto-add Description',
+	'settings.autoDate.description_fieldDesc': 'Auto-generate description field from first paragraph',
+
+	// Settings - Frontmatter
+	'settings.frontmatter.title': 'Frontmatter Settings',
+	'settings.frontmatter.editor': 'Show Editor Before Publish',
+	'settings.frontmatter.editorDesc': 'Show modal to edit frontmatter before publishing',
+	'settings.frontmatter.validation': 'Enable Validation',
+	'settings.frontmatter.validationDesc': 'Validate required frontmatter fields',
+	'settings.frontmatter.requireTitle': 'Require Title',
+	'settings.frontmatter.requireTitleDesc': 'Warn if title field is missing',
+	'settings.frontmatter.requireDescription': 'Require Description',
+	'settings.frontmatter.requireDescriptionDesc': 'Warn if description field is missing',
+	'settings.frontmatter.requireTags': 'Require Tags',
+	'settings.frontmatter.requireTagsDesc': 'Warn if tags field is missing',
 
 	// Settings - Quartz
 	'settings.quartz.title': 'Quartz Configuration',
@@ -129,6 +146,7 @@ export default {
 	'notice.publish.success': 'Published: {{filename}} → {{path}}',
 	'notice.publish.failed': 'Failed to publish: {{filename}} ({{error}})',
 	'notice.publish.error': 'Publish error: {{message}}',
+	'notice.publish.cancelled': 'Publishing cancelled.',
 	'notice.batch.success': '{{count}} notes published.',
 	'notice.batch.partial': 'Published: {{succeeded}} success, {{failed}} failed',
 	'notice.delete.success': '{{count}} notes deleted.',
@@ -178,6 +196,19 @@ export default {
 	'modal.largeFile.title': 'Large File Warning',
 	'modal.largeFile.message': '{{count}} files exceed {{size}}. Large files may cause publishing issues.',
 	'modal.largeFile.continue': 'Continue Anyway',
+
+	// Modals - Frontmatter Editor
+	'modal.frontmatter.title': 'Edit Frontmatter',
+	'modal.frontmatter.titleDesc': 'Page title (uses filename if empty)',
+	'modal.frontmatter.descriptionDesc': 'Page description (shown in link previews)',
+	'modal.frontmatter.descriptionPlaceholder': 'Enter a description for this page...',
+	'modal.frontmatter.tagsDesc': 'Enter tags separated by commas',
+	'modal.frontmatter.draftDesc': 'Enable to make the page private',
+	'modal.frontmatter.permalinkDesc': 'Custom URL path (persists even if file moves)',
+	'modal.frontmatter.tocDesc': 'Show Table of Contents',
+	'modal.frontmatter.cssDesc': 'CSS classes to apply to the page',
+	'modal.frontmatter.save': 'Save & Publish',
+	'modal.frontmatter.validationSuccess': 'All validations passed',
 
 	// Modals - Create Repo
 	'modal.createRepo.title': 'Create Quartz Repository',
