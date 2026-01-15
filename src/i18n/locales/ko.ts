@@ -449,6 +449,21 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'siteInfo.baseUrl.desc': '사이트 도메인 (프로토콜 없이 입력, 예: example.com 또는 username.github.io)',
 	'siteInfo.locale.name': '로케일',
 	'siteInfo.locale.desc': '사이트 기본 언어 및 지역 설정',
+
+	// Behavior Section
+	'behavior.heading': '동작',
+	'behavior.spa.name': 'SPA (Single Page Application)',
+	'behavior.spa.desc': '페이지 이동 시 전체 페이지 새로고침 없이 부드러운 전환을 제공합니다',
+	'behavior.popovers.name': '링크 팝오버',
+	'behavior.popovers.desc': '내부 링크 위에 마우스를 올리면 링크된 페이지의 미리보기를 표시합니다',
+	'behavior.dateType.name': '기본 날짜 유형',
+	'behavior.dateType.desc': '노트에 표시할 기본 날짜 유형을 선택합니다',
+	'behavior.dateType.created': '생성일',
+	'behavior.dateType.created.desc': '노트가 처음 생성된 날짜',
+	'behavior.dateType.modified': '수정일',
+	'behavior.dateType.modified.desc': '노트가 마지막으로 수정된 날짜',
+	'behavior.dateType.published': '발행일',
+	'behavior.dateType.published.desc': '노트가 발행된 날짜',
 };
 
 export default ko;

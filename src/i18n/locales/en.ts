@@ -445,4 +445,19 @@ export default {
 	'siteInfo.baseUrl.desc': 'Site domain (without protocol, e.g., example.com or username.github.io)',
 	'siteInfo.locale.name': 'Locale',
 	'siteInfo.locale.desc': 'Default language and region settings for the site',
+
+	// Behavior Section
+	'behavior.heading': 'Behavior',
+	'behavior.spa.name': 'Single Page Application (SPA)',
+	'behavior.spa.desc': 'Provides smooth transitions without full page reloads when navigating',
+	'behavior.popovers.name': 'Link Popovers',
+	'behavior.popovers.desc': 'Shows a preview of linked pages when hovering over internal links',
+	'behavior.dateType.name': 'Default Date Type',
+	'behavior.dateType.desc': 'Select the default date type to display on notes',
+	'behavior.dateType.created': 'Created',
+	'behavior.dateType.created.desc': 'Date the note was first created',
+	'behavior.dateType.modified': 'Modified',
+	'behavior.dateType.modified.desc': 'Date the note was last modified',
+	'behavior.dateType.published': 'Published',
+	'behavior.dateType.published.desc': 'Date the note was published',
 } as const;

@@ -8,6 +8,7 @@
  */
 
 import { Setting } from 'obsidian';
+import { t } from '../../i18n';
 import type { QuartzSiteConfig } from '../../types';
 
 /**
@@ -31,27 +32,7 @@ export interface BehaviorSectionOptions {
 /**
  * 날짜 타입 옵션
  */
-const DATE_TYPE_OPTIONS: Array<{
-	value: 'created' | 'modified' | 'published';
-	label: string;
-	description: string;
-}> = [
-	{
-		value: 'created',
-		label: '생성일',
-		description: '노트가 처음 생성된 날짜',
-	},
-	{
-		value: 'modified',
-		label: '수정일',
-		description: '노트가 마지막으로 수정된 날짜',
-	},
-	{
-		value: 'published',
-		label: '발행일',
-		description: '노트가 발행된 날짜',
-	},
-];
+const DATE_TYPE_VALUES = ['created', 'modified', 'published'] as const;
 
 /**
  * Behavior Section Component (T043)
@@ -76,7 +57,7 @@ export class BehaviorSection {
 	 */
 	private render(): void {
 		// 섹션 헤더 (T047)
-		new Setting(this.containerEl).setName('Behavior').setHeading();
+		new Setting(this.containerEl).setName(t('behavior.heading')).setHeading();
 
 		// Enable SPA 토글 (T044)
 		this.renderEnableSPAToggle();
@@ -93,10 +74,8 @@ export class BehaviorSection {
 	 */
 	private renderEnableSPAToggle(): void {
 		new Setting(this.containerEl)
-			.setName('Single Page Application (SPA)')
-			.setDesc(
-				'페이지 이동 시 전체 페이지 새로고침 없이 부드러운 전환을 제공합니다'
-			)
+			.setName(t('behavior.spa.name'))
+			.setDesc(t('behavior.spa.desc'))
 			.addToggle((toggle) => {
 				this.spaToggleEl = toggle.toggleEl.querySelector('input');
 				toggle
@@ -112,10 +91,8 @@ export class BehaviorSection {
 	 */
 	private renderEnablePopoversToggle(): void {
 		new Setting(this.containerEl)
-			.setName('Link Popovers')
-			.setDesc(
-				'내부 링크 위에 마우스를 올리면 링크된 페이지의 미리보기를 표시합니다'
-			)
+			.setName(t('behavior.popovers.name'))
+			.setDesc(t('behavior.popovers.desc'))
 			.addToggle((toggle) => {
 				this.popoversToggleEl = toggle.toggleEl.querySelector('input');
 				toggle
@@ -131,14 +108,14 @@ export class BehaviorSection {
 	 */
 	private renderDefaultDateTypeDropdown(): void {
 		new Setting(this.containerEl)
-			.setName('Default Date Type')
-			.setDesc('노트에 표시할 기본 날짜 유형을 선택합니다')
+			.setName(t('behavior.dateType.name'))
+			.setDesc(t('behavior.dateType.desc'))
 			.addDropdown((dropdown) => {
 				this.dateTypeDropdown = dropdown.selectEl;
 
 				// 옵션 추가
-				for (const option of DATE_TYPE_OPTIONS) {
-					dropdown.addOption(option.value, option.label);
+				for (const value of DATE_TYPE_VALUES) {
+					dropdown.addOption(value, t(`behavior.dateType.${value}`));
 				}
 
 				// 현재 값 설정
