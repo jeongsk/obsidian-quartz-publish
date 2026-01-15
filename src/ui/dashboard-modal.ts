@@ -447,7 +447,7 @@ export class DashboardModal extends Modal {
 
 		// 프로그레스 바
 		const progressEl = loadingEl.createDiv({
-			cls: 'quartz-publish-loading-progress hn:w-full hn:mt-4',
+			cls: 'quartz-publish-loading-progress qp:w-full qp:mt-4',
 		});
 		const progressBarContainer = progressEl.createDiv({
 			cls: 'quartz-publish-progress',
@@ -546,14 +546,14 @@ export class DashboardModal extends Modal {
 		});
 
 		errorEl.createDiv({
-			cls: 'hn:text-sm hn:mt-2 hn:text-obs-text-muted',
+			cls: 'qp:text-sm qp:mt-2 qp:text-obs-text-muted',
 			text: errorInfo.suggestion,
 		});
 
 		// 다시 시도 버튼
 		const buttonEl = errorEl.createEl('button', {
 			text: '다시 시도',
-			cls: 'mod-cta hn:mt-4',
+			cls: 'mod-cta qp:mt-4',
 			attr: { 'aria-label': '상태 다시 로드하기' },
 		});
 		buttonEl.addEventListener('click', () => this.loadStatus());
@@ -576,7 +576,7 @@ export class DashboardModal extends Modal {
 		// 새로고침 버튼
 		const refreshBtn = headerEl.createEl('button', {
 			text: '새로고침',
-			cls: 'hn:text-sm',
+			cls: 'qp:text-sm',
 		});
 		refreshBtn.addEventListener('click', () => this.refresh());
 	}
@@ -756,7 +756,7 @@ export class DashboardModal extends Modal {
 				type: 'checkbox',
 				'aria-label': `${noteName} 선택`,
 			},
-			cls: 'hn:mr-3',
+			cls: 'qp:mr-3',
 		}) as HTMLInputElement;
 		checkboxEl.checked = isSelected;
 		checkboxEl.addEventListener('change', () =>
@@ -764,18 +764,18 @@ export class DashboardModal extends Modal {
 		);
 
 		// 노트 정보
-		const infoEl = itemEl.createDiv({ cls: 'hn:flex-1 hn:min-w-0' });
+		const infoEl = itemEl.createDiv({ cls: 'qp:flex-1 qp:min-w-0' });
 
 		// 파일명
 		infoEl.createDiv({
 			text: note.file.basename || note.file.path.split('/').pop(),
-			cls: 'hn:font-medium hn:truncate',
+			cls: 'qp:font-medium qp:truncate',
 		});
 
 		// 경로
 		infoEl.createDiv({
 			text: note.file.path,
-			cls: 'hn:text-xs hn:text-obs-text-muted hn:truncate',
+			cls: 'qp:text-xs qp:text-obs-text-muted qp:truncate',
 		});
 
 		// 상태 뱃지
@@ -805,7 +805,7 @@ export class DashboardModal extends Modal {
 		if (selectedCount > 0) {
 			leftEl.createSpan({
 				text: `${selectedCount}개 선택됨`,
-				cls: 'hn:text-sm hn:text-obs-text-muted',
+				cls: 'qp:text-sm qp:text-obs-text-muted',
 				attr: { 'aria-live': 'polite' },
 			});
 		}
@@ -922,7 +922,7 @@ export class ConfirmModal extends Modal {
 		contentEl.createEl('p', { text: this.message });
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'hn:flex hn:justify-end hn:gap-2 hn:mt-4',
+			cls: 'qp:flex qp:justify-end qp:gap-2 qp:mt-4',
 		});
 
 		const cancelBtn = buttonContainer.createEl('button', {

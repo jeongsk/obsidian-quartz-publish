@@ -262,7 +262,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.connectionStatusEl.createSpan({
 			text: message,
-			cls: status === 'error' ? 'hn:text-obs-text-error' : '',
+			cls: status === 'error' ? 'qp:text-obs-text-error' : '',
 		});
 	}
 
@@ -317,7 +317,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		if (!githubToken || !repoUrl) {
 			this.quartzSettingsContainerEl.createEl('p', {
 				text: 'Connect to GitHub first to configure Quartz settings.',
-				cls: 'hn:text-obs-text-muted hn:text-sm',
+				cls: 'qp:text-obs-text-muted qp:text-sm',
 			});
 			return;
 		}
@@ -349,7 +349,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.quartzSettingsContainerEl.empty();
 		this.quartzSettingsContainerEl.createEl('p', {
 			text: 'Loading Quartz settings...',
-			cls: 'hn:text-obs-text-muted hn:text-sm',
+			cls: 'qp:text-obs-text-muted qp:text-sm',
 		});
 
 		try {
@@ -391,7 +391,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			this.quartzSettingsContainerEl.createEl('p', {
 				text: `Failed to load settings: ${message}`,
-				cls: 'hn:text-obs-text-error hn:text-sm',
+				cls: 'qp:text-obs-text-error qp:text-sm',
 			});
 
 			// 재시도 버튼
@@ -480,7 +480,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		if (statusEl) {
 			statusEl.textContent = 'Saving...';
-			statusEl.className = 'quartz-publish-setting-status hn:text-obs-text-muted';
+			statusEl.className = 'quartz-publish-setting-status qp:text-obs-text-muted';
 		}
 
 		try {
@@ -516,7 +516,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			// 성공 표시
 			if (statusEl) {
 				statusEl.textContent = 'Saved!';
-				statusEl.className = 'quartz-publish-setting-status hn:text-obs-text-success';
+				statusEl.className = 'quartz-publish-setting-status qp:text-obs-text-success';
 				setTimeout(() => {
 					statusEl.textContent = '';
 				}, 2000);
@@ -528,7 +528,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			if (statusEl) {
 				statusEl.textContent = `Error: ${message}`;
-				statusEl.className = 'quartz-publish-setting-status hn:text-obs-text-error';
+				statusEl.className = 'quartz-publish-setting-status qp:text-obs-text-error';
 			}
 
 			new Notice(`Failed to save: ${message}`);
@@ -561,21 +561,21 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			if (patterns.length === 0) {
 				patternsContainer.createEl('p', {
 					text: 'No patterns configured',
-					cls: 'hn:text-obs-text-muted hn:text-sm',
+					cls: 'qp:text-obs-text-muted qp:text-sm',
 				});
 			} else {
 				patterns.forEach((pattern, index) => {
 					const patternEl = patternsContainer.createDiv({
-						cls: 'quartz-publish-pattern-item hn:flex hn:items-center hn:gap-2 hn:mb-1',
+						cls: 'quartz-publish-pattern-item qp:flex qp:items-center qp:gap-2 qp:mb-1',
 					});
 
 					patternEl.createEl('code', {
 						text: pattern,
-						cls: 'hn:flex-1',
+						cls: 'qp:flex-1',
 					});
 
 					const removeBtn = patternEl.createEl('button', {
-						cls: 'hn:text-obs-text-error',
+						cls: 'qp:text-obs-text-error',
 						attr: { 'aria-label': 'Remove pattern' },
 					});
 					removeBtn.textContent = '×';
@@ -592,17 +592,17 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 패턴 추가 입력
 		const addPatternContainer = this.quartzSettingsContainerEl.createDiv({
-			cls: 'quartz-publish-add-pattern hn:flex hn:gap-2 hn:mt-2',
+			cls: 'quartz-publish-add-pattern qp:flex qp:gap-2 qp:mt-2',
 		});
 
 		const inputEl = addPatternContainer.createEl('input', {
 			type: 'text',
 			placeholder: 'e.g., private/*, **/*.draft.md',
-			cls: 'hn:flex-1',
+			cls: 'qp:flex-1',
 		});
 
 		const errorEl = this.quartzSettingsContainerEl.createDiv({
-			cls: 'hn:text-obs-text-error hn:text-sm hn:mt-1',
+			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1',
 		});
 
 		const addBtn = addPatternContainer.createEl('button', {
@@ -792,7 +792,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.upgradeContainerEl.empty();
 		this.upgradeContainerEl.createEl('p', {
 			text: 'Checking for updates...',
-			cls: 'hn:text-obs-text-muted hn:text-sm',
+			cls: 'qp:text-obs-text-muted qp:text-sm',
 		});
 
 		try {
@@ -806,7 +806,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			this.upgradeContainerEl.createEl('p', {
 				text: `Failed to check updates: ${message}`,
-				cls: 'hn:text-obs-text-error hn:text-sm',
+				cls: 'qp:text-obs-text-error qp:text-sm',
 			});
 
 			// 재시도 버튼
@@ -828,11 +828,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 현재 버전 표시
 		const currentVersionEl = this.upgradeContainerEl.createDiv({
-			cls: 'quartz-publish-version-info hn:mb-2',
+			cls: 'quartz-publish-version-info qp:mb-2',
 		});
 		currentVersionEl.createEl('span', {
 			text: 'Current version: ',
-			cls: 'hn:text-obs-text-muted',
+			cls: 'qp:text-obs-text-muted',
 		});
 		currentVersionEl.createEl('code', {
 			text: versionInfo.current ?? 'Unknown',
@@ -840,11 +840,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 최신 버전 표시
 		const latestVersionEl = this.upgradeContainerEl.createDiv({
-			cls: 'quartz-publish-version-info hn:mb-2',
+			cls: 'quartz-publish-version-info qp:mb-2',
 		});
 		latestVersionEl.createEl('span', {
 			text: 'Latest version: ',
-			cls: 'hn:text-obs-text-muted',
+			cls: 'qp:text-obs-text-muted',
 		});
 		latestVersionEl.createEl('code', {
 			text: versionInfo.latest ?? 'Unknown',
@@ -853,11 +853,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// 업데이트 상태 및 버튼
 		if (versionInfo.hasUpdate) {
 			const updateAvailableEl = this.upgradeContainerEl.createDiv({
-				cls: 'quartz-publish-update-available hn:p-2 hn:rounded hn:mb-2',
+				cls: 'quartz-publish-update-available qp:p-2 qp:rounded qp:mb-2',
 			});
 			updateAvailableEl.createEl('p', {
 				text: `Update available: ${versionInfo.current} → ${versionInfo.latest}`,
-				cls: 'hn:text-obs-text-accent hn:font-medium',
+				cls: 'qp:text-obs-text-accent qp:font-medium',
 			});
 
 			new Setting(this.upgradeContainerEl)
@@ -874,7 +874,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		} else {
 			this.upgradeContainerEl.createEl('p', {
 				text: '✓ You are using the latest version',
-				cls: 'hn:text-obs-text-success hn:text-sm',
+				cls: 'qp:text-obs-text-success qp:text-sm',
 			});
 		}
 
@@ -907,11 +907,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		const statusEl = progressContainer.createEl('p', {
 			text: 'Starting upgrade...',
-			cls: 'hn:font-medium',
+			cls: 'qp:font-medium',
 		});
 
 		const progressBarContainer = progressContainer.createDiv({
-			cls: 'quartz-publish-progress-bar-container hn:w-full hn:h-2 hn:rounded hn:overflow-hidden hn:my-2 hn:bg-obs-modifier-border',
+			cls: 'quartz-publish-progress-bar-container qp:w-full qp:h-2 qp:rounded qp:overflow-hidden qp:my-2 qp:bg-obs-modifier-border',
 		});
 
 		const progressBar = progressBarContainer.createDiv({
@@ -926,7 +926,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		const detailEl = progressContainer.createEl('p', {
 			text: '',
-			cls: 'hn:text-obs-text-muted hn:text-sm',
+			cls: 'qp:text-obs-text-muted qp:text-sm',
 		});
 
 		// 취소 버튼
@@ -965,7 +965,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			if (progress.error) {
 				detailEl.textContent = progress.error;
-				detailEl.className = 'hn:text-obs-text-error hn:text-sm';
+				detailEl.className = 'qp:text-obs-text-error qp:text-sm';
 			}
 		};
 
@@ -976,14 +976,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			if (result.success) {
 				statusEl.textContent = `Successfully upgraded to ${result.version}`;
-				statusEl.className = 'hn:text-obs-text-success hn:font-medium';
+				statusEl.className = 'qp:text-obs-text-success qp:font-medium';
 				progressBar.setCssProps({ '--progress-width': '100%' });
 				detailEl.textContent = `${result.filesUpdated} files updated`;
 
 				new Notice(`Quartz upgraded to ${result.version}`);
 			} else {
 				statusEl.textContent = 'Upgrade failed';
-				statusEl.className = 'hn:text-obs-text-error hn:font-medium';
+				statusEl.className = 'qp:text-obs-text-error qp:font-medium';
 				detailEl.textContent = result.error || 'Unknown error';
 
 				new Notice(`Upgrade failed: ${result.error}`);
@@ -993,7 +993,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			statusEl.textContent = 'Upgrade failed';
-			statusEl.className = 'hn:text-obs-text-error hn:font-medium';
+			statusEl.className = 'qp:text-obs-text-error qp:font-medium';
 			detailEl.textContent = message;
 
 			new Notice(`Upgrade failed: ${message}`);
