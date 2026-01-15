@@ -14,7 +14,7 @@ import type {
 	UnpublishResult,
 	AttachmentRecord,
 } from '../types';
-import { MAX_FILE_SIZE } from '../types';
+import { MAX_FILE_SIZE, DEFAULT_AUTO_DATE_SETTINGS } from '../types';
 import { GitHubService } from './github';
 import { ContentTransformer } from './transformer';
 
@@ -89,20 +89,28 @@ export class PublishService {
 				await this.vault.modify(file, content);
 			}
 
-			// 4. 발행된 노트 목록 가져오기 (링크 변환용)
+			// 4. 날짜 필드 자동 추가
+			const autoDateSettings = this.settings.autoDateSettings ?? DEFAULT_AUTO_DATE_SETTINGS;
+			const contentWithDates = this.transformer.addDateFields(content, file, autoDateSettings);
+			if (contentWithDates !== content) {
+				content = contentWithDates;
+				await this.vault.modify(file, content);
+			}
+
+			// 5. 발행된 노트 목록 가져오기 (링크 변환용)
 			const publishedNotes = this.getPublishedNotes();
 
-			// 5. 콘텐츠 변환
+			// 6. 콘텐츠 변환
 			const transformed = this.transformer.transform(content, file, publishedNotes);
 
-			// 6. 원격 경로 결정
+			// 7. 원격 경로 결정
 			const remotePath = this.transformer.getRemotePath(file, frontmatter);
 
-			// 7. 기존 파일 SHA 확인
+			// 8. 기존 파일 SHA 확인
 			const existingFile = await this.github.getFile(remotePath);
 			const existingSha = existingFile?.sha;
 
-			// 8. 파일 업로드
+			// 9. 파일 업로드
 			const commitResult = await this.github.createOrUpdateFile(
 				remotePath,
 				transformed.content,
@@ -118,13 +126,13 @@ export class PublishService {
 				};
 			}
 
-			// 9. 첨부파일 업로드
+			// 10. 첨부파일 업로드
 			const attachmentRecords = await this.uploadAttachments(
 				transformed.attachments,
 				file.basename
 			);
 
-			// 10. 발행 기록 저장
+			// 11. 발행 기록 저장
 			const contentHash = await this.calculateHash(transformed.content);
 			const record: PublishRecord = {
 				id: await this.calculateHash(file.path),
