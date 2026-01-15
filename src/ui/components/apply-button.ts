@@ -64,6 +64,7 @@ export class ApplyButton {
 
 		const iconSpan = this.buttonEl.createSpan({
 			cls: 'quartz-publish-apply-button-icon qp:mr-2',
+			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconSpan, 'upload-cloud');
 
@@ -126,6 +127,7 @@ export class ApplyButton {
 
 		const iconSpan = this.buttonEl.createSpan({
 			cls: 'quartz-publish-apply-button-icon qp:mr-2',
+			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconSpan, icon);
 

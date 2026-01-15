@@ -54,6 +54,7 @@ export class ConflictModal extends Modal {
 
 		const iconEl = headerEl.createSpan({
 			cls: 'qp:text-obs-text-warning',
+			attr: { 'aria-hidden': 'true' },
 		});
 		setIcon(iconEl, 'alert-triangle');
 
