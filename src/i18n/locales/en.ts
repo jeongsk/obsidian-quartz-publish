@@ -436,4 +436,13 @@ export default {
 	// Common - Warnings
 	'common.unsavedChanges': 'You have unsaved changes',
 	'common.discardChanges': 'Discard changes',
+
+	// Site Info Section
+	'siteInfo.heading': 'Site Information',
+	'siteInfo.pageTitle.name': 'Page Title',
+	'siteInfo.pageTitle.desc': 'Site title (displayed in browser tab, header, etc.)',
+	'siteInfo.baseUrl.name': 'Base URL',
+	'siteInfo.baseUrl.desc': 'Site domain (without protocol, e.g., example.com or username.github.io)',
+	'siteInfo.locale.name': 'Locale',
+	'siteInfo.locale.desc': 'Default language and region settings for the site',
 } as const;

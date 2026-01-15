@@ -440,6 +440,15 @@ const ko: { [K in TranslationKeys]?: string } = {
 	// Common - Warnings
 	'common.unsavedChanges': '저장되지 않은 변경사항이 있습니다',
 	'common.discardChanges': '변경사항 취소',
+
+	// Site Info Section
+	'siteInfo.heading': '사이트 정보',
+	'siteInfo.pageTitle.name': '페이지 제목',
+	'siteInfo.pageTitle.desc': '사이트 제목 (브라우저 탭, 헤더 등에 표시됩니다)',
+	'siteInfo.baseUrl.name': '기본 URL',
+	'siteInfo.baseUrl.desc': '사이트 도메인 (프로토콜 없이 입력, 예: example.com 또는 username.github.io)',
+	'siteInfo.locale.name': '로케일',
+	'siteInfo.locale.desc': '사이트 기본 언어 및 지역 설정',
 };
 
 export default ko;

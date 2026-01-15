@@ -9,6 +9,7 @@
 
 import { Setting } from 'obsidian';
 import { SUPPORTED_LOCALES } from '../../constants/locales';
+import { t } from '../../i18n';
 import type { QuartzSiteConfig } from '../../types';
 import {
 	validatePageTitle,
@@ -61,7 +62,7 @@ export class SiteInfoSection {
 	 */
 	private render(): void {
 		// 섹션 헤더 (T032)
-		new Setting(this.containerEl).setName('Site Information').setHeading();
+		new Setting(this.containerEl).setName(t('siteInfo.heading')).setHeading();
 
 		// Page Title 입력 (T028)
 		this.renderPageTitleInput();
@@ -78,8 +79,8 @@ export class SiteInfoSection {
 	 */
 	private renderPageTitleInput(): void {
 		const setting = new Setting(this.containerEl)
-			.setName('Page Title')
-			.setDesc('사이트 제목 (브라우저 탭, 헤더 등에 표시됩니다)')
+			.setName(t('siteInfo.pageTitle.name'))
+			.setDesc(t('siteInfo.pageTitle.desc'))
 			.addText((text) => {
 				this.pageTitleInput = text.inputEl;
 				text
@@ -131,10 +132,8 @@ export class SiteInfoSection {
 	 */
 	private renderBaseUrlInput(): void {
 		const setting = new Setting(this.containerEl)
-			.setName('Base URL')
-			.setDesc(
-				'사이트 도메인 (프로토콜 없이 입력, 예: example.com 또는 username.github.io)'
-			)
+			.setName(t('siteInfo.baseUrl.name'))
+			.setDesc(t('siteInfo.baseUrl.desc'))
 			.addText((text) => {
 				this.baseUrlInput = text.inputEl;
 				text
@@ -186,8 +185,8 @@ export class SiteInfoSection {
 	 */
 	private renderLocaleDropdown(): void {
 		new Setting(this.containerEl)
-			.setName('Locale')
-			.setDesc('사이트 기본 언어 및 지역 설정')
+			.setName(t('siteInfo.locale.name'))
+			.setDesc(t('siteInfo.locale.desc'))
 			.addDropdown((dropdown) => {
 				this.localeDropdown = dropdown.selectEl;
 
