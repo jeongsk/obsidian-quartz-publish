@@ -1,0 +1,234 @@
+/**
+ * Publishing Section Component
+ *
+ * 발행 관련 설정 UI 컴포넌트 (T058-T063)
+ * - explicitPublish: 명시적 발행 필터
+ * - ignorePatterns: 제외 패턴
+ * - urlStrategy: URL 생성 전략
+ */
+
+import { Setting } from 'obsidian';
+import type { QuartzSiteConfig } from '../../types';
+import { validateGlobPattern } from '../../utils/glob-validator';
+
+/**
+ * PublishingSection 변경 콜백
+ */
+export type PublishingChangeCallback = <K extends keyof QuartzSiteConfig>(
+	field: K,
+	value: QuartzSiteConfig[K]
+) => void;
+
+/**
+ * PublishingSection 옵션
+ */
+export interface PublishingSectionOptions {
+	/** 초기 설정값 */
+	config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns' | 'urlStrategy'>;
+	/** 변경 콜백 */
+	onChange: PublishingChangeCallback;
+}
+
+/**
+ * Publishing Section Component (T058)
+ */
+export class PublishingSection {
+	private containerEl: HTMLElement;
+	private options: PublishingSectionOptions;
+
+	// 현재 상태
+	private patterns: string[];
+
+	// 컴포넌트 참조
+	private explicitPublishToggleEl: HTMLInputElement | null = null;
+	private urlStrategyDropdown: HTMLSelectElement | null = null;
+	private patternsContainerEl: HTMLElement | null = null;
+
+	constructor(containerEl: HTMLElement, options: PublishingSectionOptions) {
+		this.containerEl = containerEl;
+		this.options = options;
+		this.patterns = [...options.config.ignorePatterns];
+		this.render();
+	}
+
+	/**
+	 * 섹션 렌더링
+	 */
+	private render(): void {
+		// 섹션 헤더 (T063)
+		new Setting(this.containerEl).setName('Publishing').setHeading();
+
+		// ExplicitPublish 토글 (T059)
+		this.renderExplicitPublishToggle();
+
+		// Ignore Patterns (T060)
+		this.renderIgnorePatternsInput();
+
+		// URL Strategy (T061)
+		this.renderUrlStrategyDropdown();
+	}
+
+	/**
+	 * ExplicitPublish 토글 렌더링 (T059)
+	 */
+	private renderExplicitPublishToggle(): void {
+		new Setting(this.containerEl)
+			.setName('Selective Publishing')
+			.setDesc(
+				'활성화하면 프론트매터에 "publish: true"가 있는 노트만 발행합니다. 비활성화하면 초안(draft)을 제외한 모든 노트가 발행됩니다.'
+			)
+			.addToggle((toggle) => {
+				this.explicitPublishToggleEl = toggle.toggleEl.querySelector('input');
+				toggle
+					.setValue(this.options.config.explicitPublish)
+					.onChange((value) => {
+						this.options.onChange('explicitPublish', value);
+					});
+			});
+	}
+
+	/**
+	 * Ignore Patterns 입력 렌더링 (T060)
+	 */
+	private renderIgnorePatternsInput(): void {
+		new Setting(this.containerEl)
+			.setName('Ignore Patterns')
+			.setDesc('발행에서 제외할 파일/폴더 패턴 (glob 형식)');
+
+		// 패턴 목록 컨테이너
+		this.patternsContainerEl = this.containerEl.createDiv({
+			cls: 'quartz-publish-patterns-list qp:mb-2',
+		});
+
+		this.renderPatternsList();
+
+		// 패턴 추가 입력
+		const addPatternContainer = this.containerEl.createDiv({
+			cls: 'quartz-publish-add-pattern qp:flex qp:gap-2',
+		});
+
+		const inputEl = addPatternContainer.createEl('input', {
+			type: 'text',
+			placeholder: 'e.g., private/*, **/*.draft.md',
+			cls: 'qp:flex-1',
+		});
+
+		const errorEl = this.containerEl.createDiv({
+			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1',
+		});
+
+		const addBtn = addPatternContainer.createEl('button', {
+			text: 'Add',
+		});
+
+		addBtn.onclick = () => {
+			const newPattern = inputEl.value.trim();
+			if (!newPattern) return;
+
+			// 유효성 검사
+			const validation = validateGlobPattern(newPattern);
+			if (!validation.valid) {
+				errorEl.textContent = validation.error || 'Invalid pattern';
+				return;
+			}
+
+			// 중복 검사
+			if (this.patterns.includes(newPattern)) {
+				errorEl.textContent = 'Pattern already exists';
+				return;
+			}
+
+			errorEl.textContent = '';
+			this.patterns.push(newPattern);
+			inputEl.value = '';
+			this.renderPatternsList();
+			this.options.onChange('ignorePatterns', [...this.patterns]);
+		};
+
+		// Enter 키 지원
+		inputEl.onkeydown = (e) => {
+			if (e.key === 'Enter') {
+				addBtn.click();
+			}
+		};
+	}
+
+	/**
+	 * 패턴 목록 렌더링
+	 */
+	private renderPatternsList(): void {
+		if (!this.patternsContainerEl) return;
+
+		this.patternsContainerEl.empty();
+
+		if (this.patterns.length === 0) {
+			this.patternsContainerEl.createEl('p', {
+				text: 'No patterns configured',
+				cls: 'qp:text-obs-text-muted qp:text-sm',
+			});
+		} else {
+			for (let i = 0; i < this.patterns.length; i++) {
+				const pattern = this.patterns[i];
+				const patternEl = this.patternsContainerEl.createDiv({
+					cls: 'quartz-publish-pattern-item qp:flex qp:items-center qp:gap-2 qp:mb-1',
+				});
+
+				patternEl.createEl('code', {
+					text: pattern,
+					cls: 'qp:flex-1',
+				});
+
+				const removeBtn = patternEl.createEl('button', {
+					cls: 'qp:text-obs-text-error',
+					attr: { 'aria-label': 'Remove pattern' },
+				});
+				removeBtn.textContent = '×';
+
+				const index = i;
+				removeBtn.onclick = () => {
+					this.patterns.splice(index, 1);
+					this.renderPatternsList();
+					this.options.onChange('ignorePatterns', [...this.patterns]);
+				};
+			}
+		}
+	}
+
+	/**
+	 * URL Strategy 드롭다운 렌더링 (T061)
+	 */
+	private renderUrlStrategyDropdown(): void {
+		new Setting(this.containerEl)
+			.setName('URL Strategy')
+			.setDesc('노트 URL 생성 방식을 선택합니다')
+			.addDropdown((dropdown) => {
+				this.urlStrategyDropdown = dropdown.selectEl;
+
+				dropdown
+					.addOption('shortest', 'Shortest (기본값)')
+					.addOption('absolute', 'Absolute paths')
+					.setValue(this.options.config.urlStrategy)
+					.onChange((value) => {
+						this.options.onChange('urlStrategy', value as 'shortest' | 'absolute');
+					});
+			});
+	}
+
+	/**
+	 * 외부에서 값 업데이트
+	 */
+	updateValues(
+		config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns' | 'urlStrategy'>
+	): void {
+		if (this.explicitPublishToggleEl) {
+			this.explicitPublishToggleEl.checked = config.explicitPublish;
+		}
+
+		this.patterns = [...config.ignorePatterns];
+		this.renderPatternsList();
+
+		if (this.urlStrategyDropdown) {
+			this.urlStrategyDropdown.value = config.urlStrategy;
+		}
+	}
+}

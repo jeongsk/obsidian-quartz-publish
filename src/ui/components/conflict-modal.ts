@@ -1,0 +1,155 @@
+/**
+ * Conflict Modal Component
+ *
+ * SHA 불일치(충돌) 해결 모달 (T038-T039)
+ */
+
+import { App, Modal, Setting } from 'obsidian';
+import { setIcon } from 'obsidian';
+import type { ConflictResolution } from '../../types';
+
+/**
+ * ConflictModal 옵션
+ */
+export interface ConflictModalOptions {
+	/** 추가 설명 메시지 */
+	message?: string;
+}
+
+/**
+ * Conflict Modal Component (T038)
+ */
+export class ConflictModal extends Modal {
+	private options: ConflictModalOptions;
+	private resolvePromise: ((value: ConflictResolution) => void) | null = null;
+
+	constructor(app: App, options: ConflictModalOptions = {}) {
+		super(app);
+		this.options = options;
+	}
+
+	/**
+	 * 모달 열기 (Promise 반환) (T039)
+	 */
+	openAsync(): Promise<ConflictResolution> {
+		return new Promise((resolve) => {
+			this.resolvePromise = resolve;
+			this.open();
+		});
+	}
+
+	/**
+	 * 모달 내용 표시
+	 */
+	onOpen(): void {
+		const { contentEl } = this;
+		contentEl.empty();
+		contentEl.addClass('quartz-publish-conflict-modal');
+
+		// 경고 아이콘 + 제목
+		const headerEl = contentEl.createDiv({
+			cls: 'quartz-publish-conflict-modal-header qp:flex qp:items-center qp:gap-2 qp:mb-4',
+		});
+
+		const iconEl = headerEl.createSpan({
+			cls: 'qp:text-obs-text-warning',
+		});
+		setIcon(iconEl, 'alert-triangle');
+
+		headerEl.createEl('h2', {
+			text: '설정 충돌 감지',
+			cls: 'qp:m-0',
+		});
+
+		// 설명 메시지
+		contentEl.createEl('p', {
+			text:
+				this.options.message ||
+				'원격 저장소의 설정 파일이 변경되었습니다. 어떻게 처리하시겠습니까?',
+			cls: 'quartz-publish-conflict-modal-message qp:mb-4 qp:text-obs-text-muted',
+		});
+
+		// 옵션 설명
+		const optionsEl = contentEl.createDiv({
+			cls: 'quartz-publish-conflict-modal-options qp:mb-4',
+		});
+
+		// 옵션 1: 새로고침
+		const reloadOption = optionsEl.createDiv({
+			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:mb-2 qp:bg-obs-bg-secondary',
+		});
+		reloadOption.createEl('strong', { text: '새로고침 후 재적용' });
+		reloadOption.createEl('p', {
+			text: '최신 설정을 불러온 후 변경사항을 다시 적용합니다. (권장)',
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
+		});
+
+		// 옵션 2: 강제 덮어쓰기
+		const forceOption = optionsEl.createDiv({
+			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:mb-2 qp:bg-obs-bg-secondary',
+		});
+		forceOption.createEl('strong', { text: '강제 덮어쓰기' });
+		forceOption.createEl('p', {
+			text: '원격 변경사항을 무시하고 현재 설정으로 덮어씁니다.',
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
+		});
+
+		// 옵션 3: 취소
+		const cancelOption = optionsEl.createDiv({
+			cls: 'quartz-publish-conflict-option qp:p-3 qp:rounded qp:bg-obs-bg-secondary',
+		});
+		cancelOption.createEl('strong', { text: '취소' });
+		cancelOption.createEl('p', {
+			text: '저장을 취소하고 현재 상태를 유지합니다.',
+			cls: 'qp:text-sm qp:text-obs-text-muted qp:m-0 qp:mt-1',
+		});
+
+		// 버튼 영역
+		const buttonSetting = new Setting(contentEl)
+			.setClass('quartz-publish-conflict-modal-buttons');
+
+		// 취소 버튼
+		buttonSetting.addButton((button) =>
+			button.setButtonText('취소').onClick(() => {
+				this.resolvePromise?.('cancel');
+				this.close();
+			})
+		);
+
+		// 강제 덮어쓰기 버튼
+		buttonSetting.addButton((button) =>
+			button
+				.setButtonText('강제 덮어쓰기')
+				.setWarning()
+				.onClick(() => {
+					this.resolvePromise?.('force_overwrite');
+					this.close();
+				})
+		);
+
+		// 새로고침 버튼 (권장)
+		buttonSetting.addButton((button) =>
+			button
+				.setButtonText('새로고침 후 재적용')
+				.setCta()
+				.onClick(() => {
+					this.resolvePromise?.('reload');
+					this.close();
+				})
+		);
+	}
+
+	/**
+	 * 모달 닫힘 처리
+	 */
+	onClose(): void {
+		const { contentEl } = this;
+		contentEl.empty();
+
+		// 모달이 ESC 키 등으로 닫힌 경우 cancel 반환
+		if (this.resolvePromise) {
+			this.resolvePromise('cancel');
+			this.resolvePromise = null;
+		}
+	}
+}

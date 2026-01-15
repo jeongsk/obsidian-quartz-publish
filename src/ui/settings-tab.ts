@@ -7,11 +7,23 @@
 import { App, PluginSettingTab, Setting, Notice, TextComponent } from 'obsidian';
 import type QuartzPublishPlugin from '../main';
 import { GitHubService } from '../services/github';
-import { QuartzConfigService, type ParsedQuartzConfig } from '../services/quartz-config';
+import {
+	QuartzConfigService,
+	type ParsedQuartzConfig,
+} from '../services/quartz-config';
 import { QuartzUpgradeService } from '../services/quartz-upgrade';
+import { PendingChangesManager } from '../services/pending-changes';
 import { validateGlobPattern } from '../utils/glob-validator';
-import type { QuartzVersionInfo, QuartzUpgradeProgress } from '../types';
+import type { QuartzVersionInfo, QuartzUpgradeProgress, QuartzSiteConfig } from '../types';
 import { DEFAULT_AUTO_DATE_SETTINGS } from '../types';
+import { SiteInfoSection } from './sections/site-info-section';
+import { BehaviorSection } from './sections/behavior-section';
+import { AnalyticsSection } from './sections/analytics-section';
+import { PublishingSection } from './sections/publishing-section';
+import { ApplyButton } from './components/apply-button';
+import { UnsavedWarning } from './components/unsaved-warning';
+import { ConfirmModal } from './components/confirm-modal';
+import { ConflictModal } from './components/conflict-modal';
 
 /**
  * 플러그인 설정 탭
@@ -26,9 +38,50 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	private isQuartzSettingsLoading = false;
 	private upgradeContainerEl: HTMLElement | null = null;
 
+	// Phase 4: Advanced Config 관련 (T031)
+	private pendingChangesManager: PendingChangesManager | null = null;
+	private siteInfoSection: SiteInfoSection | null = null;
+	private advancedConfigContainerEl: HTMLElement | null = null;
+
+	// Phase 4: Apply Flow 관련 (T033-T042)
+	private applyButton: ApplyButton | null = null;
+	private unsavedWarning: UnsavedWarning | null = null;
+
+	// Phase 5-7: Additional Sections (T043-T057)
+	private behaviorSection: BehaviorSection | null = null;
+	private analyticsSection: AnalyticsSection | null = null;
+
+	// Phase 8: Publishing Section (T058-T063)
+	private publishingSection: PublishingSection | null = null;
+
 	constructor(app: App, plugin: QuartzPublishPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+	}
+
+	/**
+	 * 설정 탭 닫힐 때 호출 (T041)
+	 */
+	hide(): void {
+		// 저장되지 않은 변경사항 경고
+		if (this.pendingChangesManager?.isDirty()) {
+			// 변경사항이 있으면 경고 표시 (콘솔에 로그)
+			console.warn(
+				'Quartz Publish: 저장되지 않은 변경사항이 있습니다:',
+				this.pendingChangesManager.getChangeSummary()
+			);
+			// Note: Obsidian PluginSettingTab.hide()는 비동기 확인을 지원하지 않음
+			// 대신 UnsavedWarning 배너로 사용자에게 알림
+		}
+
+		// 리소스 정리
+		this.pendingChangesManager = null;
+		this.siteInfoSection = null;
+		this.behaviorSection = null;
+		this.analyticsSection = null;
+		this.publishingSection = null;
+		this.applyButton = null;
+		this.unsavedWarning = null;
 	}
 
 	display(): void {
@@ -413,6 +466,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.quartzSettingsContainerEl.empty();
 
+		// Advanced Config 섹션 (Phase 4: Site Information - T031, T032)
+		this.renderAdvancedConfigSection(config);
+
 		// ExplicitPublish 토글 (US1)
 		this.renderExplicitPublishToggle(config);
 
@@ -435,6 +491,250 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					await this.loadQuartzSettings();
 				})
 		);
+	}
+
+	/**
+	 * Advanced Config 섹션 렌더링 (T031, T032)
+	 */
+	private renderAdvancedConfigSection(config: ParsedQuartzConfig): void {
+		if (!this.quartzSettingsContainerEl || !this.quartzConfigService) return;
+
+		// 확장된 설정 파싱
+		const extendedConfig = this.quartzConfigService.parseExtendedConfig(config.rawContent);
+		if (!extendedConfig) {
+			return;
+		}
+
+		// PendingChangesManager 초기화
+		const siteConfig = this.quartzConfigService.toQuartzSiteConfig(extendedConfig);
+		const sha = this.quartzConfigService['cachedConfig']?.sha ?? '';
+
+		this.pendingChangesManager = new PendingChangesManager();
+		this.pendingChangesManager.initialize(siteConfig, sha);
+
+		// Advanced Config 컨테이너
+		this.advancedConfigContainerEl = this.quartzSettingsContainerEl.createDiv({
+			cls: 'quartz-publish-advanced-config',
+		});
+
+		// Unsaved Warning Banner (T035, T042)
+		this.unsavedWarning = new UnsavedWarning(this.advancedConfigContainerEl, {
+			onDiscard: () => {
+				this.handleDiscardChanges();
+			},
+		});
+
+		// Site Information Section 렌더링 (T027-T030, T032)
+		this.siteInfoSection = new SiteInfoSection(this.advancedConfigContainerEl, {
+			config: {
+				pageTitle: extendedConfig.pageTitle,
+				baseUrl: extendedConfig.baseUrl,
+				locale: extendedConfig.locale,
+			},
+			onChange: (field, value) => {
+				this.handleAdvancedConfigChange(field, value);
+			},
+		});
+
+		// Behavior Section 렌더링 (T043-T047, T056-T057)
+		this.behaviorSection = new BehaviorSection(this.advancedConfigContainerEl, {
+			config: {
+				enableSPA: extendedConfig.enableSPA,
+				enablePopovers: extendedConfig.enablePopovers,
+				defaultDateType: extendedConfig.defaultDateType,
+			},
+			onChange: (field, value) => {
+				this.handleAdvancedConfigChange(field, value);
+			},
+		});
+
+		// Analytics Section 렌더링 (T048-T055)
+		this.analyticsSection = new AnalyticsSection(this.advancedConfigContainerEl, {
+			config: extendedConfig.analytics,
+			onChange: (field, value) => {
+				this.handleAdvancedConfigChange(field, value);
+			},
+		});
+
+		// Publishing Section 렌더링 (T058-T063)
+		this.publishingSection = new PublishingSection(this.advancedConfigContainerEl, {
+			config: {
+				explicitPublish: extendedConfig.explicitPublish,
+				ignorePatterns: extendedConfig.ignorePatterns,
+				urlStrategy: extendedConfig.urlStrategy,
+			},
+			onChange: (field, value) => {
+				this.handleAdvancedConfigChange(field, value);
+			},
+		});
+
+		// Apply Button (T033-T034, T042)
+		this.applyButton = new ApplyButton(this.advancedConfigContainerEl, {
+			onClick: async () => {
+				await this.handleApplyChanges();
+			},
+			initialState: 'disabled',
+		});
+	}
+
+	/**
+	 * Advanced Config 변경 핸들러 (T031, T042)
+	 */
+	private handleAdvancedConfigChange<K extends keyof QuartzSiteConfig>(
+		field: K,
+		value: QuartzSiteConfig[K]
+	): void {
+		if (!this.pendingChangesManager) return;
+
+		this.pendingChangesManager.updateField(field, value);
+
+		// UI 상태 업데이트 (T042)
+		this.updateApplyFlowUI();
+	}
+
+	/**
+	 * Apply Flow UI 상태 업데이트 (T042)
+	 */
+	private updateApplyFlowUI(): void {
+		if (!this.pendingChangesManager) return;
+
+		const isDirty = this.pendingChangesManager.isDirty();
+
+		// ApplyButton 상태 업데이트
+		this.applyButton?.setEnabled(isDirty);
+
+		// UnsavedWarning 표시/숨김
+		this.unsavedWarning?.toggle(isDirty);
+	}
+
+	/**
+	 * 변경사항 취소 핸들러
+	 */
+	private handleDiscardChanges(): void {
+		if (!this.pendingChangesManager) return;
+
+		// 변경사항 리셋
+		this.pendingChangesManager.reset();
+
+		// UI 값 복원
+		const originalConfig = this.pendingChangesManager.getOriginalConfig();
+
+		this.siteInfoSection?.updateValues({
+			pageTitle: originalConfig.pageTitle,
+			baseUrl: originalConfig.baseUrl,
+			locale: originalConfig.locale,
+		});
+
+		this.behaviorSection?.updateValues({
+			enableSPA: originalConfig.enableSPA,
+			enablePopovers: originalConfig.enablePopovers,
+			defaultDateType: originalConfig.defaultDateType,
+		});
+
+		this.analyticsSection?.updateValues(originalConfig.analytics);
+
+		this.publishingSection?.updateValues({
+			explicitPublish: originalConfig.explicitPublish,
+			ignorePatterns: originalConfig.ignorePatterns,
+			urlStrategy: originalConfig.urlStrategy,
+		});
+
+		// UI 상태 업데이트
+		this.updateApplyFlowUI();
+
+		new Notice('변경사항이 취소되었습니다');
+	}
+
+	/**
+	 * Apply Flow 실행 (T040)
+	 */
+	private async handleApplyChanges(): Promise<void> {
+		if (
+			!this.pendingChangesManager ||
+			!this.quartzConfigService ||
+			!this.pendingChangesManager.isDirty()
+		) {
+			return;
+		}
+
+		// 유효성 검사
+		const validation = this.siteInfoSection?.validate();
+		if (validation && !validation.valid) {
+			new Notice(`유효성 검사 실패: ${validation.errors[0]}`);
+			return;
+		}
+
+		// 확인 모달 (T036-T037)
+		const confirmModal = new ConfirmModal(this.app, {
+			title: '설정 변경 적용',
+			message: `다음 설정이 변경됩니다:\n${this.pendingChangesManager.getChangeSummary()}\n\n변경사항을 GitHub에 저장하시겠습니까?`,
+			confirmText: '적용',
+			cancelText: '취소',
+		});
+
+		const confirmed = await confirmModal.openAsync();
+		if (!confirmed) {
+			return;
+		}
+
+		// 로딩 상태
+		this.applyButton?.updateState('loading');
+
+		try {
+			// SHA 체크 (T040)
+			const remoteSha = await this.quartzConfigService.getRemoteSha();
+			const originalSha = this.pendingChangesManager.getOriginalSha();
+
+			if (remoteSha && remoteSha !== originalSha) {
+				// 충돌 감지 - ConflictModal 표시 (T038-T039)
+				const conflictModal = new ConflictModal(this.app);
+				const resolution = await conflictModal.openAsync();
+
+				switch (resolution) {
+					case 'reload':
+						// 새로고침 후 재시도
+						this.quartzConfigService.invalidateCache();
+						await this.loadQuartzSettings();
+						new Notice('설정을 다시 불러왔습니다. 변경사항을 다시 적용해주세요.');
+						return;
+
+					case 'force_overwrite':
+						// 강제 덮어쓰기 - 계속 진행
+						break;
+
+					case 'cancel':
+					default:
+						// 취소
+						this.applyButton?.setEnabled(true);
+						return;
+				}
+			}
+
+			// 설정 저장 (T040)
+			const currentConfig = this.pendingChangesManager.getCurrentConfig();
+			const commitMessage = this.pendingChangesManager.generateCommitMessage();
+
+			const result = await this.quartzConfigService.saveConfig(
+				currentConfig,
+				remoteSha ?? originalSha, // 강제 덮어쓰기 시 최신 SHA 사용
+				commitMessage
+			);
+
+			if (result.success) {
+				// 저장 성공
+				this.pendingChangesManager.markAsSaved(currentConfig, result.newSha ?? '');
+				this.updateApplyFlowUI();
+				new Notice('설정이 성공적으로 저장되었습니다');
+			} else {
+				// 저장 실패
+				new Notice(`저장 실패: ${result.errorMessage}`);
+				this.applyButton?.setEnabled(true);
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : '알 수 없는 오류';
+			new Notice(`저장 실패: ${message}`);
+			this.applyButton?.setEnabled(true);
+		}
 	}
 
 	/**

@@ -5,10 +5,16 @@
  */
 
 import type { GitHubService } from './github';
-import type { QuartzConfigFile } from '../types';
+import {
+	DEFAULT_QUARTZ_SITE_CONFIG,
+	type QuartzConfigFile,
+	type QuartzSiteConfig,
+	type AnalyticsConfig,
+	type ConfigUpdateResult,
+} from '../types';
 
 /**
- * 파싱된 Quartz 설정
+ * 파싱된 Quartz 설정 (기존 호환성)
  */
 export interface ParsedQuartzConfig {
 	/** ExplicitPublish 필터 활성화 여부 */
@@ -19,6 +25,26 @@ export interface ParsedQuartzConfig {
 	urlStrategy: 'shortest' | 'absolute';
 	/** 원본 파일 내용 */
 	rawContent: string;
+}
+
+/**
+ * 확장된 파싱 결과 (Phase 4)
+ */
+export interface ExtendedParsedConfig extends ParsedQuartzConfig {
+	/** 페이지 제목 */
+	pageTitle: string;
+	/** 기본 URL */
+	baseUrl: string;
+	/** 로케일 */
+	locale: string;
+	/** SPA 모드 */
+	enableSPA: boolean;
+	/** 팝오버 활성화 */
+	enablePopovers: boolean;
+	/** 기본 날짜 타입 */
+	defaultDateType: 'created' | 'modified' | 'published';
+	/** 애널리틱스 설정 */
+	analytics: AnalyticsConfig;
 }
 
 /**
@@ -302,5 +328,422 @@ export class QuartzConfigService {
 	 */
 	invalidateCache(): void {
 		this.cachedConfig = null;
+	}
+
+	// ============================================================================
+	// Extended Config Parsing (T015-T016)
+	// ============================================================================
+
+	/**
+	 * pageTitle 추출
+	 */
+	private parsePageTitle(content: string): string {
+		const match = content.match(/pageTitle\s*:\s*["']([^"']+)["']/);
+		return match?.[1] ?? DEFAULT_QUARTZ_SITE_CONFIG.pageTitle;
+	}
+
+	/**
+	 * baseUrl 추출
+	 */
+	private parseBaseUrl(content: string): string {
+		const match = content.match(/baseUrl\s*:\s*["']([^"']+)["']/);
+		return match?.[1] ?? DEFAULT_QUARTZ_SITE_CONFIG.baseUrl;
+	}
+
+	/**
+	 * locale 추출
+	 */
+	private parseLocale(content: string): string {
+		const match = content.match(/locale\s*:\s*["']([^"']+)["']/);
+		return match?.[1] ?? DEFAULT_QUARTZ_SITE_CONFIG.locale;
+	}
+
+	/**
+	 * enableSPA 추출
+	 */
+	private parseEnableSPA(content: string): boolean {
+		const match = content.match(/enableSPA\s*:\s*(true|false)/);
+		return match?.[1] === 'true';
+	}
+
+	/**
+	 * enablePopovers 추출
+	 */
+	private parseEnablePopovers(content: string): boolean {
+		const match = content.match(/enablePopovers\s*:\s*(true|false)/);
+		return match?.[1] === 'true';
+	}
+
+	/**
+	 * defaultDateType 추출
+	 */
+	private parseDefaultDateType(
+		content: string
+	): 'created' | 'modified' | 'published' {
+		const match = content.match(/defaultDateType\s*:\s*["'](\w+)["']/);
+		const value = match?.[1];
+		if (value === 'modified' || value === 'published') {
+			return value;
+		}
+		return 'created';
+	}
+
+	/**
+	 * analytics 설정 추출
+	 */
+	private parseAnalytics(content: string): AnalyticsConfig {
+		// analytics: { provider: "...", ... } 블록 찾기
+		const analyticsMatch = content.match(
+			/analytics\s*:\s*\{([^}]*)\}/s
+		);
+
+		if (!analyticsMatch) {
+			return { provider: 'null' };
+		}
+
+		const analyticsBlock = analyticsMatch[1];
+
+		// provider 추출
+		const providerMatch = analyticsBlock.match(
+			/provider\s*:\s*["'](\w+)["']/
+		);
+		const provider = providerMatch?.[1] ?? 'null';
+
+		switch (provider) {
+			case 'google': {
+				const tagIdMatch = analyticsBlock.match(
+					/tagId\s*:\s*["']([^"']+)["']/
+				);
+				return {
+					provider: 'google',
+					tagId: tagIdMatch?.[1] ?? '',
+				};
+			}
+
+			case 'plausible': {
+				const hostMatch = analyticsBlock.match(
+					/host\s*:\s*["']([^"']+)["']/
+				);
+				if (hostMatch) {
+					return {
+						provider: 'plausible',
+						host: hostMatch[1],
+					};
+				}
+				return { provider: 'plausible' };
+			}
+
+			case 'umami': {
+				const websiteIdMatch = analyticsBlock.match(
+					/websiteId\s*:\s*["']([^"']+)["']/
+				);
+				const hostMatch = analyticsBlock.match(
+					/host\s*:\s*["']([^"']+)["']/
+				);
+				return {
+					provider: 'umami',
+					websiteId: websiteIdMatch?.[1] ?? '',
+					host: hostMatch?.[1] ?? '',
+				};
+			}
+
+			default:
+				return { provider: 'null' };
+		}
+	}
+
+	/**
+	 * 확장된 설정 파싱 (T016)
+	 */
+	parseExtendedConfig(content: string): ExtendedParsedConfig | null {
+		const baseConfig = this.parseConfig(content);
+		if (!baseConfig) {
+			return null;
+		}
+
+		return {
+			...baseConfig,
+			pageTitle: this.parsePageTitle(content),
+			baseUrl: this.parseBaseUrl(content),
+			locale: this.parseLocale(content),
+			enableSPA: this.parseEnableSPA(content),
+			enablePopovers: this.parseEnablePopovers(content),
+			defaultDateType: this.parseDefaultDateType(content),
+			analytics: this.parseAnalytics(content),
+		};
+	}
+
+	/**
+	 * ExtendedParsedConfig를 QuartzSiteConfig로 변환
+	 */
+	toQuartzSiteConfig(parsed: ExtendedParsedConfig): QuartzSiteConfig {
+		return {
+			pageTitle: parsed.pageTitle,
+			baseUrl: parsed.baseUrl,
+			locale: parsed.locale,
+			enableSPA: parsed.enableSPA,
+			enablePopovers: parsed.enablePopovers,
+			defaultDateType: parsed.defaultDateType,
+			analytics: parsed.analytics,
+			explicitPublish: parsed.explicitPublish,
+			ignorePatterns: parsed.ignorePatterns,
+			urlStrategy: parsed.urlStrategy,
+		};
+	}
+
+	// ============================================================================
+	// Config Serialization (T017)
+	// ============================================================================
+
+	/**
+	 * 설정 값을 파일 내용에 반영 (T017)
+	 */
+	serializeConfig(
+		config: QuartzSiteConfig,
+		originalContent: string
+	): string {
+		let content = originalContent;
+
+		// pageTitle 업데이트
+		content = this.updateStringField(content, 'pageTitle', config.pageTitle);
+
+		// baseUrl 업데이트
+		content = this.updateStringField(content, 'baseUrl', config.baseUrl);
+
+		// locale 업데이트
+		content = this.updateStringField(content, 'locale', config.locale);
+
+		// enableSPA 업데이트
+		content = this.updateBooleanField(content, 'enableSPA', config.enableSPA);
+
+		// enablePopovers 업데이트
+		content = this.updateBooleanField(
+			content,
+			'enablePopovers',
+			config.enablePopovers
+		);
+
+		// defaultDateType 업데이트
+		content = this.updateStringField(
+			content,
+			'defaultDateType',
+			config.defaultDateType
+		);
+
+		// analytics 업데이트
+		content = this.updateAnalytics(content, config.analytics);
+
+		// 기존 설정 업데이트 (ExplicitPublish)
+		const explicitResult = this.setExplicitPublish(
+			content,
+			config.explicitPublish
+		);
+		if (explicitResult.success && explicitResult.newContent) {
+			content = explicitResult.newContent;
+		}
+
+		// ignorePatterns 업데이트
+		const patternsResult = this.setIgnorePatterns(
+			content,
+			config.ignorePatterns
+		);
+		if (patternsResult.success && patternsResult.newContent) {
+			content = patternsResult.newContent;
+		}
+
+		// urlStrategy 업데이트
+		const strategyResult = this.setUrlStrategy(content, config.urlStrategy);
+		if (strategyResult.success && strategyResult.newContent) {
+			content = strategyResult.newContent;
+		}
+
+		return content;
+	}
+
+	/**
+	 * 문자열 필드 업데이트 헬퍼
+	 */
+	private updateStringField(
+		content: string,
+		fieldName: string,
+		value: string
+	): string {
+		const pattern = new RegExp(`(${fieldName}\\s*:\\s*)["'][^"']*["']`);
+		const replacement = `$1"${value}"`;
+		return content.replace(pattern, replacement);
+	}
+
+	/**
+	 * 불리언 필드 업데이트 헬퍼
+	 */
+	private updateBooleanField(
+		content: string,
+		fieldName: string,
+		value: boolean
+	): string {
+		const pattern = new RegExp(`(${fieldName}\\s*:\\s*)(true|false)`);
+		const replacement = `$1${value}`;
+		return content.replace(pattern, replacement);
+	}
+
+	/**
+	 * analytics 설정 업데이트
+	 */
+	private updateAnalytics(
+		content: string,
+		analytics: AnalyticsConfig
+	): string {
+		// analytics 블록 생성
+		let analyticsStr: string;
+
+		switch (analytics.provider) {
+			case 'null':
+				analyticsStr = `analytics: {\n    provider: "null",\n  }`;
+				break;
+
+			case 'google':
+				analyticsStr = `analytics: {\n    provider: "google",\n    tagId: "${analytics.tagId}",\n  }`;
+				break;
+
+			case 'plausible':
+				if (analytics.host) {
+					analyticsStr = `analytics: {\n    provider: "plausible",\n    host: "${analytics.host}",\n  }`;
+				} else {
+					analyticsStr = `analytics: {\n    provider: "plausible",\n  }`;
+				}
+				break;
+
+			case 'umami':
+				analyticsStr = `analytics: {\n    provider: "umami",\n    websiteId: "${analytics.websiteId}",\n    host: "${analytics.host}",\n  }`;
+				break;
+
+			default:
+				analyticsStr = `analytics: {\n    provider: "null",\n  }`;
+		}
+
+		// 기존 analytics 블록 교체
+		const analyticsPattern = /analytics\s*:\s*\{[^}]*\}/s;
+		if (analyticsPattern.test(content)) {
+			return content.replace(analyticsPattern, analyticsStr);
+		}
+
+		return content;
+	}
+
+	// ============================================================================
+	// Load & Save Config (T018-T020)
+	// ============================================================================
+
+	/**
+	 * 설정 로드 (확장 버전) (T018)
+	 */
+	async loadConfig(): Promise<{
+		config: QuartzSiteConfig;
+		sha: string;
+	} | null> {
+		const configFile = await this.fetchQuartzConfig(true);
+		if (!configFile) {
+			return null;
+		}
+
+		const parsed = this.parseExtendedConfig(configFile.content);
+		if (!parsed) {
+			return null;
+		}
+
+		return {
+			config: this.toQuartzSiteConfig(parsed),
+			sha: configFile.sha,
+		};
+	}
+
+	/**
+	 * 원격 파일 SHA 조회 (T019)
+	 */
+	async getRemoteSha(): Promise<string | null> {
+		const configFile = await this.fetchQuartzConfig(true);
+		return configFile?.sha ?? null;
+	}
+
+	/**
+	 * 설정 저장 (SHA 검증 포함) (T020)
+	 */
+	async saveConfig(
+		config: QuartzSiteConfig,
+		originalSha: string,
+		commitMessage: string
+	): Promise<ConfigUpdateResult> {
+		try {
+			// 원격 SHA 확인
+			const remoteSha = await this.getRemoteSha();
+			if (!remoteSha) {
+				return {
+					success: false,
+					errorType: 'network',
+					errorMessage: 'quartz.config.ts 파일을 찾을 수 없습니다',
+				};
+			}
+
+			// SHA 불일치 (충돌) 확인
+			if (remoteSha !== originalSha) {
+				return {
+					success: false,
+					errorType: 'conflict',
+					errorMessage:
+						'원격 파일이 변경되었습니다. 최신 설정을 다시 불러와 주세요.',
+				};
+			}
+
+			// 현재 파일 내용 가져오기
+			const configFile = await this.fetchQuartzConfig();
+			if (!configFile) {
+				return {
+					success: false,
+					errorType: 'network',
+					errorMessage: '설정 파일을 불러올 수 없습니다',
+				};
+			}
+
+			// 설정 직렬화
+			const newContent = this.serializeConfig(config, configFile.content);
+
+			// GitHub에 커밋
+			const result = await this.github.createOrUpdateFile(
+				'quartz.config.ts',
+				newContent,
+				commitMessage,
+				originalSha
+			);
+
+			if (result.success) {
+				// 캐시 업데이트
+				this.cachedConfig = {
+					path: 'quartz.config.ts',
+					sha: result.sha!,
+					content: newContent,
+					lastFetched: Date.now(),
+				};
+
+				return {
+					success: true,
+					newSha: result.sha,
+					commitSha: result.commitSha,
+				};
+			}
+
+			return {
+				success: false,
+				errorType: 'unknown',
+				errorMessage: result.error ?? '알 수 없는 오류가 발생했습니다',
+			};
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : '알 수 없는 오류';
+			return {
+				success: false,
+				errorType: 'network',
+				errorMessage: message,
+			};
+		}
 	}
 }

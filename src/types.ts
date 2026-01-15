@@ -204,6 +204,117 @@ export const DEFAULT_QUARTZ_SETTINGS: QuartzSettings = {
 	urlStrategy: 'shortest',
 };
 
+// ============================================================================
+// Quartz Site Config (Phase 4 - Advanced Config)
+// ============================================================================
+
+/**
+ * Analytics 설정 타입 (Provider별 유니온)
+ */
+export type AnalyticsConfig =
+	| { provider: 'null' }
+	| { provider: 'google'; tagId: string }
+	| { provider: 'plausible'; host?: string }
+	| { provider: 'umami'; websiteId: string; host: string };
+
+/**
+ * Quartz 사이트 전체 설정 (고급 설정 포함)
+ */
+export interface QuartzSiteConfig {
+	// === Site Information ===
+	/** 사이트 제목 (브라우저 탭, 헤더 등에 표시) */
+	pageTitle: string;
+	/** 사이트 기본 URL (프로토콜 없이, 예: "example.com" 또는 "example.com/blog") */
+	baseUrl: string;
+	/** 사이트 로케일 (BCP 47 형식, 예: "ko-KR") */
+	locale: string;
+
+	// === Behavior ===
+	/** SPA 모드 활성화 여부 */
+	enableSPA: boolean;
+	/** 링크 팝오버 미리보기 활성화 여부 */
+	enablePopovers: boolean;
+	/** 기본 날짜 타입 ("created" | "modified" | "published") */
+	defaultDateType: 'created' | 'modified' | 'published';
+
+	// === Analytics ===
+	/** 애널리틱스 설정 */
+	analytics: AnalyticsConfig;
+
+	// === Publishing (기존 설정) ===
+	/** ExplicitPublish 필터 활성화 여부 */
+	explicitPublish: boolean;
+	/** 발행 제외 패턴 목록 */
+	ignorePatterns: string[];
+	/** URL 생성 전략 */
+	urlStrategy: 'shortest' | 'absolute';
+}
+
+/**
+ * 기본 Quartz 사이트 설정값
+ */
+export const DEFAULT_QUARTZ_SITE_CONFIG: QuartzSiteConfig = {
+	pageTitle: 'Quartz 4.0',
+	baseUrl: 'quartz.jzhao.xyz',
+	locale: 'en-US',
+	enableSPA: true,
+	enablePopovers: true,
+	defaultDateType: 'created',
+	analytics: { provider: 'null' },
+	explicitPublish: false,
+	ignorePatterns: ['private', 'templates'],
+	urlStrategy: 'shortest',
+};
+
+/**
+ * 설정 업데이트 오류 타입
+ */
+export type ConfigUpdateError =
+	| 'conflict' // SHA 불일치 (원격 변경됨)
+	| 'network' // 네트워크 오류
+	| 'rate_limited' // GitHub API 제한
+	| 'parse_error' // 설정 파싱 실패
+	| 'validation' // 유효성 검사 실패
+	| 'unknown'; // 알 수 없는 오류
+
+/**
+ * 설정 업데이트 결과
+ */
+export interface ConfigUpdateResult {
+	/** 성공 여부 */
+	success: boolean;
+	/** 새 파일 SHA (성공 시) */
+	newSha?: string;
+	/** 커밋 SHA (성공 시) */
+	commitSha?: string;
+	/** 오류 유형 (실패 시) */
+	errorType?: ConfigUpdateError;
+	/** 오류 메시지 (실패 시) */
+	errorMessage?: string;
+}
+
+/**
+ * 충돌 해결 옵션
+ */
+export type ConflictResolution =
+	| 'reload' // 새로고침 후 재적용
+	| 'force_overwrite' // 강제 덮어쓰기
+	| 'cancel'; // 취소
+
+/**
+ * 변경사항 추적 인터페이스
+ */
+export interface PendingChanges {
+	/** 원본 설정 (로드 시점 스냅샷) */
+	original: QuartzSiteConfig;
+	/** 현재 설정 (사용자 편집 반영) */
+	current: QuartzSiteConfig;
+	/** 변경된 필드 키 집합 */
+	changedFields: Set<keyof QuartzSiteConfig>;
+	/** 원본 파일 SHA (충돌 감지용) */
+	originalSha: string;
+}
+
 /**
  * Quartz 설정 파일 정보
  */
