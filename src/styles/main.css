@@ -1,13 +1,12 @@
 /**
  * Quartz Publish Plugin - TailwindCSS v4 Styles
  *
- * 모든 클래스에 `qp:` 프리픽스를 사용합니다.
  * Obsidian CSS 변수를 활용하여 테마 호환성을 유지합니다.
  *
  * 주의: Preflight(기본 스타일 리셋)를 제외하여 Obsidian 기존 스타일과 충돌 방지
  */
-@import "tailwindcss/theme.css" prefix(qp);
-@import "tailwindcss/utilities.css" prefix(qp);
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
 
 /*
  * Obsidian CSS 변수를 TailwindCSS에서 사용할 수 있도록 정의
