@@ -68,6 +68,28 @@ export default {
 	'settings.publishing.urlStrategy': 'URL Strategy',
 	'settings.publishing.urlStrategyDesc': 'URL generation strategy for published notes',
 
+	// Settings - Publish Filter
+	'settings.filter.title': 'Publish Filter',
+	'settings.filter.includeFolders': 'Include Folders',
+	'settings.filter.includeFoldersDesc': 'Only publish notes from these folders (one per line). Leave empty to include all.',
+	'settings.filter.includeFoldersPlaceholder': 'Blog\nNotes/Public',
+	'settings.filter.excludeFolders': 'Exclude Folders',
+	'settings.filter.excludeFoldersDesc': 'Exclude these folders from publishing (one per line)',
+	'settings.filter.excludeFoldersPlaceholder': 'Private\nTemplates\nArchive',
+	'settings.filter.excludeTags': 'Exclude Tags',
+	'settings.filter.excludeTagsDesc': 'Exclude notes with these tags (one per line, without #)',
+	'settings.filter.excludeTagsPlaceholder': 'private\nwip\ndraft',
+	'settings.filter.rootFolder': 'Root Folder',
+	'settings.filter.rootFolderDesc': 'Set this folder as the Quartz root (paths will be relative to this folder)',
+	'settings.filter.rootFolderPlaceholder': 'Blog',
+	'settings.filter.homePage': 'Home Page',
+	'settings.filter.homePageDesc': 'Note to use as the Quartz home page (will be published as index.md)',
+	'settings.filter.homePagePlaceholder': 'Welcome.md',
+	'settings.filter.folderNotFound': 'Folder not found: {{folders}}',
+	'settings.filter.noteNotFound': 'Note not found: {{path}}',
+	'settings.filter.fileNotFound': 'File not found: {{path}}',
+	'settings.filter.homePageMustBeMd': 'Home page must be a .md file',
+
 	// Settings - Apply
 	'settings.apply.button': 'Apply Changes',
 	'settings.apply.refresh': 'Refresh',

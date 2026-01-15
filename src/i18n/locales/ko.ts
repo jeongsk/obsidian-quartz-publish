@@ -72,6 +72,28 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.publishing.urlStrategy': 'URL 전략',
 	'settings.publishing.urlStrategyDesc': '발행된 노트의 URL 생성 전략',
 
+	// Settings - Publish Filter
+	'settings.filter.title': '발행 필터',
+	'settings.filter.includeFolders': '포함 폴더',
+	'settings.filter.includeFoldersDesc': '이 폴더의 노트만 발행합니다 (줄당 하나). 비워두면 전체 포함.',
+	'settings.filter.includeFoldersPlaceholder': 'Blog\nNotes/Public',
+	'settings.filter.excludeFolders': '제외 폴더',
+	'settings.filter.excludeFoldersDesc': '발행에서 제외할 폴더 (줄당 하나)',
+	'settings.filter.excludeFoldersPlaceholder': 'Private\nTemplates\nArchive',
+	'settings.filter.excludeTags': '제외 태그',
+	'settings.filter.excludeTagsDesc': '이 태그가 있는 노트를 제외합니다 (줄당 하나, # 제외)',
+	'settings.filter.excludeTagsPlaceholder': 'private\nwip\ndraft',
+	'settings.filter.rootFolder': '루트 폴더',
+	'settings.filter.rootFolderDesc': '이 폴더를 Quartz 루트로 설정합니다 (경로는 이 폴더 기준으로 계산)',
+	'settings.filter.rootFolderPlaceholder': 'Blog',
+	'settings.filter.homePage': '홈 페이지',
+	'settings.filter.homePageDesc': 'Quartz 홈 페이지로 사용할 노트 (index.md로 발행)',
+	'settings.filter.homePagePlaceholder': 'Welcome.md',
+	'settings.filter.folderNotFound': '폴더를 찾을 수 없습니다: {{folders}}',
+	'settings.filter.noteNotFound': '노트를 찾을 수 없습니다: {{path}}',
+	'settings.filter.fileNotFound': '파일을 찾을 수 없습니다: {{path}}',
+	'settings.filter.homePageMustBeMd': '홈 페이지는 .md 파일이어야 합니다',
+
 	// Settings - Apply
 	'settings.apply.button': '변경 사항 적용',
 	'settings.apply.refresh': '새로고침',
