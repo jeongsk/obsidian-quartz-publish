@@ -108,10 +108,10 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 | Phase | 설명 | 진행률 | 상태 |
 |-------|------|--------|------|
 | Phase 1 | MVP (핵심 기능) | 100% | ✅ 완료 |
-| Phase 2 | 노트 관리 | 10% | ⚠️ 일부 |
+| Phase 2 | 노트 관리 | 100% | ✅ 완료 |
 | Phase 3 | Quartz 설정 관리 | 0% | ❌ 미착수 |
 | Phase 4 | 초보자 지원 | 0% | ❌ 미착수 |
-| 비기능 | 비기능 요구사항 | 20% | ⚠️ 일부 |
+| 비기능 | 비기능 요구사항 | 50% | ⚠️ 일부 |
 
 ### Phase 1: MVP 상세 현황 ✅
 
@@ -131,19 +131,20 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 - [x] 이미지/첨부파일 업로드 (`src/services/publish.ts`)
 - [x] 성공/실패 Notice 표시
 
-### Phase 2: 노트 관리 상세 현황 ⚠️
+### Phase 2: 노트 관리 상세 현황 ✅
 
 #### 2.1 발행 상태 대시보드
-- [ ] 신규 노트 목록
-- [ ] 수정된 노트 목록
-- [ ] 삭제 필요 노트 목록
-- [ ] 최신 상태 노트 목록
-- [ ] 대시보드 모달 UI
+- [x] 신규 노트 목록 (`src/services/status.ts`)
+- [x] 수정된 노트 목록 (`src/services/status.ts`)
+- [x] 삭제 필요 노트 목록 (`src/services/status.ts`)
+- [x] 최신 상태 노트 목록 (`src/services/status.ts`)
+- [x] 대시보드 모달 UI (`src/ui/dashboard-modal.ts`)
 
 #### 2.2 일괄 동기화
-- [x] `publishNotes()` 메서드 (코드만 존재, UI 미연결)
-- [ ] 선택 노트 일괄 발행 UI
-- [ ] 전체 동기화 기능
+- [x] `publishNotes()` 메서드
+- [x] 선택 노트 일괄 발행 UI
+- [x] 선택 노트 일괄 삭제 UI
+- [x] 전체 동기화 기능
 
 ### Phase 3: Quartz 설정 관리 상세 현황 ❌
 
@@ -162,7 +163,9 @@ draft: false         # 초안 여부 (선택, 기본값: false)
 - [ ] 오프라인 시 발행 불가 안내
 - [x] 대용량 파일 제한 상수 정의 (`MAX_FILE_SIZE`)
 - [ ] 대용량 파일 경고 UI
-- [ ] 발행 진행 프로그레스 표시
+- [x] 발행 진행 프로그레스 표시 (`src/ui/dashboard-modal.ts`)
+- [x] 에러 처리 개선 (네트워크 오류, Rate Limit 안내)
+- [x] 접근성 개선 (키보드 네비게이션, ARIA 레이블)
 
 ### 구현된 파일 목록
 
@@ -173,9 +176,21 @@ src/
 ├── services/
 │   ├── github.ts              # GitHub API 서비스
 │   ├── transformer.ts         # 콘텐츠 변환 서비스
-│   └── publish.ts             # 발행 서비스
+│   ├── publish.ts             # 발행 서비스
+│   └── status.ts              # 발행 상태 계산 서비스
 ├── ui/
-│   └── settings-tab.ts        # 설정 탭 UI
+│   ├── settings-tab.ts        # 설정 탭 UI
+│   └── dashboard-modal.ts     # 발행 대시보드 모달
 └── styles/
     └── main.css               # TailwindCSS 스타일
+
+tests/
+├── mocks/
+│   └── obsidian.ts            # Obsidian API 모킹
+├── setup.ts                   # 테스트 설정
+└── unit/
+    ├── services/
+    │   └── status.test.ts     # StatusService 테스트 (16개)
+    └── ui/
+        └── dashboard-modal.test.ts  # DashboardModal 테스트 (21개)
 ```
