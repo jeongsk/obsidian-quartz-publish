@@ -69,7 +69,7 @@ export class ContentTransformer {
 		const { body, raw: frontmatterRaw } = this.parseFrontmatter(content);
 
 		// 2. 위키 링크 변환
-		let transformedBody = this.transformWikiLinks(body, publishedNotes);
+		let transformedBody = this.transformWikiLinks(body, file.path, publishedNotes);
 
 		// 3. 이미지 임베드 변환 (첨부파일 수집)
 		const noteBasename = file.basename;
@@ -314,13 +314,23 @@ export class ContentTransformer {
 	 * - 발행된 노트: [[note]] → [note](note.md)
 	 * - 발행되지 않은 노트: [[note]] → note (링크 제거)
 	 */
-	private transformWikiLinks(content: string, publishedNotes: Set<string>): string {
+	private transformWikiLinks(
+		content: string,
+		sourcePath: string,
+		publishedNotes: Set<string>
+	): string {
 		// [[note|alias]] 또는 [[note]] 패턴
 		const wikiLinkRegex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 		return content.replace(wikiLinkRegex, (match, linkTarget, alias) => {
 			const displayText = alias || linkTarget;
-			const normalizedTarget = this.normalizeNotePath(linkTarget);
+
+			// Obsidian API를 사용하여 링크 대상 파일 찾기
+			const targetFile = this.metadataCache.getFirstLinkpathDest(linkTarget, sourcePath);
+			
+			// 파일이 존재하면 해당 파일의 경로 사용, 없으면 원본 타겟 사용
+			const targetPath = targetFile ? targetFile.path : linkTarget;
+			const normalizedTarget = this.normalizeNotePath(targetPath);
 
 			// 발행된 노트인지 확인
 			if (publishedNotes.has(normalizedTarget)) {
