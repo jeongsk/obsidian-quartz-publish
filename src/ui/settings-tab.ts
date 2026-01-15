@@ -275,7 +275,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 */
 	private createQuickLinksSection(containerEl: HTMLElement): void {
 		this.quickLinksContainerEl = containerEl.createDiv({
-			cls: 'qp:flex qp:flex-wrap qp:gap-2 qp:mb-4',
+			cls: 'flex flex-wrap gap-2 mb-4',
 			attr: {
 				role: 'group',
 				'aria-label': t('settings.quickLinks.title'),
@@ -299,8 +299,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const isGithubDisabled = !repoUrl || !isValidGitHubUrl(repoUrl);
 		const githubButton = this.quickLinksContainerEl.createEl('button', {
 			cls: cn(
-				'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
-				isGithubDisabled && 'qp:opacity-60 qp:cursor-not-allowed'
+				'flex items-center gap-1 px-3 py-1.5 rounded text-sm bg-obs-bg-modifier-hover text-obs-text-normal hover:bg-obs-bg-modifier-active-hover',
+				isGithubDisabled && 'opacity-60 cursor-not-allowed'
 			),
 			attr: {
 				'aria-label': isGithubDisabled
@@ -322,8 +322,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const isSiteDisabled = !baseUrl;
 		const siteButton = this.quickLinksContainerEl.createEl('button', {
 			cls: cn(
-				'qp:flex qp:items-center qp:gap-1 qp:px-3 qp:py-1.5 qp:rounded qp:text-sm qp:bg-obs-bg-modifier-hover qp:text-obs-text-normal hover:qp:bg-obs-bg-modifier-active-hover',
-				isSiteDisabled && 'qp:opacity-60 qp:cursor-not-allowed'
+				'flex items-center gap-1 px-3 py-1.5 rounded text-sm bg-obs-bg-modifier-hover text-obs-text-normal hover:bg-obs-bg-modifier-active-hover',
+				isSiteDisabled && 'opacity-60 cursor-not-allowed'
 			),
 			attr: {
 				'aria-label': isSiteDisabled
@@ -652,7 +652,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.connectionStatusEl.createSpan({
 			text: message,
-			cls: status === 'error' ? 'qp:text-obs-text-error' : '',
+			cls: status === 'error' ? 'text-obs-text-error' : '',
 		});
 	}
 
@@ -707,7 +707,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		if (!githubToken || !repoUrl) {
 			this.quartzSettingsContainerEl.createEl('p', {
 				text: t('settings.quartz.connectFirst'),
-				cls: 'qp:text-obs-text-muted qp:text-sm',
+				cls: 'text-obs-text-muted text-sm',
 			});
 			return;
 		}
@@ -739,7 +739,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.quartzSettingsContainerEl.empty();
 		this.quartzSettingsContainerEl.createEl('p', {
 			text: t('settings.quartz.loading'),
-			cls: 'qp:text-obs-text-muted qp:text-sm',
+			cls: 'text-obs-text-muted text-sm',
 		});
 
 		try {
@@ -781,7 +781,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const message = error instanceof Error ? error.message : t('error.unknown');
 			this.quartzSettingsContainerEl.createEl('p', {
 				text: t('settings.quartz.loadFailed', { message }),
-				cls: 'qp:text-obs-text-error qp:text-sm',
+				cls: 'text-obs-text-error text-sm',
 			});
 
 			// 재시도 버튼
@@ -1290,11 +1290,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		const statusEl = progressContainer.createEl('p', {
 			text: t('upgrade.starting'),
-			cls: 'qp:font-medium',
+			cls: 'font-medium',
 		});
 
 		const progressBarContainer = progressContainer.createDiv({
-			cls: 'quartz-publish-progress-bar-container qp:w-full qp:h-2 qp:rounded qp:overflow-hidden qp:my-2 qp:bg-obs-modifier-border',
+			cls: 'quartz-publish-progress-bar-container w-full h-2 rounded overflow-hidden my-2 bg-obs-modifier-border',
 		});
 
 		const progressBar = progressBarContainer.createDiv({
@@ -1309,7 +1309,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		const detailEl = progressContainer.createEl('p', {
 			text: '',
-			cls: 'qp:text-obs-text-muted qp:text-sm',
+			cls: 'text-obs-text-muted text-sm',
 		});
 
 		// 취소 버튼
@@ -1348,7 +1348,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			if (progress.error) {
 				detailEl.textContent = progress.error;
-				detailEl.className = 'qp:text-obs-text-error qp:text-sm';
+				detailEl.className = 'text-obs-text-error text-sm';
 			}
 		};
 
@@ -1359,14 +1359,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			if (result.success) {
 				statusEl.textContent = t('upgrade.successMessage', { version: result.version ?? '' });
-				statusEl.className = 'qp:text-obs-text-success qp:font-medium';
+				statusEl.className = 'text-obs-text-success font-medium';
 				progressBar.setCssProps({ '--progress-width': '100%' });
 				detailEl.textContent = t('upgrade.filesUpdated', { count: result.filesUpdated ?? 0 });
 
 				new Notice(t('upgrade.successMessage', { version: result.version ?? '' }));
 			} else {
 				statusEl.textContent = t('upgrade.failed');
-				statusEl.className = 'qp:text-obs-text-error qp:font-medium';
+				statusEl.className = 'text-obs-text-error font-medium';
 				detailEl.textContent = result.error || t('error.unknown');
 
 				new Notice(t('upgrade.failedMessage', { error: result.error ?? '' }));
@@ -1376,7 +1376,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			const message = error instanceof Error ? error.message : t('error.unknown');
 			statusEl.textContent = t('upgrade.failed');
-			statusEl.className = 'qp:text-obs-text-error qp:font-medium';
+			statusEl.className = 'text-obs-text-error font-medium';
 			detailEl.textContent = message;
 
 			new Notice(t('upgrade.failedMessage', { error: message }));

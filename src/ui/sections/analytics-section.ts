@@ -71,7 +71,7 @@ export class AnalyticsSection {
 
 		// 오류 메시지 영역
 		this.errorEl = this.containerEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-2',
+			cls: 'text-obs-text-error text-sm mt-2',
 			attr: {
 				role: 'alert',
 				'aria-live': 'polite',

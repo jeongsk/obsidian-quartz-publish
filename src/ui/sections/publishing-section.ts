@@ -87,7 +87,7 @@ export class PublishingSection {
 	private renderIgnorePatternsInput(): void {
 		// 전체 컨테이너 (외부 박스)
 		const containerEl = this.containerEl.createDiv({
-			cls: 'quartz-publish-patterns-container qp:bg-obs-bg-secondary qp:rounded-lg qp:p-4 qp:mt-4',
+			cls: 'quartz-publish-patterns-container bg-obs-bg-secondary rounded-lg p-4 mt-4',
 		});
 
 		// 헤더 (제목)
@@ -99,7 +99,7 @@ export class PublishingSection {
 		// 설명
 		containerEl.createEl('div', {
 			text: t('publishing.ignorePatterns.desc'),
-			cls: 'setting-item-description qp:mb-3',
+			cls: 'setting-item-description mb-3',
 		});
 
 		// 패턴 목록 컨테이너
@@ -122,16 +122,16 @@ export class PublishingSection {
 			for (let i = 0; i < this.patterns.length; i++) {
 				const pattern = this.patterns[i];
 				const patternEl = this.patternsContainerEl.createDiv({
-					cls: 'quartz-publish-pattern-item qp:text-sm qp:flex qp:items-center qp:gap-2 qp:mb-1',
+					cls: 'quartz-publish-pattern-item text-sm flex items-center gap-2 mb-1',
 				});
 
 				patternEl.createEl('code', {
 					text: pattern,
-					cls: 'qp:flex-1',
+					cls: 'flex-1',
 				});
 
 				const removeBtn = patternEl.createEl('button', {
-					cls: 'clickable-icon qp:text-obs-text-error',
+					cls: 'clickable-icon text-obs-text-error',
 					attr: { 'aria-label': t('publishing.ignorePatterns.remove') },
 				});
 				setIcon(removeBtn, 'trash-2');
@@ -146,13 +146,13 @@ export class PublishingSection {
 		}
 
 		const addRowEl = this.patternsContainerEl.createDiv({
-			cls: 'quartz-publish-pattern-item qp:flex qp:items-center qp:gap-2 qp:mb-1',
+			cls: 'quartz-publish-pattern-item flex items-center gap-2 mb-1',
 		});
 
 		const inputEl = addRowEl.createEl('input', {
 			type: 'text',
 			placeholder: t('publishing.ignorePatterns.placeholder'),
-			cls: 'qp:flex-1 qp:bg-obs-bg-secondary qp:border-transparent focus:qp:border-obs-interactive-accent qp:text-obs-text-normal qp:placeholder-obs-text-muted qp:rounded qp:px-2 qp:py-1',
+			cls: 'flex-1 bg-obs-bg-secondary border-transparent focus:border-obs-interactive-accent text-obs-text-normal placeholder-obs-text-muted rounded px-2 py-1',
 			attr: {
 				'aria-label': t('publishing.ignorePatterns.name'),
 				'aria-describedby': 'pattern-error',
@@ -160,7 +160,7 @@ export class PublishingSection {
 		});
 
 		const addBtn = addRowEl.createEl('button', {
-			cls: 'clickable-icon qp:text-obs-text-success',
+			cls: 'clickable-icon text-obs-text-success',
 			attr: {
 				'aria-label': t('publishing.ignorePatterns.add'),
 			},
@@ -168,7 +168,7 @@ export class PublishingSection {
 		setIcon(addBtn, 'plus');
 
 		const errorEl = this.patternsContainerEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1 qp:mb-2 qp:min-h-[20px]',
+			cls: 'text-obs-text-error text-sm mt-1 mb-2 min-h-[20px]',
 			attr: {
 				id: 'pattern-error',
 				role: 'alert',

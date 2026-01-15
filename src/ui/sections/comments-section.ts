@@ -63,7 +63,7 @@ export class CommentsSection {
 		});
 
 		this.errorEl = this.containerEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-2',
+			cls: 'text-obs-text-error text-sm mt-2',
 			attr: {
 				role: 'alert',
 				'aria-live': 'polite',
@@ -130,7 +130,7 @@ export class CommentsSection {
 		const config = this.currentConfig.options;
 
 		const helpLink = this.fieldsContainerEl.createEl('p', {
-			cls: 'qp:text-obs-text-muted qp:text-sm qp:mb-4',
+			cls: 'text-obs-text-muted text-sm mb-4',
 		});
 		helpLink.innerHTML = t('settings.comments.giscusHelp');
 

@@ -93,7 +93,7 @@ export class SiteInfoSection {
 
 		// 오류 메시지 표시 영역
 		this.pageTitleErrorEl = setting.descEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-xs qp:mt-1',
+			cls: 'text-obs-text-error text-xs mt-1',
 			attr: {
 				role: 'alert',
 				'aria-live': 'polite',
@@ -146,7 +146,7 @@ export class SiteInfoSection {
 
 		// 오류 메시지 표시 영역
 		this.baseUrlErrorEl = setting.descEl.createDiv({
-			cls: 'qp:text-obs-text-error qp:text-xs qp:mt-1',
+			cls: 'text-obs-text-error text-xs mt-1',
 			attr: {
 				role: 'alert',
 				'aria-live': 'polite',
