@@ -961,6 +961,48 @@ export interface DeployGuideStep {
 }
 
 /**
+ * GitHub 설정 가이드 단계 (DeployGuideStep 확장)
+ */
+export interface GuideStep extends DeployGuideStep {
+	/** Base64 인코딩된 스크린샷 이미지 */
+	screenshot?: string;
+	/** 완료 상태 체크 함수 */
+	completionCheck?: () => boolean;
+	/** 문제 해결 팁 목록 */
+	troubleshootingTips?: string[];
+}
+
+/**
+ * 설정 진행 상태
+ */
+export interface SetupStatus {
+	/** GitHub 계정 보유 여부 (수동 확인) */
+	hasGitHubAccount: boolean;
+	/** Quartz Fork 완료 여부 */
+	hasForkedRepo: boolean;
+	/** PAT 설정 여부 */
+	hasToken: boolean;
+	/** GitHub 연결 성공 여부 */
+	isConnected: boolean;
+}
+
+/**
+ * 문제 해결 항목
+ */
+export interface TroubleshootingItem {
+	/** 오류 코드 (예: "401", "404") */
+	errorCode: string;
+	/** 오류 메시지 패턴 */
+	errorMessage: string;
+	/** 오류 원인 설명 */
+	cause: string;
+	/** 해결 방법 */
+	solution: string;
+	/** 관련 가이드 단계 번호 */
+	relatedStep?: number;
+}
+
+/**
  * Quartz 템플릿 정보
  */
 export const QUARTZ_TEMPLATE = {

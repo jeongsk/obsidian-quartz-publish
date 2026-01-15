@@ -61,6 +61,7 @@ npm run lint:fix     # 린트 자동 수정
 - TypeScript 5.9+ + Obsidian API, esbuild, TailwindCSS v4 (001-fix-content-hash)
 - TypeScript 5.9+ + Obsidian API + Obsidian API (Plugin, PluginSettingTab, Notice, Setting), TailwindCSS v4 (010-quick-links)
 - 기존 PluginSettings (repoUrl), QuartzSiteConfig (baseUrl) - 읽기 전용 (010-quick-links)
+- TypeScript 5.9+ + Obsidian API (Modal, App, Notice), TailwindCSS v4 (011-github-guide)
 
 ## Recent Changes
 - 006-beginner-support: Quartz 리포지토리 자동 생성 및 배포 가이드 (CreateRepoModal, DeployGuideModal, RepositoryCreatorService)

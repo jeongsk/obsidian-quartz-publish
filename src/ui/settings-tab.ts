@@ -27,6 +27,7 @@ import { ConfirmModal } from './components/confirm-modal';
 import { ConflictModal } from './components/conflict-modal';
 import { CreateRepoModal } from './create-repo-modal';
 import { DeployGuideModal } from './deploy-guide-modal';
+import { GitHubGuideModal } from './github-guide-modal';
 import { RemoteFileManagerModal } from './remote-file-manager-modal';
 import { t } from '../i18n';
 import { isValidGitHubUrl, normalizeBaseUrl } from '../utils/url';
@@ -231,6 +232,19 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.openRemoteFileManagerModal();
 					});
 			});
+
+		// GitHub 설정 가이드 버튼
+		new Setting(containerEl)
+			.setName(t('guide.button'))
+			.setDesc(t('guide.buttonDesc'))
+			.addButton((button) =>
+				button.setButtonText(t('guide.button')).onClick(() => {
+					this.openGitHubGuideModal();
+				})
+			);
+
+		// 설정이 완료되지 않은 경우 자동으로 가이드 모달 표시
+		this.checkAndShowGuideIfNeeded();
 	}
 
 	/**
@@ -558,6 +572,37 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			},
 		});
 		modal.open();
+	}
+
+	/**
+	 * GitHub 설정 가이드 모달 열기 (T013)
+	 */
+	private openGitHubGuideModal(): void {
+		const modal = new GitHubGuideModal(this.app, {
+			getSettings: () => this.plugin.settings,
+			onClose: () => {
+				// 모달이 닫히면 설정 탭 새로고침
+				this.display();
+			},
+		});
+		modal.open();
+	}
+
+	/**
+	 * 설정이 미완료인 경우 자동으로 가이드 모달 표시 (T014)
+	 */
+	private checkAndShowGuideIfNeeded(): void {
+		// 토큰과 리포지토리 URL 모두 비어있는 경우에만 자동 표시
+		// (완전 신규 사용자를 위함)
+		const settings = this.plugin.settings;
+		const isNewUser = !settings.githubToken && !settings.repoUrl;
+
+		if (isNewUser) {
+			// 약간의 지연 후 모달 표시 (설정 탭 렌더링 완료 대기)
+			setTimeout(() => {
+				this.openGitHubGuideModal();
+			}, 500);
+		}
 	}
 
 	private showConnectionStatus(

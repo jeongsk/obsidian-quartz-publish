@@ -350,6 +350,68 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'error.remoteFiles.maxFiles': '한 번에 최대 {{max}}개 파일만 삭제할 수 있습니다',
 	'error.remoteFiles.noSelection': '선택된 파일이 없습니다',
 	'error.remoteFiles.deleteFailed': '파일 삭제 실패: {{path}}',
+
+	// GitHub Guide
+	'guide.title': 'GitHub 설정 가이드',
+	'guide.button': 'GitHub 설정 가이드',
+	'guide.buttonDesc': 'Quartz 리포지토리 설정 방법 안내',
+	'guide.stepOf': '{{current}} / {{total}} 단계',
+	'guide.back': '이전',
+	'guide.next': '다음',
+	'guide.done': '완료',
+	'guide.close': '닫기',
+	'guide.complete': '완료됨',
+	'guide.incomplete': '미완료',
+	'guide.troubleshooting': '문제 해결',
+
+	// Guide Steps
+	'guide.step1.title': 'GitHub 계정 확인',
+	'guide.step1.description':
+		'Quartz를 사용하려면 GitHub 계정이 필요합니다. 아직 계정이 없다면 먼저 가입해 주세요.',
+	'guide.step1.action': 'GitHub 가입하기',
+	'guide.step1.tip1': '이미 GitHub 계정이 있다면 이 단계를 건너뛰세요',
+	'guide.step1.tip2': '이메일 인증을 완료해야 합니다',
+
+	'guide.step2.title': 'Quartz 템플릿 Fork',
+	'guide.step2.description':
+		'Quartz 공식 템플릿을 자신의 GitHub 계정으로 Fork합니다. Fork 버튼을 클릭하고 "Create fork"를 선택하세요.',
+	'guide.step2.action': 'Quartz 템플릿 열기',
+	'guide.step2.tip1': 'Repository name은 원하는 이름으로 변경할 수 있습니다',
+	'guide.step2.tip2': 'Copy the main branch only 옵션을 체크하세요',
+	'guide.step2.tip3': 'Fork가 완료되면 자동으로 새 저장소로 이동됩니다',
+
+	'guide.step3.title': 'Personal Access Token 생성',
+	'guide.step3.description':
+		'플러그인이 GitHub에 접근하려면 Personal Access Token(PAT)이 필요합니다. 토큰 생성 시 "repo" 권한을 반드시 선택하세요.',
+	'guide.step3.action': '토큰 생성 페이지 열기',
+	'guide.step3.tip1': 'Token name은 "Quartz Publish" 등으로 지정하세요',
+	'guide.step3.tip2': 'Expiration은 "No expiration" 또는 원하는 기간 선택',
+	'guide.step3.tip3': '"repo" 체크박스를 반드시 선택하세요',
+	'guide.step3.tip4': '생성된 토큰을 안전한 곳에 복사해 두세요',
+
+	'guide.step4.title': '플러그인 설정 연결',
+	'guide.step4.description':
+		'Fork한 리포지토리 URL과 생성한 토큰을 플러그인 설정에 입력하고 연결을 테스트합니다.',
+	'guide.step4.action': '설정으로 이동',
+	'guide.step4.tip1': 'Repository URL: https://github.com/사용자명/저장소명',
+	'guide.step4.tip2': '연결 테스트 버튼으로 설정을 확인하세요',
+
+	// Troubleshooting
+	'guide.error.401.title': '401 Unauthorized',
+	'guide.error.401.cause': '토큰이 잘못되었거나 만료되었습니다',
+	'guide.error.401.solution': '새 토큰을 생성하고 다시 입력하세요',
+
+	'guide.error.404.title': '404 Not Found',
+	'guide.error.404.cause': '리포지토리 URL이 잘못되었거나 비공개 저장소입니다',
+	'guide.error.404.solution': 'URL을 확인하고, 비공개인 경우 토큰 권한을 확인하세요',
+
+	'guide.error.403.title': '403 Forbidden',
+	'guide.error.403.cause': '토큰에 repo 권한이 없습니다',
+	'guide.error.403.solution': 'repo 권한이 있는 새 토큰을 생성하세요',
+
+	'guide.error.network.title': 'Network Error',
+	'guide.error.network.cause': '인터넷 연결에 문제가 있습니다',
+	'guide.error.network.solution': '네트워크 연결을 확인하고 다시 시도하세요',
 };
 
 export default ko;

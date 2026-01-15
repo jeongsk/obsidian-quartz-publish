@@ -346,4 +346,66 @@ export default {
 	'error.remoteFiles.maxFiles': 'Cannot delete more than {{max}} files at once',
 	'error.remoteFiles.noSelection': 'No files selected',
 	'error.remoteFiles.deleteFailed': 'Failed to delete file: {{path}}',
+
+	// GitHub Guide
+	'guide.title': 'GitHub Setup Guide',
+	'guide.button': 'GitHub Setup Guide',
+	'guide.buttonDesc': 'Guide to setting up Quartz repository',
+	'guide.stepOf': '{{current}} / {{total}} steps',
+	'guide.back': 'Back',
+	'guide.next': 'Next',
+	'guide.done': 'Done',
+	'guide.close': 'Close',
+	'guide.complete': 'Complete',
+	'guide.incomplete': 'Incomplete',
+	'guide.troubleshooting': 'Troubleshooting',
+
+	// Guide Steps
+	'guide.step1.title': 'Check GitHub Account',
+	'guide.step1.description':
+		'You need a GitHub account to use Quartz. If you do not have one, please sign up first.',
+	'guide.step1.action': 'Sign up for GitHub',
+	'guide.step1.tip1': 'Skip this step if you already have a GitHub account',
+	'guide.step1.tip2': 'You need to complete email verification',
+
+	'guide.step2.title': 'Fork Quartz Template',
+	'guide.step2.description':
+		'Fork the official Quartz template to your GitHub account. Click the Fork button and select "Create fork".',
+	'guide.step2.action': 'Open Quartz Template',
+	'guide.step2.tip1': 'You can change the Repository name to any name you want',
+	'guide.step2.tip2': 'Check the "Copy the main branch only" option',
+	'guide.step2.tip3': 'After forking, you will be redirected to the new repository',
+
+	'guide.step3.title': 'Create Personal Access Token',
+	'guide.step3.description':
+		'The plugin needs a Personal Access Token (PAT) to access GitHub. Make sure to select the "repo" permission when creating the token.',
+	'guide.step3.action': 'Open Token Creation Page',
+	'guide.step3.tip1': 'Set the Token name to something like "Quartz Publish"',
+	'guide.step3.tip2': 'Select "No expiration" or your preferred duration for Expiration',
+	'guide.step3.tip3': 'Make sure to check the "repo" checkbox',
+	'guide.step3.tip4': 'Copy and save the generated token somewhere safe',
+
+	'guide.step4.title': 'Connect Plugin Settings',
+	'guide.step4.description':
+		'Enter the forked repository URL and the generated token in the plugin settings, then test the connection.',
+	'guide.step4.action': 'Go to Settings',
+	'guide.step4.tip1': 'Repository URL: https://github.com/username/repository',
+	'guide.step4.tip2': 'Use the Test Connection button to verify your settings',
+
+	// Troubleshooting
+	'guide.error.401.title': '401 Unauthorized',
+	'guide.error.401.cause': 'The token is invalid or expired',
+	'guide.error.401.solution': 'Generate a new token and try again',
+
+	'guide.error.404.title': '404 Not Found',
+	'guide.error.404.cause': 'The repository URL is incorrect or the repository is private',
+	'guide.error.404.solution': 'Check the URL and verify token permissions if the repository is private',
+
+	'guide.error.403.title': '403 Forbidden',
+	'guide.error.403.cause': 'The token does not have repo permission',
+	'guide.error.403.solution': 'Generate a new token with repo permission',
+
+	'guide.error.network.title': 'Network Error',
+	'guide.error.network.cause': 'There is a problem with your internet connection',
+	'guide.error.network.solution': 'Check your network connection and try again',
 } as const;
