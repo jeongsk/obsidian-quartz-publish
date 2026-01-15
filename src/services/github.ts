@@ -10,6 +10,7 @@ import type {
 	GitHubFileContent,
 	GitHubCommitResult,
 	RateLimitInfo,
+	PublishedFile,
 } from '../types';
 import { GITHUB_API_BASE_URL } from '../types';
 
@@ -52,6 +53,8 @@ interface GitHubContentsResponse {
 	content?: string;
 	encoding?: string;
 	type: string;
+	html_url: string;
+	download_url: string | null;
 }
 
 interface GitHubCommitResponse {
@@ -483,6 +486,51 @@ export class GitHubService {
 	 */
 	getBranch(): string {
 		return this.branch;
+	}
+
+	// ============================================================================
+	// Directory Contents Methods (for Remote File Management)
+	// ============================================================================
+
+	/**
+	 * 디렉토리 내용 조회 (GET /repos/{owner}/{repo}/contents/{path})
+	 *
+	 * 지정된 경로의 파일 목록을 조회합니다. recursive 옵션 사용 시 하위 디렉토리도 재귀적으로 조회합니다.
+	 *
+	 * @param path 조회할 디렉토리 경로 (예: 'content')
+	 * @param recursive 하위 디렉토리 재귀 조회 여부 (기본값: true)
+	 * @returns 파일 목록
+	 * @throws GitHubError - API 오류 시 (401, 403, 404, 500+)
+	 */
+	async getDirectoryContents(
+		path: string,
+		recursive: boolean = true
+	): Promise<PublishedFile[]> {
+		const items = await this.request<GitHubContentsResponse[]>(
+			`/repos/${this.owner}/${this.repo}/contents/${path}?ref=${this.branch}`
+		);
+
+		const files: PublishedFile[] = [];
+
+		for (const item of items) {
+			if (item.type === 'file') {
+				files.push({
+					path: item.path,
+					name: item.name,
+					sha: item.sha,
+					size: item.size,
+					type: 'file',
+					htmlUrl: item.html_url,
+					downloadUrl: item.download_url,
+				});
+			} else if (item.type === 'dir' && recursive) {
+				// 재귀적으로 하위 디렉토리 조회
+				const subFiles = await this.getDirectoryContents(item.path, true);
+				files.push(...subFiles);
+			}
+		}
+
+		return files;
 	}
 
 	// ============================================================================
