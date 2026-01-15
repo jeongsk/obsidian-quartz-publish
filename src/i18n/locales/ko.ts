@@ -396,6 +396,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'guide.complete': '완료됨',
 	'guide.incomplete': '미완료',
 	'guide.troubleshooting': '문제 해결',
+	'guide.goToStep': '{{step}}단계로 이동',
 
 	// Guide Steps
 	'guide.step1.title': 'GitHub 계정 확인',

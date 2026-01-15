@@ -392,6 +392,7 @@ export default {
 	'guide.complete': 'Complete',
 	'guide.incomplete': 'Incomplete',
 	'guide.troubleshooting': 'Troubleshooting',
+	'guide.goToStep': 'Go to step {{step}}',
 
 	// Guide Steps
 	'guide.step1.title': 'Check GitHub Account',

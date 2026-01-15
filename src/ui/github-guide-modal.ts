@@ -428,7 +428,7 @@ export class GitHubGuideModal extends Modal {
 			// 관련 단계로 이동 버튼
 			if (item.relatedStep) {
 				const goToStepBtn = itemEl.createEl('button', {
-					text: `${item.relatedStep}단계로 이동`,
+					text: t('guide.goToStep', { step: String(item.relatedStep) }),
 					cls: 'qp:mt-3 qp:text-sm qp:text-obs-text-accent qp:cursor-pointer hover:qp:text-obs-text-accent-hover',
 				});
 				goToStepBtn.addEventListener('click', () => {

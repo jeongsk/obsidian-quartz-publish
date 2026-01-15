@@ -60,7 +60,10 @@ async function buildCSS() {
 			from: './src/styles/main.css',
 			to: './styles.css',
 		});
-		await writeFile('./styles.css', result.css);
+		// TailwindCSS v4의 :root, :host를 :root, :host, body로 변환
+		// Obsidian 플러그인 환경에서 body 선택자도 포함해야 CSS 변수가 적용됨
+		let css = result.css.replace(/:root,\s*:host\s*\{/g, ':root, :host, body {');
+		await writeFile('./styles.css', css);
 		console.log('✓ CSS built successfully');
 	} catch (error) {
 		console.error('✗ CSS build failed:', error.message);
