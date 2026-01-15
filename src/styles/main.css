@@ -481,6 +481,12 @@
 	margin-bottom: 1rem;
 }
 
+@media (max-width: 480px) {
+	.quartz-publish-version-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
 .quartz-publish-version-item {
 	display: flex;
 	flex-direction: column;
