@@ -812,6 +812,7 @@ export class DashboardModal extends Modal {
 				role: 'tabpanel',
 				id: `tabpanel-${this.state.activeTab}`,
 				'aria-labelledby': `tab-${this.state.activeTab}`,
+				'aria-live': 'polite',
 			},
 		});
 
