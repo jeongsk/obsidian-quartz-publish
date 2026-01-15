@@ -64,6 +64,10 @@ export class CommentsSection {
 
 		this.errorEl = this.containerEl.createDiv({
 			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-2',
+			attr: {
+				role: 'alert',
+				'aria-live': 'polite',
+			},
 		});
 
 		this.renderProviderFields();

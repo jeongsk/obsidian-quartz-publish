@@ -61,6 +61,10 @@ export class PublishFilterSection {
 
 		this.includeFoldersWarningEl = setting.descEl.createDiv({
 			cls: 'qp:text-obs-text-warning qp:text-xs qp:mt-1',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+			},
 		});
 
 		this.validateFolders(
@@ -91,6 +95,10 @@ export class PublishFilterSection {
 
 		this.excludeFoldersWarningEl = setting.descEl.createDiv({
 			cls: 'qp:text-obs-text-warning qp:text-xs qp:mt-1',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+			},
 		});
 
 		this.validateFolders(
@@ -140,6 +148,10 @@ export class PublishFilterSection {
 
 		this.rootFolderWarningEl = setting.descEl.createDiv({
 			cls: 'qp:text-obs-text-warning qp:text-xs qp:mt-1',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+			},
 		});
 
 		this.validateFolder(
@@ -169,6 +181,10 @@ export class PublishFilterSection {
 
 		this.homePageWarningEl = setting.descEl.createDiv({
 			cls: 'qp:text-obs-text-warning qp:text-xs qp:mt-1',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+			},
 		});
 
 		this.validateHomePage(

@@ -71,6 +71,10 @@ export class AnalyticsSection {
 		// 오류 메시지 영역
 		this.errorEl = this.containerEl.createDiv({
 			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-2',
+			attr: {
+				role: 'alert',
+				'aria-live': 'polite',
+			},
 		});
 
 		// 초기 필드 렌더링

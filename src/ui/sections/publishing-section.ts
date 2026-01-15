@@ -106,14 +106,26 @@ export class PublishingSection {
 			type: 'text',
 			placeholder: 'e.g., private/*, **/*.draft.md',
 			cls: 'qp:flex-1',
+			attr: {
+				'aria-label': 'New ignore pattern',
+				'aria-describedby': 'pattern-error',
+			},
 		});
 
 		const errorEl = this.containerEl.createDiv({
 			cls: 'qp:text-obs-text-error qp:text-sm qp:mt-1',
+			attr: {
+				id: 'pattern-error',
+				role: 'alert',
+				'aria-live': 'polite',
+			},
 		});
 
 		const addBtn = addPatternContainer.createEl('button', {
 			text: 'Add',
+			attr: {
+				'aria-label': 'Add new ignore pattern',
+			},
 		});
 
 		addBtn.onclick = () => {
