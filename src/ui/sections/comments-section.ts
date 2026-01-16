@@ -129,10 +129,18 @@ export class CommentsSection {
 
 		const config = this.currentConfig.options;
 
-		const helpLink = this.fieldsContainerEl.createEl('p', {
+		const helpText = this.fieldsContainerEl.createEl('p', {
 			cls: 'text-obs-text-muted text-sm mb-4',
 		});
-		helpLink.innerHTML = t('settings.comments.giscusHelp');
+		const prefix = t('settings.comments.giscusHelpPrefix');
+		const suffix = t('settings.comments.giscusHelpSuffix');
+		if (prefix) helpText.appendText(prefix);
+		helpText.createEl('a', {
+			text: t('settings.comments.giscusHelpLinkText'),
+			href: 'https://giscus.app',
+			attr: { target: '_blank' },
+		});
+		if (suffix) helpText.appendText(suffix);
 
 		new Setting(this.fieldsContainerEl)
 			.setName(t('settings.comments.repo'))
