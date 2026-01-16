@@ -4,7 +4,7 @@
  * 노트 발행 상태를 확인하고 일괄 발행/삭제를 수행하는 대시보드 모달입니다.
  */
 
-import { App, Modal, TFile, Notice } from 'obsidian';
+import { App, Modal, TFile, Notice, setIcon, setTooltip } from 'obsidian';
 import type {
 	DashboardTab,
 	DashboardState,
@@ -76,6 +76,7 @@ export class DashboardModal extends Modal {
 	private networkStatusUnsubscribe: (() => void) | null = null;
 	private isOffline: boolean = false;
 	private fileValidator: FileValidatorService;
+	private refreshBtn: HTMLElement | null = null;
 
 	constructor(app: App, options: DashboardModalOptions) {
 		super(app);
@@ -142,6 +143,7 @@ export class DashboardModal extends Modal {
 	private async loadStatus(): Promise<void> {
 		this.state.isLoading = true;
 		this.state.error = null;
+		this.setRefreshButtonLoading(true);
 		this.render();
 
 		try {
@@ -160,7 +162,26 @@ export class DashboardModal extends Modal {
 				error instanceof Error ? error.message : 'Unknown error';
 		} finally {
 			this.state.isLoading = false;
+			this.setRefreshButtonLoading(false);
 			this.render();
+		}
+	}
+
+	/**
+	 * 새로고침 버튼의 로딩 상태를 설정합니다.
+	 */
+	private setRefreshButtonLoading(isLoading: boolean): void {
+		if (!this.refreshBtn) return;
+
+		const svg = this.refreshBtn.querySelector('svg');
+		if (isLoading) {
+			if (svg) svg.classList.add('qp-animate-spin');
+			this.refreshBtn.addClass('pointer-events-none');
+			this.refreshBtn.setAttribute('aria-disabled', 'true');
+		} else {
+			if (svg) svg.classList.remove('qp-animate-spin');
+			this.refreshBtn.removeClass('pointer-events-none');
+			this.refreshBtn.removeAttribute('aria-disabled');
 		}
 	}
 
@@ -661,6 +682,34 @@ export class DashboardModal extends Modal {
 			cls: 'quartz-publish-dashboard-title',
 		});
 
+		// 새로고침 버튼 (아이콘 버튼)
+		this.refreshBtn = titleContainer.createDiv({
+			cls: 'clickable-icon',
+			attr: {
+				'aria-label': t('dashboard.action.refresh'),
+				role: 'button',
+				tabindex: '0',
+			},
+		});
+		setIcon(this.refreshBtn, 'refresh-cw');
+		setTooltip(this.refreshBtn, t('dashboard.action.refresh'));
+
+		// 로딩 상태일 때 애니메이션 적용
+		if (this.state.isLoading) {
+			const svg = this.refreshBtn.querySelector('svg');
+			if (svg) svg.classList.add('qp-animate-spin');
+			this.refreshBtn.addClass('pointer-events-none');
+			this.refreshBtn.setAttribute('aria-disabled', 'true');
+		}
+
+		this.refreshBtn.addEventListener('click', () => this.refresh());
+		this.refreshBtn.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				this.refresh();
+			}
+		});
+
 		// 오프라인 상태 표시기
 		if (this.isOffline) {
 			const offlineIndicator = titleContainer.createSpan({
@@ -674,16 +723,6 @@ export class DashboardModal extends Modal {
 			offlineIndicator.createSpan({ text: '●', cls: 'text-[8px]' });
 			offlineIndicator.createSpan({ text: t('dashboard.status.offline') });
 		}
-
-		// 새로고침 버튼
-		const refreshBtn = headerEl.createEl('button', {
-			text: t('dashboard.action.refresh'),
-			cls: 'text-sm',
-			attr: {
-				'aria-label': t('dashboard.action.refresh'),
-			},
-		});
-		refreshBtn.addEventListener('click', () => this.refresh());
 	}
 
 	/**

@@ -13,9 +13,60 @@
  * https://docs.obsidian.md/Reference/CSS+variables/CSS+variables
  */
 @theme {
-	/* Background colors */
+	/* ============================================================================
+	 * Extended Colors (Obsidian 기본 색상)
+	 * https://docs.obsidian.md/Reference/CSS+variables/Foundations/Colors
+	 * ============================================================================ */
+	--color-obs-red: var(--color-red);
+	--color-obs-orange: var(--color-orange);
+	--color-obs-yellow: var(--color-yellow);
+	--color-obs-green: var(--color-green);
+	--color-obs-cyan: var(--color-cyan);
+	--color-obs-blue: var(--color-blue);
+	--color-obs-purple: var(--color-purple);
+	--color-obs-pink: var(--color-pink);
+
+	/* Extended Colors RGB (opacity 지원용) */
+	--color-obs-red-rgb: var(--color-red-rgb);
+	--color-obs-orange-rgb: var(--color-orange-rgb);
+	--color-obs-yellow-rgb: var(--color-yellow-rgb);
+	--color-obs-green-rgb: var(--color-green-rgb);
+	--color-obs-cyan-rgb: var(--color-cyan-rgb);
+	--color-obs-blue-rgb: var(--color-blue-rgb);
+	--color-obs-purple-rgb: var(--color-purple-rgb);
+	--color-obs-pink-rgb: var(--color-pink-rgb);
+
+	/* ============================================================================
+	 * Base Colors (중립 팔레트, 00=밝음 ~ 100=어두움)
+	 * ============================================================================ */
+	--color-obs-base-00: var(--color-base-00);
+	--color-obs-base-05: var(--color-base-05);
+	--color-obs-base-10: var(--color-base-10);
+	--color-obs-base-20: var(--color-base-20);
+	--color-obs-base-25: var(--color-base-25);
+	--color-obs-base-30: var(--color-base-30);
+	--color-obs-base-35: var(--color-base-35);
+	--color-obs-base-40: var(--color-base-40);
+	--color-obs-base-50: var(--color-base-50);
+	--color-obs-base-60: var(--color-base-60);
+	--color-obs-base-70: var(--color-base-70);
+	--color-obs-base-100: var(--color-base-100);
+
+	/* ============================================================================
+	 * Accent Colors (HSL 구성요소)
+	 * 사용 예: hsl(var(--accent-h), var(--accent-s), var(--accent-l))
+	 * ============================================================================ */
+	--color-obs-accent-h: var(--accent-h);
+	--color-obs-accent-s: var(--accent-s);
+	--color-obs-accent-l: var(--accent-l);
+
+	/* ============================================================================
+	 * Background colors (배경 색상)
+	 * ============================================================================ */
 	--color-obs-bg-primary: var(--background-primary);
+	--color-obs-bg-primary-alt: var(--background-primary-alt);
 	--color-obs-bg-secondary: var(--background-secondary);
+	--color-obs-bg-secondary-alt: var(--background-secondary-alt);
 	--color-obs-bg-modifier-hover: var(--background-modifier-hover);
 	--color-obs-bg-modifier-active-hover: var(--background-modifier-active-hover);
 	--color-obs-bg-modifier-border: var(--background-modifier-border);
@@ -25,8 +76,11 @@
 	--color-obs-bg-modifier-error-hover: var(--background-modifier-error-hover);
 	--color-obs-bg-modifier-success: var(--background-modifier-success);
 	--color-obs-bg-modifier-message: var(--background-modifier-message);
+	--color-obs-bg-modifier-form-field: var(--background-modifier-form-field);
 
-	/* Text colors */
+	/* ============================================================================
+	 * Text colors (텍스트 색상)
+	 * ============================================================================ */
 	--color-obs-text-normal: var(--text-normal);
 	--color-obs-text-muted: var(--text-muted);
 	--color-obs-text-faint: var(--text-faint);
@@ -37,27 +91,38 @@
 	--color-obs-text-warning: var(--text-warning);
 	--color-obs-text-accent: var(--text-accent);
 	--color-obs-text-accent-hover: var(--text-accent-hover);
+	--color-obs-text-highlight-bg: var(--text-highlight-bg);
+	--color-obs-text-highlight-bg-active: var(--text-highlight-bg-active);
+	--color-obs-text-selection: var(--text-selection);
 
-	/* Interactive colors */
+	/* ============================================================================
+	 * Interactive colors (상호작용 요소 색상)
+	 * ============================================================================ */
 	--color-obs-interactive-normal: var(--interactive-normal);
 	--color-obs-interactive-hover: var(--interactive-hover);
 	--color-obs-interactive-accent: var(--interactive-accent);
 	--color-obs-interactive-accent-hovered: var(--interactive-accent-hovered);
 	--color-obs-interactive-accent-active: var(--interactive-accent-active);
 
-	/* Icon colors */
+	/* ============================================================================
+	 * Icon colors (아이콘 색상)
+	 * ============================================================================ */
 	--color-obs-icon: var(--icon-color);
 	--color-obs-icon-hover: var(--icon-color-hover);
 	--color-obs-icon-active: var(--icon-color-active);
 	--color-obs-icon-focused: var(--icon-color-focused);
 
-	/* Status colors */
+	/* ============================================================================
+	 * Status colors (상태 표시 색상)
+	 * ============================================================================ */
 	--color-obs-status-new: var(--color-green);
 	--color-obs-status-modified: var(--color-yellow);
 	--color-obs-status-synced: var(--text-muted);
 	--color-obs-status-deleted: var(--color-red);
 
-	/* Font family */
+	/* ============================================================================
+	 * Font family (폰트)
+	 * ============================================================================ */
 	--font-sans: var(--font-text);
 	--font-mono: var(--font-monospace);
 }
@@ -344,15 +409,15 @@
 }
 
 .quartz-publish-connection-icon--connected {
-	color: var(--color-green);
+	color: var(--color-obs-green);
 }
 
 .quartz-publish-connection-icon--error {
-	color: var(--color-red);
+	color: var(--color-obs-red);
 }
 
 .quartz-publish-connection-icon--connecting {
-	color: var(--color-yellow);
+	color: var(--color-obs-yellow);
 	animation: spin 1.5s linear infinite;
 }
 
@@ -732,13 +797,13 @@
 
 /* Warning Button Style Fix - Obsidian의 mod-warning 스타일 강제 적용 */
 button.mod-warning {
-	background-color: var(--color-red) !important;
-	color: var(--text-on-accent) !important;
-	border-color: var(--color-red) !important;
+	background-color: var(--color-obs-red) !important;
+	color: var(--color-obs-text-on-accent) !important;
+	border-color: var(--color-obs-red) !important;
 }
 
 button.mod-warning:hover {
-	background-color: var(--color-red) !important;
+	background-color: var(--color-obs-red) !important;
 	filter: brightness(1.1);
 }
 
@@ -763,14 +828,14 @@ button.mod-warning:disabled {
 /* Invalid input field styling */
 input.is-invalid,
 textarea.is-invalid {
-	border-color: var(--text-error) !important;
-	box-shadow: 0 0 0 2px rgba(var(--color-red-rgb), 0.2);
+	border-color: var(--color-obs-text-error) !important;
+	box-shadow: 0 0 0 2px rgba(var(--color-obs-red-rgb), 0.2);
 }
 
 input.is-invalid:focus,
 textarea.is-invalid:focus {
-	border-color: var(--text-error) !important;
-	box-shadow: 0 0 0 2px rgba(var(--color-red-rgb), 0.3);
+	border-color: var(--color-obs-text-error) !important;
+	box-shadow: 0 0 0 2px rgba(var(--color-obs-red-rgb), 0.3);
 }
 
 /* Animation */
