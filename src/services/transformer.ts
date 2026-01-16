@@ -76,7 +76,8 @@ export class ContentTransformer {
 		transformedBody = this.transformImageEmbeds(
 			transformedBody,
 			noteBasename,
-			attachments
+			attachments,
+			file.path
 		);
 
 		// 4. 프론트매터 재구성
@@ -313,14 +314,15 @@ export class ContentTransformer {
 	 * 위키 링크 변환
 	 * - 위키링크 형식 유지 (Quartz 호환)
 	 * - 파일이 존재하면 파일명으로 정규화
+	 * - 이미지 임베드(![[...]])는 제외
 	 */
 	private transformWikiLinks(
 		content: string,
 		sourcePath: string,
 		_publishedNotes: Set<string>
 	): string {
-		// [[note|alias]] 또는 [[note]] 패턴
-		const wikiLinkRegex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+		// [[note|alias]] 또는 [[note]] 패턴 (이미지 임베드 제외: negative lookbehind)
+		const wikiLinkRegex = /(?<!!)\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 		return content.replace(wikiLinkRegex, (match, linkTarget, alias) => {
 			const displayText = alias || linkTarget;
@@ -346,29 +348,43 @@ export class ContentTransformer {
 	/**
 	 * 이미지 임베드 변환
 	 * ![[image.png]] → ![image](/static/images/note-name/image.png)
+	 *
+	 * @param content 마크다운 콘텐츠
+	 * @param noteBasename 노트 파일명 (확장자 제외)
+	 * @param attachments 첨부파일 목록 (결과 저장용)
+	 * @param sourcePath 소스 파일 경로 (링크 해석용)
 	 */
 	private transformImageEmbeds(
 		content: string,
-		noteBasename: string,
-		attachments: AttachmentRef[]
+		_noteBasename: string,
+		attachments: AttachmentRef[],
+		sourcePath: string
 	): string {
 		// ![[image.ext]] 패턴 (이미지 확장자만)
 		const imageEmbedRegex = /!\[\[([^\]]+\.(png|jpg|jpeg|gif|svg|webp|bmp))\]\]/gi;
 
-		return content.replace(imageEmbedRegex, (match, imagePath) => {
+		// 이미지 임베드를 찾아서 첨부파일 목록에 추가 (변환 없음)
+		let match;
+		while ((match = imageEmbedRegex.exec(content)) !== null) {
+			const imagePath = match[1];
 			const filename = imagePath.split('/').pop() || imagePath;
-			const remotePath = `${this.staticPath}/images/${noteBasename}/${filename}`;
+
+			// 이미지를 content/attachments/ 폴더에 저장 (최단 경로)
+			const remotePath = `${this.contentPath}/attachments/${filename}`;
+
+			// MetadataCache를 사용하여 실제 파일 경로 해석
+			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
+			const resolvedLocalPath = imageFile ? imageFile.path : imagePath;
 
 			// 첨부파일 목록에 추가
 			attachments.push({
-				localPath: imagePath,
+				localPath: resolvedLocalPath,
 				remotePath,
 			});
+		}
 
-			// 표준 마크다운 이미지 문법으로 변환
-			const altText = filename.replace(/\.[^.]+$/, '');
-			return `![${altText}](/${remotePath})`;
-		});
+		// 위키링크 형식 그대로 유지 (변환하지 않음)
+		return content;
 	}
 
 	/**
@@ -390,9 +406,28 @@ export class ContentTransformer {
 	}
 
 	/**
-	 * 콘텐츠에서 참조된 첨부파일 추출
+	 * 문자열을 URL-safe slug로 변환
+	 * - 공백을 하이픈(-)으로 변환
+	 * - 특수문자 제거 (한글, 영문, 숫자, 하이픈, 언더스코어만 유지)
+	 * - 연속 하이픈 정리
 	 */
-	extractAttachments(content: string, noteBasename: string): AttachmentRef[] {
+	private toSlug(str: string): string {
+		return str
+			.trim()
+			.replace(/\s+/g, '-') // 공백 → 하이픈
+			.replace(/[^\w가-힣\-]/g, '') // 허용 문자만 유지
+			.replace(/-+/g, '-') // 연속 하이픈 정리
+			.replace(/^-|-$/g, ''); // 앞뒤 하이픈 제거
+	}
+
+	/**
+	 * 콘텐츠에서 참조된 첨부파일 추출
+	 *
+	 * @param content 마크다운 콘텐츠
+	 * @param noteBasename 노트 파일명 (확장자 제외)
+	 * @param sourcePath 소스 파일 경로 (링크 해석용)
+	 */
+	extractAttachments(content: string, _noteBasename: string, sourcePath: string): AttachmentRef[] {
 		const attachments: AttachmentRef[] = [];
 		const imageEmbedRegex = /!\[\[([^\]]+\.(png|jpg|jpeg|gif|svg|webp|bmp))\]\]/gi;
 
@@ -400,10 +435,15 @@ export class ContentTransformer {
 		while ((match = imageEmbedRegex.exec(content)) !== null) {
 			const imagePath = match[1];
 			const filename = imagePath.split('/').pop() || imagePath;
-			const remotePath = `${this.staticPath}/images/${noteBasename}/${filename}`;
+
+			// 이미지를 content/attachments/ 폴더에 저장 (최단 경로)
+			const remotePath = `${this.contentPath}/attachments/${filename}`;
+
+			// MetadataCache를 사용하여 실제 파일 경로 해석
+			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
 
 			attachments.push({
-				localPath: imagePath,
+				localPath: imageFile ? imageFile.path : imagePath,
 				remotePath,
 			});
 		}
