@@ -47,6 +47,92 @@ export class PublishFilterSection {
 		this.renderExcludeTags();
 	}
 
+	private renderRootFolder(): void {
+		const setting = new Setting(this.containerEl)
+			.setName(t('settings.filter.rootFolder'))
+			.setDesc(t('settings.filter.rootFolderDesc'))
+			.addText((text) => {
+				this.rootFolderInput = text.inputEl;
+				text.setPlaceholder(t('settings.filter.rootFolderPlaceholder'));
+				text.setValue(this.options.config.rootFolder);
+
+				// 입력 필드 클릭 시 폴더 선택 모달 열기
+				text.inputEl.addEventListener('click', () => {
+					new FolderSuggestModal(this.options.app, (path) => {
+						text.setValue(path);
+						this.handleRootFolderChange(path);
+					}).open();
+				});
+
+				// 직접 입력도 허용
+				text.onChange((value) => {
+					this.handleRootFolderChange(value);
+				});
+			});
+
+		this.rootFolderWarningEl = setting.descEl.createDiv({
+			cls: 'text-obs-text-warning text-xs mt-1',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+			},
+		});
+
+		this.validateFolder(
+			this.options.config.rootFolder,
+			this.rootFolderWarningEl
+		);
+	}
+
+	private handleRootFolderChange(value: string): void {
+		const normalized = value.trim().replace(/^\/+|\/+$/g, '');
+		this.validateFolder(normalized, this.rootFolderWarningEl);
+		this.options.onChange('rootFolder', normalized);
+	}
+
+	private renderHomePage(): void {
+		const setting = new Setting(this.containerEl)
+			.setName(t('settings.filter.homePage'))
+			.setDesc(t('settings.filter.homePageDesc'))
+			.addText((text) => {
+				this.homePageInput = text.inputEl;
+				text.setPlaceholder(t('settings.filter.homePagePlaceholder'));
+				text.setValue(this.options.config.homePagePath);
+
+				// 입력 필드 클릭 시 노트 선택 모달 열기
+				text.inputEl.addEventListener('click', () => {
+					new NoteSuggestModal(this.options.app, (path) => {
+						text.setValue(path);
+						this.handleHomePageChange(path);
+					}).open();
+				});
+
+				// 직접 입력도 허용
+				text.onChange((value) => {
+					this.handleHomePageChange(value);
+				});
+			});
+
+		this.homePageWarningEl = setting.descEl.createDiv({
+			cls: 'text-obs-text-warning text-xs mt-1',
+			attr: {
+				role: 'status',
+				'aria-live': 'polite',
+			},
+		});
+
+		this.validateHomePage(
+			this.options.config.homePagePath,
+			this.homePageWarningEl
+		);
+	}
+
+	private handleHomePageChange(value: string): void {
+		const normalized = value.trim().replace(/^\/+|\/+$/g, '');
+		this.validateHomePage(normalized, this.homePageWarningEl);
+		this.options.onChange('homePagePath', normalized);
+	}
+
 	private renderIncludeFolders(): void {
 		const setting = new Setting(this.containerEl)
 			.setName(t('settings.filter.includeFolders'))
@@ -133,92 +219,6 @@ export class PublishFilterSection {
 	private handleExcludeTagsChange(value: string): void {
 		const tags = this.parseLines(value).map((tag) => tag.replace(/^#/, ''));
 		this.options.onChange('excludeTags', tags);
-	}
-
-	private renderRootFolder(): void {
-		const setting = new Setting(this.containerEl)
-			.setName(t('settings.filter.rootFolder'))
-			.setDesc(t('settings.filter.rootFolderDesc'))
-			.addText((text) => {
-				this.rootFolderInput = text.inputEl;
-				text.setPlaceholder(t('settings.filter.rootFolderPlaceholder'));
-				text.setValue(this.options.config.rootFolder);
-
-				// 입력 필드 클릭 시 폴더 선택 모달 열기
-				text.inputEl.addEventListener('click', () => {
-					new FolderSuggestModal(this.options.app, (path) => {
-						text.setValue(path);
-						this.handleRootFolderChange(path);
-					}).open();
-				});
-
-				// 직접 입력도 허용
-				text.onChange((value) => {
-					this.handleRootFolderChange(value);
-				});
-			});
-
-		this.rootFolderWarningEl = setting.descEl.createDiv({
-			cls: 'text-obs-text-warning text-xs mt-1',
-			attr: {
-				role: 'status',
-				'aria-live': 'polite',
-			},
-		});
-
-		this.validateFolder(
-			this.options.config.rootFolder,
-			this.rootFolderWarningEl
-		);
-	}
-
-	private handleRootFolderChange(value: string): void {
-		const normalized = value.trim().replace(/^\/+|\/+$/g, '');
-		this.validateFolder(normalized, this.rootFolderWarningEl);
-		this.options.onChange('rootFolder', normalized);
-	}
-
-	private renderHomePage(): void {
-		const setting = new Setting(this.containerEl)
-			.setName(t('settings.filter.homePage'))
-			.setDesc(t('settings.filter.homePageDesc'))
-			.addText((text) => {
-				this.homePageInput = text.inputEl;
-				text.setPlaceholder(t('settings.filter.homePagePlaceholder'));
-				text.setValue(this.options.config.homePagePath);
-
-				// 입력 필드 클릭 시 노트 선택 모달 열기
-				text.inputEl.addEventListener('click', () => {
-					new NoteSuggestModal(this.options.app, (path) => {
-						text.setValue(path);
-						this.handleHomePageChange(path);
-					}).open();
-				});
-
-				// 직접 입력도 허용
-				text.onChange((value) => {
-					this.handleHomePageChange(value);
-				});
-			});
-
-		this.homePageWarningEl = setting.descEl.createDiv({
-			cls: 'text-obs-text-warning text-xs mt-1',
-			attr: {
-				role: 'status',
-				'aria-live': 'polite',
-			},
-		});
-
-		this.validateHomePage(
-			this.options.config.homePagePath,
-			this.homePageWarningEl
-		);
-	}
-
-	private handleHomePageChange(value: string): void {
-		const normalized = value.trim().replace(/^\/+|\/+$/g, '');
-		this.validateHomePage(normalized, this.homePageWarningEl);
-		this.options.onChange('homePagePath', normalized);
 	}
 
 	private parseLines(value: string): string[] {
