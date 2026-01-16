@@ -141,24 +141,24 @@ export class PublishService {
 		this.isPublishing = true;
 
 		try {
-			let content = await this.vault.read(file);
-
 			// 2. 프론트매터 파싱 (MetadataCache 사용으로 배열/중첩 객체 완전 지원)
 			const frontmatter = this.transformer.getFrontmatterFromCache(file);
-
-			// 3. publish 플래그 확인 및 자동 추가
-			if (frontmatter.publish !== true) {
-				content = this.transformer.addPublishFlag(content);
-				await this.vault.modify(file, content);
-			}
-
-			// 4. 날짜 필드 자동 추가
 			const autoDateSettings = this.settings.autoDateSettings ?? DEFAULT_AUTO_DATE_SETTINGS;
-			const contentWithDates = this.transformer.addDateFields(content, file, autoDateSettings);
-			if (contentWithDates !== content) {
-				content = contentWithDates;
-				await this.vault.modify(file, content);
-			}
+
+			// 3. publish 플래그 및 날짜 필드 원자적 추가 (vault.process 사용)
+			let content = await this.vault.process(file, (data) => {
+				let result = data;
+
+				// publish 플래그 자동 추가
+				if (frontmatter.publish !== true) {
+					result = this.transformer.addPublishFlag(result);
+				}
+
+				// 날짜 필드 자동 추가
+				result = this.transformer.addDateFields(result, file, autoDateSettings);
+
+				return result;
+			});
 
 			// 5. 발행된 노트 목록 가져오기 (링크 변환용)
 			const publishedNotes = this.getPublishedNotes();
