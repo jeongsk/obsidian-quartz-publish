@@ -205,4 +205,102 @@ describe('ContentTransformer', () => {
 			expect(result.attachments[0].remotePath).toBe('content/attachments/image.png');
 		});
 	});
+
+	describe('transformMarkdownImageSize', () => {
+		it('should convert ![alt|width](url) to HTML img tag', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = '![alt text|500](https://example.com/image.png)';
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toBe('<img src="https://example.com/image.png" alt="alt text" width="500">');
+		});
+
+		it('should convert ![alt|widthxheight](url) to HTML img tag with dimensions', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = '![alt text|500x300](https://example.com/image.png)';
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toBe('<img src="https://example.com/image.png" alt="alt text" width="500" height="300">');
+		});
+
+		it('should handle empty alt text with size', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = '![|500](https://example.com/image.png)';
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toBe('<img src="https://example.com/image.png" alt="" width="500">');
+		});
+
+		it('should not transform standard markdown images without size', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = '![alt text](https://example.com/image.png)';
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toBe('![alt text](https://example.com/image.png)');
+		});
+
+		it('should handle multiple images with size in content', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = 'First ![img1|200](url1) and second ![img2|300x150](url2)';
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toBe('First <img src="url1" alt="img1" width="200"> and second <img src="url2" alt="img2" width="300" height="150">');
+		});
+
+		it('should handle local file paths with size', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = '![photo|400](./images/photo.jpg)';
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toBe('<img src="./images/photo.jpg" alt="photo" width="400">');
+		});
+
+		it('should preserve frontmatter when transforming image size', () => {
+			const file = vault._addFile('notes/test.md', '');
+			const content = `---
+title: Test
+---
+
+![image|500](https://example.com/image.png)`;
+
+			const result = transformer.transform(
+				content,
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			expect(result.content).toContain('---\ntitle: Test\n---');
+			expect(result.content).toContain('<img src="https://example.com/image.png" alt="image" width="500">');
+		});
+	});
 });

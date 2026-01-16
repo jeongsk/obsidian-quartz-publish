@@ -80,7 +80,10 @@ export class ContentTransformer {
 			file.path
 		);
 
-		// 4. 프론트매터 재구성
+		// 4. 마크다운 이미지 크기 문법 변환 (![alt|500](url) → HTML)
+		transformedBody = this.transformMarkdownImageSize(transformedBody);
+
+		// 5. 프론트매터 재구성
 		const finalContent = this.reconstructContent(frontmatterRaw, transformedBody);
 
 		return {
@@ -342,6 +345,28 @@ export class ContentTransformer {
 
 			// 파일을 찾지 못한 경우 원본 위키링크 유지
 			return match;
+		});
+	}
+
+	/**
+	 * 마크다운 이미지 크기 문법 변환
+	 * Obsidian의 ![alt|500](url) 또는 ![alt|500x300](url) 문법을 HTML img 태그로 변환
+	 * Quartz 4에서 이 문법을 지원하지 않기 때문에 HTML로 변환
+	 *
+	 * @param content 마크다운 콘텐츠
+	 * @returns 변환된 콘텐츠
+	 */
+	private transformMarkdownImageSize(content: string): string {
+		// ![alt|widthxheight](url) 또는 ![alt|width](url) 패턴
+		// alt는 선택적, 파이프와 크기는 필수
+		const imageSizeRegex = /!\[([^|\]]*)\|(\d+)(?:x(\d+))?\]\(([^)]+)\)/g;
+
+		return content.replace(imageSizeRegex, (match, alt, width, height, url) => {
+			const altAttr = alt ? ` alt="${alt}"` : ' alt=""';
+			const widthAttr = ` width="${width}"`;
+			const heightAttr = height ? ` height="${height}"` : '';
+
+			return `<img src="${url}"${altAttr}${widthAttr}${heightAttr}>`;
 		});
 	}
 
