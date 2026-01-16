@@ -1,15 +1,26 @@
-import { Plugin, TFile, Notice } from 'obsidian';
-import type { PluginSettings, PluginData, PublishRecord, BatchPublishResult, UnpublishResult, QuartzFrontmatter } from './types';
-import { DEFAULT_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS, DEFAULT_VALIDATION_SETTINGS } from './types';
-import { QuartzPublishSettingTab } from './ui/settings-tab';
-import { PublishService } from './services/publish';
-import { StatusService } from './services/status';
-import { NetworkService } from './services/network';
-import { ContentTransformer } from './services/transformer';
-import { DashboardModal } from './ui/dashboard-modal';
-import { FrontmatterEditorModal } from './ui/frontmatter-editor-modal';
-import { initI18n, t } from './i18n';
-import { isValidGitHubUrl, normalizeBaseUrl } from './utils/url';
+import { addIcon, Plugin, TFile, Notice } from "obsidian";
+import type {
+	PluginSettings,
+	PluginData,
+	PublishRecord,
+	BatchPublishResult,
+	UnpublishResult,
+	QuartzFrontmatter,
+} from "./types";
+import {
+	DEFAULT_SETTINGS,
+	DEFAULT_PUBLISH_FILTER_SETTINGS,
+	DEFAULT_VALIDATION_SETTINGS,
+} from "./types";
+import { QuartzPublishSettingTab } from "./ui/settings-tab";
+import { PublishService } from "./services/publish";
+import { StatusService } from "./services/status";
+import { NetworkService } from "./services/network";
+import { ContentTransformer } from "./services/transformer";
+import { DashboardModal } from "./ui/dashboard-modal";
+import { FrontmatterEditorModal } from "./ui/frontmatter-editor-modal";
+import { initI18n, t } from "./i18n";
+import { isValidGitHubUrl, normalizeBaseUrl } from "./utils/url";
 
 /**
  * Quartz Publish Plugin
@@ -23,6 +34,19 @@ export default class QuartzPublishPlugin extends Plugin {
 	private networkService!: NetworkService;
 
 	async onload(): Promise<void> {
+		if (typeof addIcon === "function") {
+			// 커스텀 아이콘 등록: Quartz 결정 + 화살표
+			addIcon(
+				"quartz-publish",
+				`<g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 10 L80 25 L80 75 L50 90 L20 75 L20 25 Z" />
+    <path d="M50 65 L50 35" />
+    <path d="M38 47 L50 35 L62 47" />
+  </g>
+</svg>`
+			);
+		}
+
 		initI18n();
 		await this.loadSettings();
 
@@ -34,7 +58,9 @@ export default class QuartzPublishPlugin extends Plugin {
 			vault: this.app.vault,
 			metadataCache: this.app.metadataCache,
 			getPublishRecords: () => this.publishRecords,
-			getFilterSettings: () => this.settings.publishFilterSettings ?? DEFAULT_PUBLISH_FILTER_SETTINGS,
+			getFilterSettings: () =>
+				this.settings.publishFilterSettings ??
+				DEFAULT_PUBLISH_FILTER_SETTINGS,
 			contentPath: this.settings.contentPath,
 			staticPath: this.settings.staticPath,
 		});
@@ -44,11 +70,11 @@ export default class QuartzPublishPlugin extends Plugin {
 
 		// 커맨드 등록: 현재 노트 발행
 		this.addCommand({
-			id: 'publish-current-note',
-			name: t('command.publishNote'),
+			id: "publish-current-note",
+			name: t("command.publishNote"),
 			checkCallback: (checking: boolean) => {
 				const file = this.app.workspace.getActiveFile();
-				if (file && file.extension === 'md') {
+				if (file && file.extension === "md") {
 					if (!checking) {
 						this.publishNote(file);
 					}
@@ -60,8 +86,8 @@ export default class QuartzPublishPlugin extends Plugin {
 
 		// 커맨드 등록: 대시보드 열기
 		this.addCommand({
-			id: 'open-publish-dashboard',
-			name: t('command.openDashboard'),
+			id: "open-publish-dashboard",
+			name: t("command.openDashboard"),
 			callback: () => {
 				this.openDashboard();
 			},
@@ -69,67 +95,71 @@ export default class QuartzPublishPlugin extends Plugin {
 
 		// 커맨드 등록: GitHub 저장소 열기
 		this.addCommand({
-			id: 'open-github-repo',
-			name: t('command.openGitHubRepo'),
+			id: "open-github-repo",
+			name: t("command.openGitHubRepo"),
 			callback: () => {
 				const repoUrl = this.settings.repoUrl;
 				if (repoUrl && isValidGitHubUrl(repoUrl)) {
-					window.open(repoUrl, '_blank');
+					window.open(repoUrl, "_blank");
 				} else {
-					new Notice(t('notice.noGitHubRepo'));
+					new Notice(t("notice.noGitHubRepo"));
 				}
 			},
 		});
 
 		// 커맨드 등록: 배포 사이트 열기
 		this.addCommand({
-			id: 'open-deployed-site',
-			name: t('command.openDeployedSite'),
+			id: "open-deployed-site",
+			name: t("command.openDeployedSite"),
 			callback: () => {
 				const baseUrl = this.settings.quartzSiteConfig?.baseUrl;
 				if (baseUrl) {
-					window.open(normalizeBaseUrl(baseUrl), '_blank');
+					window.open(normalizeBaseUrl(baseUrl), "_blank");
 				} else {
-					new Notice(t('notice.noBaseUrl'));
+					new Notice(t("notice.noBaseUrl"));
 				}
 			},
 		});
 
 		// 리본 아이콘 등록: 대시보드 열기
-		this.addRibbonIcon('layout-dashboard', t('command.openDashboard'), () => {
-			this.openDashboard();
-		});
+		this.addRibbonIcon(
+			"layout-dashboard",
+			t("command.openDashboard"),
+			() => {
+				this.openDashboard();
+			}
+		);
 
 		// 리본 아이콘 등록: 현재 노트 발행
-		this.addRibbonIcon('upload', t('command.publishNote'), () => {
+		this.addRibbonIcon("upload", t("command.publishNote"), () => {
 			const file = this.app.workspace.getActiveFile();
-			if (file && file.extension === 'md') {
+			if (file && file.extension === "md") {
 				this.publishNote(file);
 			} else {
-				new Notice(t('notice.noActiveFile'));
+				new Notice(t("notice.noActiveFile"));
 			}
 		});
 
 		// 파일 메뉴: Publish to Quartz
 		this.registerEvent(
-			this.app.workspace.on('file-menu', (menu, file) => {
-				if (file instanceof TFile && file.extension === 'md') {
+			this.app.workspace.on("file-menu", (menu, file) => {
+				if (file instanceof TFile && file.extension === "md") {
 					menu.addItem((item) => {
-						item.setTitle(t('menu.publishToQuartz'))
-							.setIcon('upload')
+						item.setTitle(t("menu.publishToQuartz"))
+							.setIcon("upload")
 							.onClick(() => this.publishNote(file));
 					});
 				}
 			})
 		);
 
-		console.log('Quartz Publish plugin loaded');
+		console.log("Quartz Publish plugin loaded");
 	}
 
 	onunload(): void {
 		// NetworkService 정리
 		this.networkService?.destroy();
-		console.log('Quartz Publish plugin unloaded');
+		console.log("Quartz Publish plugin unloaded");
 	}
 
 	/**
@@ -155,7 +185,10 @@ export default class QuartzPublishPlugin extends Plugin {
 	/**
 	 * 발행 기록 업데이트
 	 */
-	async updatePublishRecord(localPath: string, record: PublishRecord): Promise<void> {
+	async updatePublishRecord(
+		localPath: string,
+		record: PublishRecord
+	): Promise<void> {
 		this.publishRecords[localPath] = record;
 		await this.saveSettings();
 	}
@@ -181,13 +214,13 @@ export default class QuartzPublishPlugin extends Plugin {
 	async publishNote(file: TFile): Promise<void> {
 		// 네트워크 연결 확인
 		if (!this.networkService.isOnline()) {
-			new Notice(t('notice.network.offline'));
+			new Notice(t("notice.network.offline"));
 			return;
 		}
 
 		// 설정 확인
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
-			new Notice(t('notice.configureFirst'));
+			new Notice(t("notice.configureFirst"));
 			return;
 		}
 
@@ -200,19 +233,22 @@ export default class QuartzPublishPlugin extends Plugin {
 				this.settings.contentPath,
 				this.settings.staticPath
 			);
-			const currentFrontmatter = transformer.getFrontmatterFromCache(file);
+			const currentFrontmatter =
+				transformer.getFrontmatterFromCache(file);
 
 			const editorModal = new FrontmatterEditorModal(this.app, {
 				file,
 				frontmatter: currentFrontmatter,
-				validationSettings: this.settings.validationSettings ?? DEFAULT_VALIDATION_SETTINGS,
+				validationSettings:
+					this.settings.validationSettings ??
+					DEFAULT_VALIDATION_SETTINGS,
 				transformer,
 			});
 
 			const result = await editorModal.waitForResult();
 			if (!result.saved) {
 				// 사용자가 취소함
-				new Notice(t('notice.publish.cancelled'));
+				new Notice(t("notice.publish.cancelled"));
 				return;
 			}
 			frontmatterOverride = result.frontmatter;
@@ -221,7 +257,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			await this.applyFrontmatterToFile(file, frontmatterOverride);
 		}
 
-		new Notice(t('notice.publish.start', { filename: file.basename }));
+		new Notice(t("notice.publish.start", { filename: file.basename }));
 
 		try {
 			const publishService = new PublishService(
@@ -236,21 +272,35 @@ export default class QuartzPublishPlugin extends Plugin {
 			const result = await publishService.publishNote(file);
 
 			if (result.success) {
-				new Notice(t('notice.publish.success', { filename: file.basename, path: result.remotePath ?? '' }));
+				new Notice(
+					t("notice.publish.success", {
+						filename: file.basename,
+						path: result.remotePath ?? "",
+					})
+				);
 			} else {
-				new Notice(t('notice.publish.failed', { filename: file.basename, error: result.error ?? '' }));
+				new Notice(
+					t("notice.publish.failed", {
+						filename: file.basename,
+						error: result.error ?? "",
+					})
+				);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : t('error.unknown');
-			new Notice(t('notice.publish.error', { message }));
-			console.error('[QuartzPublish] Publish error:', error);
+			const message =
+				error instanceof Error ? error.message : t("error.unknown");
+			new Notice(t("notice.publish.error", { message }));
+			console.error("[QuartzPublish] Publish error:", error);
 		}
 	}
 
 	/**
 	 * 파일에 frontmatter 적용
 	 */
-	private async applyFrontmatterToFile(file: TFile, frontmatter: QuartzFrontmatter): Promise<void> {
+	private async applyFrontmatterToFile(
+		file: TFile,
+		frontmatter: QuartzFrontmatter
+	): Promise<void> {
 		await this.app.fileManager.processFrontMatter(file, (fm) => {
 			// 기존 frontmatter 유지하면서 편집된 값만 업데이트
 			for (const [key, value] of Object.entries(frontmatter)) {
@@ -288,7 +338,7 @@ export default class QuartzPublishPlugin extends Plugin {
 		};
 
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
-			new Notice(t('notice.configureFirst'));
+			new Notice(t("notice.configureFirst"));
 			return results;
 		}
 
@@ -311,7 +361,7 @@ export default class QuartzPublishPlugin extends Plugin {
 		const results: UnpublishResult[] = [];
 
 		if (!this.settings.githubToken || !this.settings.repoUrl) {
-			new Notice(t('notice.configureFirst'));
+			new Notice(t("notice.configureFirst"));
 			return results;
 		}
 
@@ -335,7 +385,10 @@ export default class QuartzPublishPlugin extends Plugin {
 				results.push({
 					success: false,
 					file,
-					error: error instanceof Error ? error.message : 'Unknown error',
+					error:
+						error instanceof Error
+							? error.message
+							: "Unknown error",
 				});
 			}
 		}

@@ -131,7 +131,6 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		new Setting(containerEl).setName(t('settings.github.title')).setHeading();
 
 		// 바로가기 버튼 그룹
-		this.createQuickLinksSection(containerEl);
 
 		// GitHub Token 입력
 		new Setting(containerEl)
@@ -281,7 +280,6 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				'aria-label': t('settings.quickLinks.title'),
 			},
 		});
-		this.renderQuickLinksButtons();
 	}
 
 	/**
@@ -916,9 +914,6 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// quartzSiteConfig 캐시 저장
 		this.plugin.settings.quartzSiteConfig = siteConfig;
 		this.plugin.saveSettings();
-
-		// 바로가기 버튼 업데이트 (baseUrl이 로드되었으므로)
-		this.renderQuickLinksButtons();
 
 		// Advanced Config 컨테이너
 		this.advancedConfigContainerEl = this.quartzSettingsContainerEl.createDiv({
