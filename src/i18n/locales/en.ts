@@ -49,7 +49,7 @@ export default {
 	'settings.frontmatter.requireTagsDesc': 'Warn if tags field is missing',
 
 	// Settings - Quartz
-	'settings.quartz.title': 'Quartz Configuration',
+	'settings.quartz.title': 'Advanced Quartz Configuration',
 	'settings.quartz.load': 'Load Quartz Settings',
 	'settings.quartz.loadDesc': 'Fetch settings from quartz.config.ts',
 	'settings.quartz.loading': 'Loading Quartz settings...',

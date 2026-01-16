@@ -53,7 +53,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.frontmatter.requireTagsDesc': 'tags 필드가 없으면 경고',
 
 	// Settings - Quartz
-	'settings.quartz.title': 'Quartz 설정',
+	'settings.quartz.title': 'Quartz 고급 설정',
 	'settings.quartz.load': 'Quartz 설정 불러오기',
 	'settings.quartz.loadDesc': 'quartz.config.ts에서 설정 가져오기',
 	'settings.quartz.loading': 'Quartz 설정 불러오는 중...',

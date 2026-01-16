@@ -129,14 +129,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// GitHub 연동 섹션
 		this.createGitHubSection(containerEl);
 
-		// 날짜 자동 추가 섹션
-		this.createAutoDateSection(containerEl);
+		// 발행 설정 섹션
+		this.createPublishFilterSection(containerEl);
 
 		// Frontmatter 설정 섹션
 		this.createFrontmatterSection(containerEl);
 
-		// 발행 필터 섹션
-		this.createPublishFilterSection(containerEl);
+		// 날짜 자동 추가 섹션
+		this.createAutoDateSection(containerEl);
 
 		// Quartz 설정 섹션
 		this.createQuartzSettingsSection(containerEl);

@@ -207,7 +207,7 @@ export class PublishFilterSection {
 			.setDesc(t('settings.filter.excludeTagsDesc'))
 			.addTextArea((textarea) => {
 				this.excludeTagsTextarea = textarea.inputEl;
-				textarea.inputEl.rows = 2;
+				textarea.inputEl.rows = 3;
 				textarea.inputEl.placeholder = t('settings.filter.excludeTagsPlaceholder');
 				textarea.setValue(this.options.config.excludeTags.join('\n'));
 				textarea.onChange((value) => {
