@@ -145,7 +145,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	'settings.publishing.ignorePatternsDesc': '발행 시 무시할 Glob 패턴',
 
 	// Settings - Publish Filter
-	'settings.filter.title': '발행 필터',
+	'settings.filter.title': '발행 설정',
 	'settings.filter.includeFolders': '포함 폴더',
 	'settings.filter.includeFoldersDesc': '이 폴더의 노트만 발행합니다 (줄당 하나). 비워두면 전체 포함.',
 	'settings.filter.includeFoldersPlaceholder': 'Blog\nNotes/Public',

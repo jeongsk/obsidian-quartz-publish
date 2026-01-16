@@ -141,7 +141,7 @@ export default {
 	'settings.publishing.ignorePatternsDesc': 'Glob patterns to ignore when publishing',
 
 	// Settings - Publish Filter
-	'settings.filter.title': 'Publish Filter',
+	'settings.filter.title': 'Publish Settings',
 	'settings.filter.includeFolders': 'Include Folders',
 	'settings.filter.includeFoldersDesc': 'Only publish notes from these folders (one per line). Leave empty to include all.',
 	'settings.filter.includeFoldersPlaceholder': 'Blog\nNotes/Public',
