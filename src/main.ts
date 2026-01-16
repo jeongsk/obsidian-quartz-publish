@@ -21,6 +21,10 @@ import { DashboardModal } from "./ui/dashboard-modal";
 import { FrontmatterEditorModal } from "./ui/frontmatter-editor-modal";
 import { initI18n, t } from "./i18n";
 import { isValidGitHubUrl, normalizeBaseUrl } from "./utils/url";
+import {
+	ICON_QUARTZ_PUBLISH,
+	ICON_QUARTZ_PUBLISH_SVG,
+} from "./constants/icons";
 
 /**
  * Quartz Publish Plugin
@@ -35,16 +39,7 @@ export default class QuartzPublishPlugin extends Plugin {
 
 	async onload(): Promise<void> {
 		if (typeof addIcon === "function") {
-			// 커스텀 아이콘 등록: Quartz 결정 + 화살표
-			addIcon(
-				"quartz-publish",
-				`<g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M50 10 L80 25 L80 75 L50 90 L20 75 L20 25 Z" />
-    <path d="M50 65 L50 35" />
-    <path d="M38 47 L50 35 L62 47" />
-  </g>
-</svg>`
-			);
+			addIcon(ICON_QUARTZ_PUBLISH, ICON_QUARTZ_PUBLISH_SVG);
 		}
 
 		initI18n();
