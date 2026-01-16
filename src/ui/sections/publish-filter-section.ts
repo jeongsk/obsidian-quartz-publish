@@ -40,11 +40,11 @@ export class PublishFilterSection {
 	private render(): void {
 		new Setting(this.containerEl).setName(t('settings.filter.title')).setHeading();
 
+		this.renderRootFolder();
+		this.renderHomePage();
 		this.renderIncludeFolders();
 		this.renderExcludeFolders();
 		this.renderExcludeTags();
-		this.renderRootFolder();
-		this.renderHomePage();
 	}
 
 	private renderIncludeFolders(): void {
