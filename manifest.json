@@ -3,7 +3,7 @@
 	"name": "Quartz Publish",
 	"version": "0.4.1",
 	"minAppVersion": "1.11.0",
-	"description": "Publish your Obsidian notes directly to Quartz blog",
+	"description": "Publish your Obsidian notes directly to Quartz blog.",
 	"author": "Jeongsk",
 	"authorUrl": "https://github.com/jeongsk"
 }
