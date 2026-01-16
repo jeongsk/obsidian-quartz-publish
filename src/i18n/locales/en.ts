@@ -308,10 +308,15 @@ export default {
 
 	// Errors
 	'error.github.invalidToken': 'Invalid or expired GitHub token',
+	'error.github.invalidToken.hint': 'Generate a new token or check token permissions (repo)',
 	'error.github.notFound': 'Repository not found or no access permission',
-	'error.github.notQuartz': 'This repository is not a Quartz site (quartz.config.ts not found)',
-	'error.github.rateLimit': 'GitHub API rate limit exceeded. Please try again later.',
-	'error.github.network': 'Network error. Please check your internet connection.',
+	'error.github.notFound.hint': 'Verify the repository URL and token access permissions',
+	'error.github.notQuartz': 'This repository is not a Quartz site',
+	'error.github.notQuartz.hint': 'Ensure the repository contains quartz.config.ts',
+	'error.github.rateLimit': 'GitHub API rate limit exceeded',
+	'error.github.rateLimit.hint': 'Wait a moment and try again, or use an authenticated token',
+	'error.github.network': 'Network error occurred',
+	'error.github.network.hint': 'Check your internet connection and try again',
 	'error.unknown': 'An unknown error occurred',
 	'error.validation.pageTitle': 'Page title is required',
 	'error.validation.baseUrl': 'Invalid URL format',

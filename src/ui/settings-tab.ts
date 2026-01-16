@@ -575,12 +575,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				);
 				new Notice(t('notice.connection.success'));
 			} else if (result.error) {
-				this.showConnectionStatus('error', this.getErrorMessage(result.error.type));
+				this.showConnectionStatus('error', this.getErrorMessage(result.error.type), {
+					errorType: result.error.type,
+				});
 				new Notice(t('notice.connection.failed', { message: result.error.message }));
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : t('error.unknown');
-			this.showConnectionStatus('error', message);
+			this.showConnectionStatus('error', message, { errorType: 'network_error' });
 			new Notice(t('notice.connection.failed', { message }));
 		}
 	}
@@ -636,7 +638,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	private showConnectionStatus(
 		status: 'connected' | 'connecting' | 'error',
 		message: string,
-		details?: { owner?: string; repo?: string; branch?: string }
+		options?: {
+			owner?: string;
+			repo?: string;
+			branch?: string;
+			errorType?: string;
+		}
 	): void {
 		if (!this.connectionStatusEl) return;
 
@@ -665,16 +672,23 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// 내용 영역
 		const contentEl = this.connectionStatusEl.createDiv({ cls: 'status-content' });
 
-		if (status === 'connected' && details?.owner && details?.repo) {
+		if (status === 'connected' && options?.owner && options?.repo) {
 			contentEl.createDiv({
-				text: `${details.owner}/${details.repo}`,
+				text: `${options.owner}/${options.repo}`,
 				cls: 'status-title',
 			});
-			if (details.branch) {
+			if (options.branch) {
 				contentEl.createDiv({
-					text: t('connection.branch', { branch: details.branch }),
+					text: t('connection.branch', { branch: options.branch }),
 					cls: 'status-subtitle',
 				});
+			}
+		} else if (status === 'error') {
+			contentEl.createDiv({ text: message, cls: 'status-message' });
+			// 에러 힌트 추가
+			const hint = this.getErrorHint(options?.errorType);
+			if (hint) {
+				contentEl.createDiv({ text: hint, cls: 'status-hint' });
 			}
 		} else {
 			contentEl.createDiv({ text: message, cls: 'status-message' });
@@ -725,6 +739,26 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				return t('error.github.network');
 			default:
 				return t('error.unknown');
+		}
+	}
+
+	/**
+	 * 오류 타입에 따른 해결 방법 힌트
+	 */
+	private getErrorHint(errorType?: string): string | null {
+		switch (errorType) {
+			case 'invalid_token':
+				return t('error.github.invalidToken.hint');
+			case 'not_found':
+				return t('error.github.notFound.hint');
+			case 'not_quartz':
+				return t('error.github.notQuartz.hint');
+			case 'rate_limited':
+				return t('error.github.rateLimit.hint');
+			case 'network_error':
+				return t('error.github.network.hint');
+			default:
+				return null;
 		}
 	}
 

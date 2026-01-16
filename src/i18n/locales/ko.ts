@@ -312,10 +312,15 @@ const ko: { [K in TranslationKeys]?: string } = {
 
 	// Errors
 	'error.github.invalidToken': '유효하지 않거나 만료된 GitHub 토큰입니다',
+	'error.github.invalidToken.hint': '새 토큰을 생성하거나 토큰 권한(repo)을 확인하세요',
 	'error.github.notFound': '저장소를 찾을 수 없거나 접근 권한이 없습니다',
-	'error.github.notQuartz': '이 저장소는 Quartz 사이트가 아닙니다 (quartz.config.ts를 찾을 수 없음)',
-	'error.github.rateLimit': 'GitHub API 요청 한도를 초과했습니다. 나중에 다시 시도해 주세요.',
-	'error.github.network': '네트워크 오류입니다. 인터넷 연결을 확인해 주세요.',
+	'error.github.notFound.hint': '저장소 URL이 올바른지, 토큰에 접근 권한이 있는지 확인하세요',
+	'error.github.notQuartz': '이 저장소는 Quartz 사이트가 아닙니다',
+	'error.github.notQuartz.hint': 'quartz.config.ts 파일이 있는 Quartz 저장소인지 확인하세요',
+	'error.github.rateLimit': 'GitHub API 요청 한도를 초과했습니다',
+	'error.github.rateLimit.hint': '잠시 후 다시 시도하거나, 인증된 토큰을 사용하세요',
+	'error.github.network': '네트워크 오류가 발생했습니다',
+	'error.github.network.hint': '인터넷 연결을 확인하고 다시 시도하세요',
 	'error.unknown': '알 수 없는 오류가 발생했습니다',
 	'error.validation.pageTitle': '페이지 제목은 필수입니다',
 	'error.validation.baseUrl': '잘못된 URL 형식입니다',

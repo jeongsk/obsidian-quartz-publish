@@ -467,6 +467,12 @@
 	color: var(--text-error);
 }
 
+.quartz-publish-connection-status-card .status-hint {
+	font-size: var(--font-smallest);
+	color: var(--text-muted);
+	margin-top: 0.25rem;
+}
+
 .quartz-publish-connection-status-card .status-close {
 	display: inline-flex;
 	align-items: center;
