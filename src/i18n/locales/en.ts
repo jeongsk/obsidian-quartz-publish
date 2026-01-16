@@ -369,6 +369,7 @@ export default {
 	// Connection Status
 	'connection.connected': 'Connected to {{owner}}/{{name}} (branch: {{branch}})',
 	'connection.connecting': 'Testing connection...',
+	'connection.branch': 'Branch: {{branch}}',
 
 	// Settings - Remote File Management
 	'settings.github.manageFiles': 'Manage Published Files',

@@ -389,36 +389,104 @@
 	/* 기본 스타일 - Obsidian Setting 컴포넌트 활용 */
 }
 
-/* Connection Status Indicator */
-.quartz-publish-connection-status {
-	display: inline-flex;
+/* Connection Status Card */
+.quartz-publish-connection-status-card {
+	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	margin-top: 0.5rem;
+	border-radius: 6px;
+	font-size: var(--font-small);
 }
 
-/* 연결 상태 아이콘 (색상 + 아이콘으로 접근성 개선) */
-.quartz-publish-connection-icon {
+.quartz-publish-connection-status-card.hidden {
+	display: none;
+}
+
+.quartz-publish-connection-status-card--connected {
+	background-color: rgba(var(--color-green-rgb), 0.1);
+	border: 1px solid rgba(var(--color-green-rgb), 0.3);
+}
+
+.quartz-publish-connection-status-card--error {
+	background-color: rgba(var(--color-red-rgb), 0.1);
+	border: 1px solid rgba(var(--color-red-rgb), 0.3);
+}
+
+.quartz-publish-connection-status-card--connecting {
+	background-color: rgba(var(--color-yellow-rgb), 0.1);
+	border: 1px solid rgba(var(--color-yellow-rgb), 0.3);
+}
+
+.quartz-publish-connection-status-card .status-icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	flex-shrink: 0;
 }
 
-.quartz-publish-connection-icon svg {
+.quartz-publish-connection-status-card .status-icon svg {
+	width: 20px;
+	height: 20px;
+}
+
+.quartz-publish-connection-status-card--connected .status-icon {
+	color: var(--color-green);
+}
+
+.quartz-publish-connection-status-card--error .status-icon {
+	color: var(--color-red);
+}
+
+.quartz-publish-connection-status-card--connecting .status-icon {
+	color: var(--color-yellow);
+	animation: spin 1.5s linear infinite;
+}
+
+.quartz-publish-connection-status-card .status-content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.quartz-publish-connection-status-card .status-title {
+	font-weight: 600;
+}
+
+.quartz-publish-connection-status-card .status-subtitle {
+	font-size: var(--font-smallest);
+	color: var(--text-muted);
+}
+
+.quartz-publish-connection-status-card .status-message {
+	color: var(--text-normal);
+}
+
+.quartz-publish-connection-status-card--error .status-message {
+	color: var(--text-error);
+}
+
+.quartz-publish-connection-status-card .status-close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: auto;
+	padding: 0.25rem;
+	border-radius: 4px;
+	cursor: pointer;
+	opacity: 0.6;
+	transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.quartz-publish-connection-status-card .status-close:hover {
+	opacity: 1;
+	background-color: rgba(var(--mono-rgb-100), 0.1);
+}
+
+.quartz-publish-connection-status-card .status-close svg {
 	width: 16px;
 	height: 16px;
-}
-
-.quartz-publish-connection-icon--connected {
-	color: var(--color-obs-green);
-}
-
-.quartz-publish-connection-icon--error {
-	color: var(--color-obs-red);
-}
-
-.quartz-publish-connection-icon--connecting {
-	color: var(--color-obs-yellow);
-	animation: spin 1.5s linear infinite;
 }
 
 @keyframes spin {

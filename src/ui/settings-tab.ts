@@ -208,7 +208,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			});
 
 		// 연결 테스트 버튼
-		const testConnectionSetting = new Setting(containerEl)
+		new Setting(containerEl)
 			.setName(t('settings.github.testConnection'))
 			.setDesc(t('settings.github.testConnectionDesc'))
 			.addButton((button) =>
@@ -220,9 +220,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					})
 			);
 
-		// 연결 상태 표시 영역
-		this.connectionStatusEl = testConnectionSetting.descEl.createDiv({
-			cls: 'quartz-publish-connection-status',
+		// 연결 상태 표시 영역 (별도 카드로 분리)
+		this.connectionStatusEl = containerEl.createDiv({
+			cls: 'quartz-publish-connection-status-card hidden',
 		});
 
 		// 발행된 파일 관리 버튼
@@ -570,7 +570,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 				this.showConnectionStatus(
 					'connected',
-					t('connection.connected', { owner: result.repository.owner, name: result.repository.name, branch: detectedBranch })
+					t('connection.connected', { owner: result.repository.owner, name: result.repository.name, branch: detectedBranch }),
+					{ owner: result.repository.owner, repo: result.repository.name, branch: detectedBranch }
 				);
 				new Notice(t('notice.connection.success'));
 			} else if (result.error) {
@@ -630,17 +631,28 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		}
 	}
 
+	private connectionStatusTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	private showConnectionStatus(
 		status: 'connected' | 'connecting' | 'error',
-		message: string
+		message: string,
+		details?: { owner?: string; repo?: string; branch?: string }
 	): void {
 		if (!this.connectionStatusEl) return;
 
-		this.connectionStatusEl.empty();
+		// 기존 타이머 취소
+		if (this.connectionStatusTimeout) {
+			clearTimeout(this.connectionStatusTimeout);
+			this.connectionStatusTimeout = null;
+		}
 
-		// 아이콘 컨테이너 (색상 + 아이콘으로 접근성 개선)
+		this.connectionStatusEl.empty();
+		this.connectionStatusEl.removeClass('hidden');
+		this.connectionStatusEl.className = `quartz-publish-connection-status-card quartz-publish-connection-status-card--${status}`;
+
+		// 아이콘 컨테이너
 		const iconContainer = this.connectionStatusEl.createSpan({
-			cls: `quartz-publish-connection-icon quartz-publish-connection-icon--${status}`,
+			cls: 'status-icon',
 			attr: { 'aria-hidden': 'true' },
 		});
 
@@ -650,10 +662,50 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			: 'loader-2';
 		setIcon(iconContainer, iconName);
 
-		this.connectionStatusEl.createSpan({
-			text: message,
-			cls: status === 'error' ? 'text-obs-text-error' : '',
-		});
+		// 내용 영역
+		const contentEl = this.connectionStatusEl.createDiv({ cls: 'status-content' });
+
+		if (status === 'connected' && details?.owner && details?.repo) {
+			contentEl.createDiv({
+				text: `${details.owner}/${details.repo}`,
+				cls: 'status-title',
+			});
+			if (details.branch) {
+				contentEl.createDiv({
+					text: t('connection.branch', { branch: details.branch }),
+					cls: 'status-subtitle',
+				});
+			}
+		} else {
+			contentEl.createDiv({ text: message, cls: 'status-message' });
+		}
+
+		// 닫기 버튼 추가 (연결 중 상태가 아닐 때만)
+		if (status !== 'connecting') {
+			const closeBtn = this.connectionStatusEl.createSpan({
+				cls: 'status-close',
+				attr: { 'aria-label': t('guide.close') },
+			});
+			setIcon(closeBtn, 'x');
+			closeBtn.addEventListener('click', () => this.hideConnectionStatus());
+		}
+
+		// 성공 시 5초 후 자동 숨김
+		if (status === 'connected') {
+			this.connectionStatusTimeout = setTimeout(() => {
+				this.hideConnectionStatus();
+			}, 5000);
+		}
+	}
+
+	private hideConnectionStatus(): void {
+		if (this.connectionStatusEl) {
+			this.connectionStatusEl.addClass('hidden');
+		}
+		if (this.connectionStatusTimeout) {
+			clearTimeout(this.connectionStatusTimeout);
+			this.connectionStatusTimeout = null;
+		}
 	}
 
 	/**

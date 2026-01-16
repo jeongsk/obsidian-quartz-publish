@@ -373,6 +373,7 @@ const ko: { [K in TranslationKeys]?: string } = {
 	// Connection Status
 	'connection.connected': '{{owner}}/{{name}}에 연결됨 (브랜치: {{branch}})',
 	'connection.connecting': '연결 테스트 중...',
+	'connection.branch': '브랜치: {{branch}}',
 
 	// Settings - Remote File Management
 	'settings.github.manageFiles': '발행된 파일 관리',
