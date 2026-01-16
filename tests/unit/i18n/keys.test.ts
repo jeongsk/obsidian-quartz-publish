@@ -6,6 +6,12 @@ describe('Translation Key Completeness', () => {
 	const enKeys = Object.keys(en) as (keyof typeof en)[];
 	const koKeys = Object.keys(ko) as (keyof typeof ko)[];
 
+	// 의도적으로 빈 문자열인 키 (언어별 문장 구조 차이로 인해 필요)
+	const allowedEmptyKeys = [
+		'settings.comments.giscusHelpPrefix',
+		'settings.comments.giscusHelpSuffix',
+	];
+
 	describe('English translations', () => {
 		it('should have all required keys', () => {
 			expect(enKeys.length).toBeGreaterThan(0);
@@ -14,8 +20,12 @@ describe('Translation Key Completeness', () => {
 		it('should not have empty values', () => {
 			enKeys.forEach((key) => {
 				const value = en[key];
-				expect(value, `Key "${key}" should not be empty`).toBeTruthy();
-				expect(typeof value, `Key "${key}" should be a string`).toBe('string');
+				if (allowedEmptyKeys.includes(key)) {
+					expect(typeof value, `Key "${key}" should be a string`).toBe('string');
+				} else {
+					expect(value, `Key "${key}" should not be empty`).toBeTruthy();
+					expect(typeof value, `Key "${key}" should be a string`).toBe('string');
+				}
 			});
 		});
 	});
@@ -40,8 +50,12 @@ describe('Translation Key Completeness', () => {
 			koKeys.forEach((key) => {
 				const value = ko[key];
 				if (value !== undefined) {
-					expect(value, `Key "${key}" should not be empty`).toBeTruthy();
-					expect(typeof value, `Key "${key}" should be a string`).toBe('string');
+					if (allowedEmptyKeys.includes(key)) {
+						expect(typeof value, `Key "${key}" should be a string`).toBe('string');
+					} else {
+						expect(value, `Key "${key}" should not be empty`).toBeTruthy();
+						expect(typeof value, `Key "${key}" should be a string`).toBe('string');
+					}
 				}
 			});
 		});
