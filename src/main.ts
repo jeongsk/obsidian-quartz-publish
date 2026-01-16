@@ -147,14 +147,11 @@ export default class QuartzPublishPlugin extends Plugin {
 				}
 			})
 		);
-
-		console.log("Quartz Publish plugin loaded");
 	}
 
 	onunload(): void {
 		// NetworkService 정리
 		this.networkService?.destroy();
-		console.log("Quartz Publish plugin unloaded");
 	}
 
 	/**

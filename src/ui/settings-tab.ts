@@ -153,7 +153,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		// 바로가기 버튼 그룹
 
 		// GitHub Token 입력
-		new Setting(containerEl)
+		const tokenSetting = new Setting(containerEl)
 			.setName(t("settings.github.token"))
 			.setDesc(
 				createFragment((el) => {
@@ -172,15 +172,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.githubToken = value;
 						await this.plugin.saveSettings();
 					})
-			)
-			.then((setting) => {
-				// 토큰 입력 필드를 패스워드 타입으로 변경
-				const inputEl = setting.controlEl.querySelector("input");
-				if (inputEl) {
-					inputEl.type = "password";
-					inputEl.autocomplete = "off";
-				}
-			});
+			);
+
+		// 토큰 입력 필드를 패스워드 타입으로 변경
+		const tokenInputEl = tokenSetting.controlEl.querySelector("input");
+		if (tokenInputEl) {
+			tokenInputEl.type = "password";
+			tokenInputEl.autocomplete = "off";
+		}
 
 		// Repository URL 입력
 		new Setting(containerEl)
