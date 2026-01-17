@@ -64,7 +64,8 @@ export class PublishService {
 			vault,
 			metadataCache,
 			settings.contentPath,
-			settings.staticPath
+			settings.staticPath,
+			settings.publishFilterSettings?.rootFolder ?? ''
 		);
 
 		this.fileValidator = new FileValidatorService();

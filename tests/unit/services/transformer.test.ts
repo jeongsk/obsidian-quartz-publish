@@ -204,6 +204,152 @@ describe('ContentTransformer', () => {
 			// remotePath는 항상 content/attachments/ 폴더 사용
 			expect(result.attachments[0].remotePath).toBe('content/attachments/image.png');
 		});
+
+		it('should strip rootFolder from image localPath when rootFolder is set', () => {
+			const transformerWithRoot = new ContentTransformer(
+				vault as unknown as import('obsidian').Vault,
+				metadataCache as unknown as import('obsidian').MetadataCache,
+				'content',
+				'static',
+				'Publish'
+			);
+
+			const file = vault._addFile('Publish/notes/my-note.md', '![[photo.png]]');
+			const imageFile = vault._addFile('Publish/images/photo.png', '');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(imageFile);
+
+			const result = transformerWithRoot.transform(
+				'![[photo.png]]',
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			// localPath에서 루트폴더가 제거되어야 함
+			expect(result.attachments[0].localPath).toBe('images/photo.png');
+			// remotePath는 위키링크의 파일명 사용
+			expect(result.attachments[0].remotePath).toBe('content/attachments/photo.png');
+			// 콘텐츠 내 위키링크에서도 루트폴더가 제거되어야 함
+			expect(result.content).toContain('![[images/photo.png]]');
+		});
+
+		it('should not modify localPath when rootFolder is empty', () => {
+			const file = vault._addFile('notes/my-note.md', '![[image.png]]');
+			const imageFile = vault._addFile('images/photo.png', '');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(imageFile);
+
+			const result = transformer.transform(
+				'![[image.png]]',
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			// localPath가 그대로 유지되어야 함
+			expect(result.attachments[0].localPath).toBe('images/photo.png');
+		});
+
+		it('should handle rootFolder with trailing slash', () => {
+			const transformerWithRoot = new ContentTransformer(
+				vault as unknown as import('obsidian').Vault,
+				metadataCache as unknown as import('obsidian').MetadataCache,
+				'content',
+				'static',
+				'Publish/'
+			);
+
+			const file = vault._addFile('Publish/notes/my-note.md', '![[image.png]]');
+			const imageFile = vault._addFile('Publish/assets/image.jpg', '');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(imageFile);
+
+			const result = transformerWithRoot.transform(
+				'![[image.png]]',
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			// localPath에서 루트폴더가 제거되어야 함
+			expect(result.attachments[0].localPath).toBe('assets/image.jpg');
+		});
+
+		it('should not strip path when it does not start with rootFolder', () => {
+			const transformerWithRoot = new ContentTransformer(
+				vault as unknown as import('obsidian').Vault,
+				metadataCache as unknown as import('obsidian').MetadataCache,
+				'content',
+				'static',
+				'Publish'
+			);
+
+			const file = vault._addFile('Publish/notes/my-note.md', '![[image.png]]');
+			const imageFile = vault._addFile('SharedAssets/image.png', '');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(imageFile);
+
+			const result = transformerWithRoot.transform(
+				'![[image.png]]',
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			// 루트폴더로 시작하지 않으면 경로 그대로 유지
+			expect(result.attachments[0].localPath).toBe('SharedAssets/image.png');
+			// 콘텐츠 내 위키링크도 경로 그대로 유지
+			expect(result.content).toContain('![[SharedAssets/image.png]]');
+		});
+
+		it('should strip rootFolder from wiki link with alias in content', () => {
+			const transformerWithRoot = new ContentTransformer(
+				vault as unknown as import('obsidian').Vault,
+				metadataCache as unknown as import('obsidian').MetadataCache,
+				'content',
+				'static',
+				'Publish'
+			);
+
+			const file = vault._addFile('Publish/Log/test.md', '![[Publish/images/photo.png|사진]]');
+			const imageFile = vault._addFile('Publish/images/photo.png', '');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(imageFile);
+
+			const result = transformerWithRoot.transform(
+				'![[Publish/images/photo.png|사진]]',
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			// localPath에서 루트폴더가 제거되어야 함
+			expect(result.attachments[0].localPath).toBe('images/photo.png');
+			// 콘텐츠 내 위키링크에서도 루트폴더가 제거되고 별칭은 유지되어야 함
+			expect(result.content).toContain('![[images/photo.png|사진]]');
+		});
+
+		it('should strip rootFolder from wiki link when image path starts with rootFolder', () => {
+			const transformerWithRoot = new ContentTransformer(
+				vault as unknown as import('obsidian').Vault,
+				metadataCache as unknown as import('obsidian').MetadataCache,
+				'content',
+				'static',
+				'Publish'
+			);
+
+			const file = vault._addFile('Publish/Log/test.md', '![[Publish/Log/assets/image.jpg]]');
+			const imageFile = vault._addFile('Publish/Log/assets/image.jpg', '');
+
+			vi.spyOn(metadataCache, 'getFirstLinkpathDest').mockReturnValue(imageFile);
+
+			const result = transformerWithRoot.transform(
+				'![[Publish/Log/assets/image.jpg]]',
+				file as unknown as import('obsidian').TFile,
+				new Set<string>()
+			);
+
+			// localPath에서 루트폴더가 제거되어야 함
+			expect(result.attachments[0].localPath).toBe('Log/assets/image.jpg');
+			// 콘텐츠 내 위키링크에서도 루트폴더가 제거되어야 함
+			expect(result.content).toContain('![[Log/assets/image.jpg]]');
+		});
 	});
 
 	describe('transformMarkdownImageSize', () => {

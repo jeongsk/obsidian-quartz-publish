@@ -24,17 +24,36 @@ export class ContentTransformer {
 	private metadataCache: MetadataCache;
 	private contentPath: string;
 	private staticPath: string;
+	private rootFolder: string;
 
 	constructor(
 		vault: Vault,
 		metadataCache: MetadataCache,
 		contentPath: string = 'content',
-		staticPath: string = 'static'
+		staticPath: string = 'static',
+		rootFolder: string = ''
 	) {
 		this.vault = vault;
 		this.metadataCache = metadataCache;
 		this.contentPath = contentPath;
 		this.staticPath = staticPath;
+		this.rootFolder = rootFolder;
+	}
+
+	/**
+	 * 경로에서 루트폴더 접두사 제거
+	 * @param path 원본 경로
+	 * @returns 루트폴더가 제거된 경로
+	 */
+	private stripRootFolder(path: string): string {
+		if (!this.rootFolder) {
+			return path;
+		}
+		const prefix = this.rootFolder.endsWith('/') ? this.rootFolder : `${this.rootFolder}/`;
+		if (path.startsWith(prefix)) {
+			return path.slice(prefix.length);
+		}
+		return path;
 	}
 
 	/**
@@ -372,7 +391,7 @@ export class ContentTransformer {
 
 	/**
 	 * 이미지 임베드 변환
-	 * ![[image.png]] → ![image](/static/images/note-name/image.png)
+	 * ![[image.png]] → 루트폴더가 있으면 제거, 없으면 그대로 유지
 	 *
 	 * @param content 마크다운 콘텐츠
 	 * @param noteBasename 노트 파일명 (확장자 제외)
@@ -385,13 +404,11 @@ export class ContentTransformer {
 		attachments: AttachmentRef[],
 		sourcePath: string
 	): string {
-		// ![[image.ext]] 패턴 (이미지 확장자만)
-		const imageEmbedRegex = /!\[\[([^\]]+\.(png|jpg|jpeg|gif|svg|webp|bmp))\]\]/gi;
+		// ![[image.ext]] 또는 ![[image.ext|alias]] 패턴 (이미지 확장자만)
+		const imageEmbedRegex = /!\[\[([^\]]+\.(png|jpg|jpeg|gif|svg|webp|bmp))(?:\|([^\]]+))?\]\]/gi;
 
-		// 이미지 임베드를 찾아서 첨부파일 목록에 추가 (변환 없음)
-		let match;
-		while ((match = imageEmbedRegex.exec(content)) !== null) {
-			const imagePath = match[1];
+		// 이미지 임베드를 찾아서 첨부파일 목록에 추가 및 콘텐츠 변환
+		return content.replace(imageEmbedRegex, (match, imagePath, _ext, alias) => {
 			const filename = imagePath.split('/').pop() || imagePath;
 
 			// 이미지를 content/attachments/ 폴더에 저장 (최단 경로)
@@ -400,16 +417,28 @@ export class ContentTransformer {
 			// MetadataCache를 사용하여 실제 파일 경로 해석
 			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
 			const resolvedLocalPath = imageFile ? imageFile.path : imagePath;
+			// 루트폴더 제거 (발행 경로와 일관성 유지)
+			const localPath = this.stripRootFolder(resolvedLocalPath);
 
 			// 첨부파일 목록에 추가
 			attachments.push({
-				localPath: resolvedLocalPath,
+				localPath,
 				remotePath,
 			});
-		}
 
-		// 위키링크 형식 그대로 유지 (변환하지 않음)
-		return content;
+			// 루트폴더가 설정된 경우: 콘텐츠 내 위키링크에서도 루트폴더 제거
+			// 루트폴더가 없는 경우: 원본 위키링크 형식 유지
+			if (this.rootFolder) {
+				// 루트폴더가 설정된 경우, 해석된 경로에서 루트폴더 제거된 경로 사용
+				if (alias) {
+					return `![[${localPath}|${alias}]]`;
+				}
+				return `![[${localPath}]]`;
+			}
+
+			// 루트폴더가 없는 경우: 원본 위키링크 그대로 유지
+			return match;
+		});
 	}
 
 	/**
@@ -466,9 +495,12 @@ export class ContentTransformer {
 
 			// MetadataCache를 사용하여 실제 파일 경로 해석
 			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
+			const resolvedLocalPath = imageFile ? imageFile.path : imagePath;
+			// 루트폴더 제거 (발행 경로와 일관성 유지)
+			const localPath = this.stripRootFolder(resolvedLocalPath);
 
 			attachments.push({
-				localPath: imageFile ? imageFile.path : imagePath,
+				localPath,
 				remotePath,
 			});
 		}
