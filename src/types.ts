@@ -876,10 +876,12 @@ export interface TransformResult {
  * 첨부파일 참조
  */
 export interface AttachmentRef {
-	/** 볼트 내 경로 */
+	/** 볼트 내 경로 (실제 파일 조회용) */
 	localPath: string;
-	/** 리포지토리 내 경로 */
+	/** 리포지토리 내 경로 (GitHub 업로드 경로) */
 	remotePath: string;
+	/** 콘텐츠 내 참조 경로 (위키링크/마크다운 링크용) */
+	contentPath?: string;
 }
 
 /**
