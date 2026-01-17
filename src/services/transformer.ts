@@ -90,7 +90,7 @@ export class ContentTransformer {
 		// 2. 위키 링크 변환
 		let transformedBody = this.transformWikiLinks(body, file.path, publishedNotes);
 
-		// 3. 이미지 임베드 변환 (첨부파일 수집)
+		// 3. 위키링크 이미지 임베드 변환 (첨부파일 수집)
 		const noteBasename = file.basename;
 		transformedBody = this.transformImageEmbeds(
 			transformedBody,
@@ -99,10 +99,18 @@ export class ContentTransformer {
 			file.path
 		);
 
-		// 4. 마크다운 이미지 크기 문법 변환 (![alt|500](url) → HTML)
+		// 4. 마크다운 이미지 크기 문법 변환 (첨부파일 미수집 - ![[...]] 제외)
 		transformedBody = this.transformMarkdownImageSize(transformedBody);
 
-		// 5. 프론트매터 재구성
+		// 5. 마크다운 이미지 문법 변환 (첨부파일 수집)
+		transformedBody = this.transformMarkdownImages(
+			transformedBody,
+			noteBasename,
+			attachments,
+			file.path
+		);
+
+		// 6. 프론트매터 재구성
 		const finalContent = this.reconstructContent(frontmatterRaw, transformedBody);
 
 		return {
@@ -390,11 +398,11 @@ export class ContentTransformer {
 	}
 
 	/**
-	 * 이미지 임베드 변환
-	 * ![[image.png]] → 루트폴더가 있으면 제거, 없으면 그대로 유지
+	 * 위키링크 이미지 임베드 변환
+	 * ![[image.png]] → attachments/{filename}으로 통일 (Quartz content/attachments 폴더와 일치)
 	 *
 	 * @param content 마크다운 콘텐츠
-	 * @param noteBasename 노트 파일명 (확장자 제외)
+	 * @param noteBasename 노트 파일명 (확장자 제거)
 	 * @param attachments 첨부파일 목록 (결과 저장용)
 	 * @param sourcePath 소스 파일 경로 (링크 해석용)
 	 */
@@ -411,33 +419,84 @@ export class ContentTransformer {
 		return content.replace(imageEmbedRegex, (match, imagePath, _ext, alias) => {
 			const filename = imagePath.split('/').pop() || imagePath;
 
-			// 이미지를 content/attachments/ 폴더에 저장 (최단 경로)
+			// 이미지를 content/attachments/ 폴더에 저장
 			const remotePath = `${this.contentPath}/attachments/${filename}`;
+
+			// 콘텐츠 내 참조 경로 (Quartz는 content 폴더가 기준이므로 attachments/{filename})
+			const contentPath = `attachments/${filename}`;
 
 			// MetadataCache를 사용하여 실제 파일 경로 해석
 			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
 			const resolvedLocalPath = imageFile ? imageFile.path : imagePath;
-			// 루트폴더 제거 (발행 경로와 일관성 유지)
-			const localPath = this.stripRootFolder(resolvedLocalPath);
+
+			// localPath: vault 조회용으로 전체 경로 유지
+			const localPath = resolvedLocalPath;
 
 			// 첨부파일 목록에 추가
 			attachments.push({
-				localPath,
-				remotePath,
+				localPath,    // 전체 경로 (vault 조회용)
+				remotePath,   // content/attachments/xxx
+				contentPath,  // attachments/xxx (콘텐츠 내 참조 경로)
 			});
 
-			// 루트폴더가 설정된 경우: 콘텐츠 내 위키링크에서도 루트폴더 제거
-			// 루트폴더가 없는 경우: 원본 위키링크 형식 유지
-			if (this.rootFolder) {
-				// 루트폴더가 설정된 경우, 해석된 경로에서 루트폴더 제거된 경로 사용
-				if (alias) {
-					return `![[${localPath}|${alias}]]`;
-				}
-				return `![[${localPath}]]`;
+			// 콘텐츠 내 위키링크는 항상 attachments/{filename} 사용
+			if (alias) {
+				return `![[${contentPath}|${alias}]]`;
+			}
+			return `![[${contentPath}]]`;
+		});
+	}
+
+	/**
+	 * 마크다운 이미지 문법 변환
+	 * ![alt](path) 패턴 처리 (로컬 파일만, 외부 URL 제외)
+	 *
+	 * @param content 마크다운 콘텐츠
+	 * @param noteBasename 노트 파일명 (확장자 제거)
+	 * @param attachments 첨부파일 목록 (결과 저장용)
+	 * @param sourcePath 소스 파일 경로 (링크 해석용)
+	 */
+	private transformMarkdownImages(
+		content: string,
+		_noteBasename: string,
+		attachments: AttachmentRef[],
+		sourcePath: string
+	): string {
+		// ![alt](path) 패턴 (외부 URL 제외: http://, https://, //)
+		const markdownImageRegex = /!\[([^\]]*)\]\((?!https?:|\/\/)([^)]+)\)/g;
+
+		return content.replace(markdownImageRegex, (match, alt, imagePath) => {
+			// 이미지 확장자 확인
+			const imageExtensions = /\.(png|jpg|jpeg|gif|svg|webp|bmp)$/i;
+			if (!imageExtensions.test(imagePath)) {
+				// 이미지 파일이 아니면 원본 유지
+				return match;
 			}
 
-			// 루트폴더가 없는 경우: 원본 위키링크 그대로 유지
-			return match;
+			const filename = imagePath.split('/').pop() || imagePath;
+
+			// 이미지를 content/attachments/ 폴더에 저장
+			const remotePath = `${this.contentPath}/attachments/${filename}`;
+
+			// 콘텐츠 내 참조 경로 (Quartz는 content 폴더가 기준이므로 attachments/{filename})
+			const contentPath = `attachments/${filename}`;
+
+			// MetadataCache를 사용하여 실제 파일 경로 해석
+			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
+			const resolvedLocalPath = imageFile ? imageFile.path : imagePath;
+
+			// localPath: vault 조회용으로 전체 경로 유지
+			const localPath = resolvedLocalPath;
+
+			// 첨부파일 목록에 추가
+			attachments.push({
+				localPath,    // 전체 경로 (vault 조회용)
+				remotePath,   // content/attachments/xxx
+				contentPath,  // attachments/xxx (콘텐츠 내 참조 경로)
+			});
+
+			// 위키링크 형식으로 변환 (Quartz 호환)
+			return `![[${contentPath}|${alt}]]`;
 		});
 	}
 
@@ -490,18 +549,23 @@ export class ContentTransformer {
 			const imagePath = match[1];
 			const filename = imagePath.split('/').pop() || imagePath;
 
-			// 이미지를 content/attachments/ 폴더에 저장 (최단 경로)
+			// 이미지를 content/attachments/ 폴더에 저장
 			const remotePath = `${this.contentPath}/attachments/${filename}`;
+
+			// 콘텐츠 내 참조 경로 (Quartz는 content 폴더가 기준이므로 attachments/{filename})
+			const contentPath = `attachments/${filename}`;
 
 			// MetadataCache를 사용하여 실제 파일 경로 해석
 			const imageFile = this.metadataCache.getFirstLinkpathDest(imagePath, sourcePath);
 			const resolvedLocalPath = imageFile ? imageFile.path : imagePath;
-			// 루트폴더 제거 (발행 경로와 일관성 유지)
-			const localPath = this.stripRootFolder(resolvedLocalPath);
+
+			// localPath: vault 조회용으로 전체 경로 유지
+			const localPath = resolvedLocalPath;
 
 			attachments.push({
-				localPath,
-				remotePath,
+				localPath,    // 전체 경로 (vault 조회용)
+				remotePath,   // content/attachments/xxx
+				contentPath,  // attachments/xxx (콘텐츠 내 참조 경로)
 			});
 		}
 
