@@ -618,6 +618,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	private createCustomCssSection(containerEl: HTMLElement): void {
 		const BASE_IMPORT = '@use "./base.scss";';
 		const CUSTOM_CSS_PATH = "quartz/styles/custom.scss";
+		let cachedSha: string | undefined;
 
 		new Setting(containerEl)
 			.setName(t("settings.customCss.title"))
@@ -674,11 +675,13 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				const file = await github.getFile(CUSTOM_CSS_PATH);
 				if (file) {
 					textarea.value = file.content;
+					cachedSha = file.sha;
 					this.plugin.settings.customCssContent = file.content;
 					await this.plugin.saveSettings();
 					statusEl.setText(t("settings.customCss.loaded"));
 				} else {
 					textarea.value = "";
+					cachedSha = undefined;
 					statusEl.setText(t("settings.customCss.notFound"));
 				}
 				textarea.disabled = false;
@@ -735,9 +738,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 							CUSTOM_CSS_PATH,
 							finalContent,
 							"Update custom CSS",
+							cachedSha,
 						);
 
 						if (result.success) {
+							cachedSha = result.sha;
 							new Notice(t("notice.customCss.success"));
 						} else {
 							new Notice(
