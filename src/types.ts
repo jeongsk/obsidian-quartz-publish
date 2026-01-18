@@ -4,7 +4,7 @@
  * 플러그인에서 사용하는 모든 타입을 정의합니다.
  */
 
-import type { TFile } from 'obsidian';
+import type { TFile } from "obsidian";
 
 // ============================================================================
 // Publish Filter Settings (Phase 8)
@@ -61,8 +61,8 @@ export const DEFAULT_PUBLISH_FILTER_SETTINGS: PublishFilterSettings = {
 	includeFolders: [],
 	excludeFolders: [],
 	excludeTags: [],
-	rootFolder: '',
-	homePagePath: '',
+	rootFolder: "",
+	homePagePath: "",
 };
 
 // ============================================================================
@@ -109,7 +109,7 @@ export const DEFAULT_AUTO_DATE_SETTINGS: AutoDateSettings = {
 /**
  * Frontmatter 검증 경고 심각도
  */
-export type ValidationSeverity = 'error' | 'warning' | 'info';
+export type ValidationSeverity = "error" | "warning" | "info";
 
 /**
  * Frontmatter 검증 결과 항목
@@ -260,21 +260,24 @@ export interface PluginSettings {
 	validationSettings?: FrontmatterValidationSettings;
 	/** 발행 전 Frontmatter 편집기 표시 여부 */
 	showFrontmatterEditor?: boolean;
+	/** 커스텀 CSS 파일 경로 */
+	customCssPath?: string;
 }
 
 /**
  * 기본 플러그인 설정값
  */
 export const DEFAULT_SETTINGS: PluginSettings = {
-	githubToken: '',
-	repoUrl: '',
-	defaultBranch: 'main',
-	contentPath: 'content',
-	staticPath: 'static',
+	githubToken: "",
+	repoUrl: "",
+	defaultBranch: "main",
+	contentPath: "content",
+	staticPath: "static",
 	autoDateSettings: DEFAULT_AUTO_DATE_SETTINGS,
 	publishFilterSettings: DEFAULT_PUBLISH_FILTER_SETTINGS,
 	validationSettings: DEFAULT_VALIDATION_SETTINGS,
 	showFrontmatterEditor: false,
+	customCssPath: "",
 };
 
 // ============================================================================
@@ -285,20 +288,20 @@ export const DEFAULT_SETTINGS: PluginSettings = {
  * 연결 상태 타입
  */
 export type ConnectionStatus =
-	| { status: 'disconnected' }
-	| { status: 'connecting' }
-	| { status: 'connected'; lastChecked: number }
-	| { status: 'error'; error: ConnectionError };
+	| { status: "disconnected" }
+	| { status: "connecting" }
+	| { status: "connected"; lastChecked: number }
+	| { status: "error"; error: ConnectionError };
 
 /**
  * 연결 오류 타입
  */
 export type ConnectionError =
-	| 'invalid_token'
-	| 'not_found'
-	| 'not_quartz'
-	| 'network_error'
-	| 'rate_limited';
+	| "invalid_token"
+	| "not_found"
+	| "not_quartz"
+	| "network_error"
+	| "rate_limited";
 
 /**
  * GitHub 리포지토리 정보 (런타임 상태)
@@ -359,7 +362,12 @@ export interface AttachmentRecord {
 /**
  * 노트의 발행 상태
  */
-export type PublishStatus = 'new' | 'modified' | 'synced' | 'deleted' | 'unpublished';
+export type PublishStatus =
+	| "new"
+	| "modified"
+	| "synced"
+	| "deleted"
+	| "unpublished";
 
 /**
  * 노트 상태 정보
@@ -419,10 +427,10 @@ export const DEFAULT_QUARTZ_SETTINGS: QuartzSettings = {
  * Analytics 설정 타입 (Provider별 유니온)
  */
 export type AnalyticsConfig =
-	| { provider: 'null' }
-	| { provider: 'google'; tagId: string }
-	| { provider: 'plausible'; host?: string }
-	| { provider: 'umami'; websiteId: string; host: string };
+	| { provider: "null" }
+	| { provider: "google"; tagId: string }
+	| { provider: "plausible"; host?: string }
+	| { provider: "umami"; websiteId: string; host: string };
 
 // ============================================================================
 // Comments Config (Giscus)
@@ -450,13 +458,13 @@ export interface GiscusConfig {
 	/** 다크 테마 파일명 (기본: 'dark') */
 	darkTheme?: string;
 	/** 페이지-Discussion 매핑 방식 (기본: 'url') */
-	mapping?: 'url' | 'title' | 'og:title' | 'specific' | 'number' | 'pathname';
+	mapping?: "url" | "title" | "og:title" | "specific" | "number" | "pathname";
 	/** 엄격한 제목 매칭 (기본: true) */
 	strict?: boolean;
 	/** 메인 포스트 리액션 활성화 (기본: true) */
 	reactionsEnabled?: boolean;
 	/** 댓글 입력창 위치 (기본: 'bottom') */
-	inputPosition?: 'top' | 'bottom';
+	inputPosition?: "top" | "bottom";
 	/** 언어 설정 (기본: 'en') */
 	lang?: string;
 }
@@ -466,14 +474,14 @@ export interface GiscusConfig {
  * 현재는 Giscus만 지원
  */
 export type CommentsConfig =
-	| { provider: 'giscus'; options: GiscusConfig }
-	| { provider: 'null' };
+	| { provider: "giscus"; options: GiscusConfig }
+	| { provider: "null" };
 
 /**
  * 기본 댓글 설정값
  */
 export const DEFAULT_COMMENTS_CONFIG: CommentsConfig = {
-	provider: 'null',
+	provider: "null",
 };
 
 /**
@@ -494,7 +502,7 @@ export interface QuartzSiteConfig {
 	/** 링크 팝오버 미리보기 활성화 여부 */
 	enablePopovers: boolean;
 	/** 기본 날짜 타입 ("created" | "modified" | "published") */
-	defaultDateType: 'created' | 'modified' | 'published';
+	defaultDateType: "created" | "modified" | "published";
 
 	// === Analytics ===
 	/** 애널리틱스 설정 */
@@ -531,25 +539,25 @@ export interface TypographyConfig {
  * 기본 타이포그래피 설정값
  */
 export const DEFAULT_TYPOGRAPHY_CONFIG: TypographyConfig = {
-	header: 'Schibsted Grotesk',
-	body: 'Source Sans Pro',
-	code: 'IBM Plex Mono',
+	header: "Schibsted Grotesk",
+	body: "Source Sans Pro",
+	code: "IBM Plex Mono",
 };
 
 /**
  * 기본 Quartz 사이트 설정값
  */
 export const DEFAULT_QUARTZ_SITE_CONFIG: QuartzSiteConfig = {
-	pageTitle: 'Quartz 4.0',
-	baseUrl: 'quartz.jzhao.xyz',
-	locale: 'en-US',
+	pageTitle: "Quartz 4.0",
+	baseUrl: "quartz.jzhao.xyz",
+	locale: "en-US",
 	enableSPA: true,
 	enablePopovers: true,
-	defaultDateType: 'created',
-	analytics: { provider: 'null' },
-	comments: { provider: 'null' },
+	defaultDateType: "created",
+	analytics: { provider: "null" },
+	comments: { provider: "null" },
 	explicitPublish: false,
-	ignorePatterns: ['private', 'templates'],
+	ignorePatterns: ["private", "templates"],
 	typography: DEFAULT_TYPOGRAPHY_CONFIG,
 };
 
@@ -557,12 +565,12 @@ export const DEFAULT_QUARTZ_SITE_CONFIG: QuartzSiteConfig = {
  * 설정 업데이트 오류 타입
  */
 export type ConfigUpdateError =
-	| 'conflict' // SHA 불일치 (원격 변경됨)
-	| 'network' // 네트워크 오류
-	| 'rate_limited' // GitHub API 제한
-	| 'parse_error' // 설정 파싱 실패
-	| 'validation' // 유효성 검사 실패
-	| 'unknown'; // 알 수 없는 오류
+	| "conflict" // SHA 불일치 (원격 변경됨)
+	| "network" // 네트워크 오류
+	| "rate_limited" // GitHub API 제한
+	| "parse_error" // 설정 파싱 실패
+	| "validation" // 유효성 검사 실패
+	| "unknown"; // 알 수 없는 오류
 
 /**
  * 설정 업데이트 결과
@@ -584,9 +592,9 @@ export interface ConfigUpdateResult {
  * 충돌 해결 옵션
  */
 export type ConflictResolution =
-	| 'reload' // 새로고침 후 재적용
-	| 'force_overwrite' // 강제 덮어쓰기
-	| 'cancel'; // 취소
+	| "reload" // 새로고침 후 재적용
+	| "force_overwrite" // 강제 덮어쓰기
+	| "cancel"; // 취소
 
 /**
  * 변경사항 추적 인터페이스
@@ -607,7 +615,7 @@ export interface PendingChanges {
  */
 export interface QuartzConfigFile {
 	/** 파일 경로 (항상 quartz.config.ts) */
-	path: 'quartz.config.ts';
+	path: "quartz.config.ts";
 	/** GitHub blob SHA */
 	sha: string;
 	/** 파일 내용 */
@@ -634,12 +642,12 @@ export interface QuartzVersionInfo {
  * 업그레이드 상태 타입
  */
 export type UpgradeStatus =
-	| 'idle'
-	| 'checking'
-	| 'downloading'
-	| 'applying'
-	| 'completed'
-	| 'error';
+	| "idle"
+	| "checking"
+	| "downloading"
+	| "applying"
+	| "completed"
+	| "error";
 
 /**
  * Quartz 업그레이드 진행 상황
@@ -661,7 +669,7 @@ export interface QuartzUpgradeProgress {
  * 업그레이드 진행 상황 초기값
  */
 export const INITIAL_UPGRADE_PROGRESS: QuartzUpgradeProgress = {
-	status: 'idle',
+	status: "idle",
 	totalFiles: 0,
 	completedFiles: 0,
 	currentFile: null,
@@ -741,7 +749,7 @@ export interface ConnectionTestResult {
 /**
  * 네트워크 연결 상태
  */
-export type NetworkStatus = 'online' | 'offline' | 'unknown';
+export type NetworkStatus = "online" | "offline" | "unknown";
 
 /**
  * 네트워크 상태 변경 콜백
@@ -787,7 +795,7 @@ export interface PublishPreflightResult {
 	/** 대용량 파일 검증 결과 */
 	fileValidation: FileValidationResult;
 	/** 차단 사유 (발행 불가 시) */
-	blockReason?: 'offline' | 'large_files_rejected';
+	blockReason?: "offline" | "large_files_rejected";
 }
 
 // ============================================================================
@@ -798,14 +806,14 @@ export interface PublishPreflightResult {
  * 발행 오류 타입
  */
 export type PublishError =
-	| 'not_connected'
-	| 'no_publish_flag'
-	| 'file_too_large'
-	| 'network_error'
-	| 'rate_limited'
-	| 'conflict'
-	| 'offline'
-	| 'unknown';
+	| "not_connected"
+	| "no_publish_flag"
+	| "file_too_large"
+	| "network_error"
+	| "rate_limited"
+	| "conflict"
+	| "offline"
+	| "unknown";
 
 /**
  * 단일 노트 발행 결과
@@ -904,7 +912,7 @@ export interface FrontmatterResult {
 export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 /** GitHub API 기본 URL */
-export const GITHUB_API_BASE_URL = 'https://api.github.com';
+export const GITHUB_API_BASE_URL = "https://api.github.com";
 
 // ============================================================================
 // Repository Creation Types (Phase 4 - Beginner Support)
@@ -917,7 +925,7 @@ export interface RepositoryCreationRequest {
 	/** 리포지토리 이름 (기본값: "quartz") */
 	name: string;
 	/** 공개 범위 (기본값: 'public') */
-	visibility: 'public' | 'private';
+	visibility: "public" | "private";
 	/** 리포지토리 설명 (선택) */
 	description?: string;
 }
@@ -944,14 +952,14 @@ export interface CreatedRepository {
  * 리포지토리 생성 에러 유형
  */
 export type RepositoryCreationErrorType =
-	| 'invalid_token'
-	| 'insufficient_permissions'
-	| 'repo_exists'
-	| 'invalid_name'
-	| 'template_not_found'
-	| 'rate_limited'
-	| 'network_error'
-	| 'unknown';
+	| "invalid_token"
+	| "insufficient_permissions"
+	| "repo_exists"
+	| "invalid_name"
+	| "template_not_found"
+	| "rate_limited"
+	| "network_error"
+	| "unknown";
 
 /**
  * 리포지토리 생성 에러
@@ -1034,14 +1042,14 @@ export interface TroubleshootingItem {
  * Quartz 템플릿 정보
  */
 export const QUARTZ_TEMPLATE = {
-	owner: 'jackyzha0',
-	repo: 'quartz',
+	owner: "jackyzha0",
+	repo: "quartz",
 } as const;
 
 /**
  * 리포지토리 이름 기본값
  */
-export const DEFAULT_REPO_NAME = 'quartz';
+export const DEFAULT_REPO_NAME = "quartz";
 
 // ============================================================================
 // Dashboard Types (Phase 2)
@@ -1050,16 +1058,16 @@ export const DEFAULT_REPO_NAME = 'quartz';
 /**
  * 대시보드 탭 타입
  */
-export type DashboardTab = 'new' | 'modified' | 'deleted' | 'synced';
+export type DashboardTab = "new" | "modified" | "deleted" | "synced";
 
 /**
  * 탭 레이블 매핑
  */
 export const TAB_LABELS: Record<DashboardTab, string> = {
-	new: '신규',
-	modified: '수정됨',
-	deleted: '삭제 필요',
-	synced: '최신',
+	new: "신규",
+	modified: "수정됨",
+	deleted: "삭제 필요",
+	synced: "최신",
 };
 
 /**
@@ -1084,7 +1092,7 @@ export interface DashboardState {
  * 대시보드 초기 상태
  */
 export const INITIAL_DASHBOARD_STATE: DashboardState = {
-	activeTab: 'new',
+	activeTab: "new",
 	selectedPaths: new Set(),
 	statusOverview: null,
 	isLoading: false,
@@ -1109,7 +1117,7 @@ export interface PublishedFile {
 	/** 파일 크기 (bytes) */
 	size: number;
 	/** 항목 타입 */
-	type: 'file' | 'dir';
+	type: "file" | "dir";
 	/** GitHub 웹 URL */
 	htmlUrl: string;
 	/** 다운로드 URL */
@@ -1160,8 +1168,8 @@ export interface RemoteFileManagerConfig {
  * 기본 원격 파일 관리자 설정
  */
 export const DEFAULT_REMOTE_FILE_MANAGER_CONFIG: RemoteFileManagerConfig = {
-	contentPath: 'content',
-	fileExtensions: ['.md'],
+	contentPath: "content",
+	fileExtensions: [".md"],
 	maxBatchDelete: 50,
 	deleteDelayMs: 100,
 };
@@ -1194,7 +1202,7 @@ export interface FileListState {
 export const INITIAL_FILE_LIST_STATE: FileListState = {
 	files: [],
 	selectedFiles: new Set(),
-	searchQuery: '',
+	searchQuery: "",
 	filteredFiles: [],
 	duplicateGroups: [],
 	isLoading: true,

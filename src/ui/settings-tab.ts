@@ -11,7 +11,7 @@ import {
 	Notice,
 	TextComponent,
 	setIcon,
-	requireApiVersion,
+	TFile,
 } from "obsidian";
 import type QuartzPublishPlugin from "../main";
 import { GitHubService } from "../services/github";
@@ -103,7 +103,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			// 변경사항이 있으면 경고 표시 (콘솔에 로그)
 			console.warn(
 				"Quartz Publish: 저장되지 않은 변경사항이 있습니다:",
-				this.pendingChangesManager.getChangeSummary()
+				this.pendingChangesManager.getChangeSummary(),
 			);
 			// Note: Obsidian PluginSettingTab.hide()는 비동기 확인을 지원하지 않음
 			// 대신 UnsavedWarning 배너로 사용자에게 알림
@@ -131,6 +131,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 발행 설정 섹션
 		this.createPublishFilterSection(containerEl);
+
+		// Custom CSS 섹션
+		this.createCustomCssSection(containerEl);
 
 		// Frontmatter 설정 섹션
 		this.createFrontmatterSection(containerEl);
@@ -162,7 +165,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						href: "https://github.com/settings/tokens/new?scopes=repo",
 						text: t("settings.github.tokenLink"),
 					});
-				})
+				}),
 			)
 			.addText((text) =>
 				text
@@ -171,7 +174,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.githubToken = value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// 토큰 입력 필드를 패스워드 타입으로 변경
@@ -193,7 +196,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.repoUrl = value;
 						await this.plugin.saveSettings();
 						this.display();
-					})
+					}),
 			);
 
 		if (!this.plugin.settings.repoUrl && this.plugin.settings.githubToken) {
@@ -206,7 +209,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						.setCta()
 						.onClick(() => {
 							this.openCreateRepoModal();
-						})
+						}),
 				);
 		}
 
@@ -234,7 +237,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.setCta()
 					.onClick(async () => {
 						await this.testConnection();
-					})
+					}),
 			);
 
 		// 연결 상태 표시 영역 (별도 카드로 분리)
@@ -261,7 +264,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			.addButton((button) =>
 				button.setButtonText(t("guide.button")).onClick(() => {
 					this.openGitHubGuideModal();
-				})
+				}),
 			);
 
 		// 설정이 완료되지 않은 경우 자동으로 가이드 모달 표시
@@ -317,7 +320,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const githubButton = this.quickLinksContainerEl.createEl("button", {
 			cls: cn(
 				"flex items-center gap-1 px-3 py-1.5 rounded text-sm bg-obs-bg-modifier-hover text-obs-text-normal hover:bg-obs-bg-modifier-active-hover",
-				isGithubDisabled && "opacity-60 cursor-not-allowed"
+				isGithubDisabled && "opacity-60 cursor-not-allowed",
 			),
 			attr: {
 				"aria-label": isGithubDisabled
@@ -340,7 +343,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const siteButton = this.quickLinksContainerEl.createEl("button", {
 			cls: cn(
 				"flex items-center gap-1 px-3 py-1.5 rounded text-sm bg-obs-bg-modifier-hover text-obs-text-normal hover:bg-obs-bg-modifier-active-hover",
-				isSiteDisabled && "opacity-60 cursor-not-allowed"
+				isSiteDisabled && "opacity-60 cursor-not-allowed",
 			),
 			attr: {
 				"aria-label": isSiteDisabled
@@ -379,7 +382,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(
 						this.plugin.settings.autoDateSettings?.enableCreated ??
-							DEFAULT_AUTO_DATE_SETTINGS.enableCreated
+							DEFAULT_AUTO_DATE_SETTINGS.enableCreated,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.autoDateSettings) {
@@ -390,7 +393,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.autoDateSettings.enableCreated =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Modified 날짜 토글
@@ -401,7 +404,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(
 						this.plugin.settings.autoDateSettings?.enableModified ??
-							DEFAULT_AUTO_DATE_SETTINGS.enableModified
+							DEFAULT_AUTO_DATE_SETTINGS.enableModified,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.autoDateSettings) {
@@ -412,7 +415,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.autoDateSettings.enableModified =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Published 날짜 토글
@@ -424,7 +427,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.setValue(
 						this.plugin.settings.autoDateSettings
 							?.enablePublished ??
-							DEFAULT_AUTO_DATE_SETTINGS.enablePublished
+							DEFAULT_AUTO_DATE_SETTINGS.enablePublished,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.autoDateSettings) {
@@ -435,7 +438,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.autoDateSettings.enablePublished =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Title 자동 추가 토글
@@ -446,7 +449,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(
 						this.plugin.settings.autoDateSettings?.enableTitle ??
-							DEFAULT_AUTO_DATE_SETTINGS.enableTitle
+							DEFAULT_AUTO_DATE_SETTINGS.enableTitle,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.autoDateSettings) {
@@ -457,7 +460,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.autoDateSettings.enableTitle =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Description 자동 추가 토글
@@ -469,7 +472,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.setValue(
 						this.plugin.settings.autoDateSettings
 							?.enableDescription ??
-							DEFAULT_AUTO_DATE_SETTINGS.enableDescription
+							DEFAULT_AUTO_DATE_SETTINGS.enableDescription,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.autoDateSettings) {
@@ -480,7 +483,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.autoDateSettings.enableDescription =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 	}
 
@@ -499,12 +502,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			.addToggle((toggle) =>
 				toggle
 					.setValue(
-						this.plugin.settings.showFrontmatterEditor ?? false
+						this.plugin.settings.showFrontmatterEditor ?? false,
 					)
 					.onChange(async (value) => {
 						this.plugin.settings.showFrontmatterEditor = value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// 검증 활성화
@@ -514,7 +517,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			.addToggle((toggle) =>
 				toggle
 					.setValue(
-						this.plugin.settings.validationSettings?.enabled ?? true
+						this.plugin.settings.validationSettings?.enabled ??
+							true,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.validationSettings) {
@@ -524,7 +528,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						}
 						this.plugin.settings.validationSettings.enabled = value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Title 필수
@@ -535,7 +539,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(
 						this.plugin.settings.validationSettings?.requireTitle ??
-							false
+							false,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.validationSettings) {
@@ -546,7 +550,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.validationSettings.requireTitle =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Description 필수
@@ -557,7 +561,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(
 						this.plugin.settings.validationSettings
-							?.requireDescription ?? false
+							?.requireDescription ?? false,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.validationSettings) {
@@ -568,7 +572,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.validationSettings.requireDescription =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 
 		// Tags 필수
@@ -579,7 +583,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(
 						this.plugin.settings.validationSettings?.requireTags ??
-							false
+							false,
 					)
 					.onChange(async (value) => {
 						if (!this.plugin.settings.validationSettings) {
@@ -590,7 +594,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						this.plugin.settings.validationSettings.requireTags =
 							value;
 						await this.plugin.saveSettings();
-					})
+					}),
 			);
 	}
 
@@ -615,6 +619,84 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		});
 	}
 
+	private createCustomCssSection(containerEl: HTMLElement): void {
+		new Setting(containerEl)
+			.setName(t("settings.customCss.title"))
+			.setHeading();
+
+		new Setting(containerEl)
+			.setName(t("settings.customCss.path"))
+			.setDesc(t("settings.customCss.pathDesc"))
+			.addText((text) => {
+				text.setPlaceholder("styles/custom.scss")
+					.setValue(this.plugin.settings.customCssPath ?? "")
+					.onChange(async (value) => {
+						this.plugin.settings.customCssPath = value;
+						await this.plugin.saveSettings();
+					});
+			})
+			.addButton((button) =>
+				button
+					.setButtonText(t("settings.customCss.upload"))
+					.setCta()
+					.onClick(async () => {
+						const path = this.plugin.settings.customCssPath;
+						if (!path) {
+							new Notice(t("notice.customCss.noPath"));
+							return;
+						}
+
+						const file = this.app.vault.getAbstractFileByPath(path);
+						if (!file || !(file instanceof TFile)) {
+							new Notice(t("notice.customCss.notFound"));
+							return;
+						}
+
+						const content = await this.app.vault.read(file);
+
+						// GitHubService 초기화
+						const { githubToken, repoUrl, defaultBranch } =
+							this.plugin.settings;
+						if (!githubToken || !repoUrl) {
+							new Notice(t("notice.configureFirst"));
+							return;
+						}
+
+						try {
+							const github = new GitHubService(
+								githubToken,
+								repoUrl,
+								defaultBranch,
+							);
+							const result = await github.createOrUpdateFile(
+								"quartz/styles/custom.scss",
+								content,
+								"Update custom CSS",
+							);
+
+							if (result.success) {
+								new Notice(t("notice.customCss.success"));
+							} else {
+								new Notice(
+									t("notice.customCss.failed", {
+										error: result.error ?? "Unknown error",
+									}),
+								);
+							}
+						} catch (error) {
+							new Notice(
+								t("notice.customCss.error", {
+									message:
+										error instanceof Error
+											? error.message
+											: "Unknown error",
+								}),
+							);
+						}
+					}),
+			);
+	}
+
 	private async testConnection(): Promise<void> {
 		if (!this.connectionStatusEl) return;
 
@@ -637,7 +719,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const github = new GitHubService(
 				githubToken,
 				repoUrl,
-				defaultBranch
+				defaultBranch,
 			);
 			const result = await github.testConnection();
 
@@ -667,7 +749,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						owner: result.repository.owner,
 						repo: result.repository.name,
 						branch: detectedBranch,
-					}
+					},
 				);
 				new Notice(t("notice.connection.success"));
 			} else if (result.error) {
@@ -676,12 +758,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					this.getErrorMessage(result.error.type),
 					{
 						errorType: result.error.type,
-					}
+					},
 				);
 				new Notice(
 					t("notice.connection.failed", {
 						message: result.error.message,
-					})
+					}),
 				);
 			}
 		} catch (error) {
@@ -751,7 +833,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			repo?: string;
 			branch?: string;
 			errorType?: string;
-		}
+		},
 	): void {
 		if (!this.connectionStatusEl) return;
 
@@ -776,8 +858,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			status === "connected"
 				? "check-circle-2"
 				: status === "error"
-				? "x-circle"
-				: "loader-2";
+					? "x-circle"
+					: "loader-2";
 		setIcon(iconContainer, iconName);
 
 		// 내용 영역
@@ -815,7 +897,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			});
 			setIcon(closeBtn, "x");
 			closeBtn.addEventListener("click", () =>
-				this.hideConnectionStatus()
+				this.hideConnectionStatus(),
 			);
 		}
 
@@ -924,7 +1006,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.setButtonText(t("settings.quartz.load"))
 					.onClick(async () => {
 						await this.loadQuartzSettings();
-					})
+					}),
 			);
 	}
 
@@ -952,7 +1034,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const github = new GitHubService(
 				githubToken,
 				repoUrl,
-				defaultBranch
+				defaultBranch,
 			);
 			this.quartzConfigService = new QuartzConfigService(github);
 
@@ -981,12 +1063,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				await this.quartzConfigService.fetchQuartzConfig();
 			if (!configFile) {
 				throw new Error(
-					t("error.configNotFound", { branch: defaultBranch })
+					t("error.configNotFound", { branch: defaultBranch }),
 				);
 			}
 
 			const parsed = this.quartzConfigService.parseConfig(
-				configFile.content
+				configFile.content,
 			);
 			if (!parsed) {
 				throw new Error(t("error.parseFailed"));
@@ -1008,7 +1090,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 					.setButtonText(t("settings.quartz.retry"))
 					.onClick(async () => {
 						await this.loadQuartzSettings();
-					})
+					}),
 			);
 		} finally {
 			this.isQuartzSettingsLoading = false;
@@ -1037,7 +1119,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 확장된 설정 파싱
 		const extendedConfig = this.quartzConfigService.parseExtendedConfig(
-			config.rawContent
+			config.rawContent,
 		);
 		if (!extendedConfig) {
 			return;
@@ -1068,7 +1150,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				onDiscard: () => {
 					this.handleDiscardChanges();
 				},
-			}
+			},
 		);
 
 		// Site Information Section 렌더링 (T027-T030, T032)
@@ -1083,7 +1165,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				onChange: (field, value) => {
 					this.handleAdvancedConfigChange(field, value);
 				},
-			}
+			},
 		);
 
 		// Behavior Section 렌더링 (T043-T047, T056-T057)
@@ -1098,7 +1180,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				onChange: (field, value) => {
 					this.handleAdvancedConfigChange(field, value);
 				},
-			}
+			},
 		);
 
 		// Analytics Section 렌더링 (T048-T055)
@@ -1109,7 +1191,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				onChange: (field, value) => {
 					this.handleAdvancedConfigChange(field, value);
 				},
-			}
+			},
 		);
 
 		// Comments Section 렌더링
@@ -1120,7 +1202,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				onChange: (field, value) => {
 					this.handleAdvancedConfigChange(field, value);
 				},
-			}
+			},
 		);
 
 		// Typography Section 렌더링 (Phase 10)
@@ -1144,11 +1226,11 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 						};
 						this.handleAdvancedConfigChange(
 							"typography",
-							newTypography
+							newTypography,
 						);
 					}
 				},
-			}
+			},
 		);
 
 		// Publishing Section 렌더링 (T058-T063)
@@ -1162,7 +1244,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				onChange: (field, value) => {
 					this.handleAdvancedConfigChange(field, value);
 				},
-			}
+			},
 		);
 
 		this.applyButton = new ApplyButton(this.advancedConfigContainerEl, {
@@ -1182,7 +1264,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	 */
 	private handleAdvancedConfigChange<K extends keyof QuartzSiteConfig>(
 		field: K,
-		value: QuartzSiteConfig[K]
+		value: QuartzSiteConfig[K],
 	): void {
 		if (!this.pendingChangesManager) return;
 
@@ -1266,7 +1348,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			new Notice(
 				t("notice.settings.validationFailed", {
 					error: validation.errors[0],
-				})
+				}),
 			);
 			return;
 		}
@@ -1329,14 +1411,14 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const result = await this.quartzConfigService.saveConfig(
 				currentConfig,
 				shaToUse,
-				commitMessage
+				commitMessage,
 			);
 
 			if (result.success) {
 				// 저장 성공
 				this.pendingChangesManager.markAsSaved(
 					currentConfig,
-					result.newSha ?? ""
+					result.newSha ?? "",
 				);
 				this.updateApplyFlowUI();
 				new Notice(t("notice.settings.saved"));
@@ -1345,7 +1427,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				new Notice(
 					t("error.saveFailed", {
 						message: result.errorMessage ?? "",
-					})
+					}),
 				);
 				this.applyButton?.setEnabled(true);
 			}
@@ -1426,7 +1508,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			const github = new GitHubService(
 				githubToken,
 				repoUrl,
-				defaultBranch
+				defaultBranch,
 			);
 			this.quartzUpgradeService = new QuartzUpgradeService(github);
 
@@ -1611,7 +1693,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 			button.setButtonText(t("upgrade.cancel")).onClick(() => {
 				this.quartzUpgradeService?.abort();
 				statusEl.textContent = t("upgrade.cancelling");
-			})
+			}),
 		);
 
 		// 업그레이드 실행
@@ -1629,7 +1711,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 			if (progress.totalFiles > 0) {
 				const percent = Math.round(
-					(progress.completedFiles / progress.totalFiles) * 100
+					(progress.completedFiles / progress.totalFiles) * 100,
 				);
 				progressBar.setCssProps({ "--progress-width": `${percent}%` });
 				detailEl.textContent = `${progress.completedFiles}/${progress.totalFiles} files`;
@@ -1663,7 +1745,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				new Notice(
 					t("upgrade.successMessage", {
 						version: result.version ?? "",
-					})
+					}),
 				);
 			} else {
 				statusEl.textContent = t("upgrade.failed");
@@ -1671,7 +1753,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 				detailEl.textContent = result.error || t("error.unknown");
 
 				new Notice(
-					t("upgrade.failedMessage", { error: result.error ?? "" })
+					t("upgrade.failedMessage", { error: result.error ?? "" }),
 				);
 			}
 		} catch (error) {
@@ -1690,7 +1772,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		new Setting(progressContainer).addButton((button) =>
 			button.setButtonText(t("upgrade.checkAgain")).onClick(async () => {
 				await this.checkForUpdates();
-			})
+			}),
 		);
 	}
 }
