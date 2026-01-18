@@ -677,6 +677,35 @@ export const INITIAL_UPGRADE_PROGRESS: QuartzUpgradeProgress = {
 };
 
 // ============================================================================
+// Publish Records Storage (Separate File)
+// ============================================================================
+
+/**
+ * 발행 기록 저장소 버전
+ */
+export const PUBLISH_RECORDS_VERSION = 1;
+
+/**
+ * 발행 기록 저장소 구조 (publish-records.json)
+ */
+export interface PublishRecordsStorage {
+	/** 저장소 버전 (마이그레이션용) */
+	version: number;
+	/** key: localPath */
+	records: Record<string, PublishRecord>;
+	/** 마지막 cleanup 시간 */
+	lastCleanup?: number;
+}
+
+/**
+ * 기본 발행 기록 저장소값
+ */
+export const DEFAULT_PUBLISH_RECORDS_STORAGE: PublishRecordsStorage = {
+	version: PUBLISH_RECORDS_VERSION,
+	records: {},
+};
+
+// ============================================================================
 // Plugin Data (Persisted)
 // ============================================================================
 
@@ -685,10 +714,10 @@ export const INITIAL_UPGRADE_PROGRESS: QuartzUpgradeProgress = {
  */
 export interface PluginData {
 	settings: PluginSettings;
-	/** key: localPath */
-	publishRecords: Record<string, PublishRecord>;
 	/** 마지막 동기화 시간 */
 	lastSync?: number;
+	/** 발행 기록이 별도 파일로 이동되었는지 여부 */
+	publishRecordsMigrated?: boolean;
 }
 
 // ============================================================================
