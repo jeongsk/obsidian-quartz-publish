@@ -6,17 +6,17 @@
  * - ignorePatterns: 제외 패턴
  */
 
-import { setIcon, Setting } from 'obsidian';
-import { t } from '../../i18n';
-import type { QuartzSiteConfig } from '../../types';
-import { validateGlobPattern } from '../../utils/glob-validator';
+import { setIcon, Setting } from "obsidian";
+import { t } from "../../i18n";
+import type { QuartzSiteConfig } from "../../types";
+import { validateGlobPattern } from "../../utils/glob-validator";
 
 /**
  * PublishingSection 변경 콜백
  */
 export type PublishingChangeCallback = <K extends keyof QuartzSiteConfig>(
 	field: K,
-	value: QuartzSiteConfig[K]
+	value: QuartzSiteConfig[K],
 ) => void;
 
 /**
@@ -24,7 +24,7 @@ export type PublishingChangeCallback = <K extends keyof QuartzSiteConfig>(
  */
 export interface PublishingSectionOptions {
 	/** 초기 설정값 */
-	config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns'>;
+	config: Pick<QuartzSiteConfig, "explicitPublish" | "ignorePatterns">;
 	/** 변경 콜백 */
 	onChange: PublishingChangeCallback;
 }
@@ -55,7 +55,9 @@ export class PublishingSection {
 	 */
 	private render(): void {
 		// 섹션 헤더 (T063)
-		new Setting(this.containerEl).setName(t('publishing.heading')).setHeading();
+		new Setting(this.containerEl)
+			.setName(t("publishing.heading"))
+			.setHeading();
 
 		// ExplicitPublish 토글 (T059)
 		this.renderExplicitPublishToggle();
@@ -69,14 +71,15 @@ export class PublishingSection {
 	 */
 	private renderExplicitPublishToggle(): void {
 		new Setting(this.containerEl)
-			.setName(t('publishing.explicitPublish.name'))
-			.setDesc(t('publishing.explicitPublish.desc'))
+			.setName(t("publishing.explicitPublish.name"))
+			.setDesc(t("publishing.explicitPublish.desc"))
 			.addToggle((toggle) => {
-				this.explicitPublishToggleEl = toggle.toggleEl.querySelector('input');
+				this.explicitPublishToggleEl =
+					toggle.toggleEl.querySelector("input");
 				toggle
 					.setValue(this.options.config.explicitPublish)
 					.onChange((value) => {
-						this.options.onChange('explicitPublish', value);
+						this.options.onChange("explicitPublish", value);
 					});
 			});
 	}
@@ -87,24 +90,24 @@ export class PublishingSection {
 	private renderIgnorePatternsInput(): void {
 		// 전체 컨테이너 (외부 박스)
 		const containerEl = this.containerEl.createDiv({
-			cls: 'quartz-publish-patterns-container bg-obs-bg-secondary rounded-lg p-4 mt-4',
+			cls: "quartz-publish-patterns-container bg-obs-setting-items rounded-lg p-4 mt-4",
 		});
 
 		// 헤더 (제목)
-		containerEl.createEl('div', {
-			text: t('publishing.ignorePatterns.name'),
-			cls: 'setting-item-name',
+		containerEl.createEl("div", {
+			text: t("publishing.ignorePatterns.name"),
+			cls: "setting-item-name",
 		});
 
 		// 설명
-		containerEl.createEl('div', {
-			text: t('publishing.ignorePatterns.desc'),
-			cls: 'setting-item-description mb-3',
+		containerEl.createEl("div", {
+			text: t("publishing.ignorePatterns.desc"),
+			cls: "setting-item-description mb-3",
 		});
 
 		// 패턴 목록 컨테이너
 		this.patternsContainerEl = containerEl.createDiv({
-			cls: 'quartz-publish-patterns-list',
+			cls: "quartz-publish-patterns-list",
 		});
 
 		this.renderPatternsList();
@@ -122,57 +125,59 @@ export class PublishingSection {
 			for (let i = 0; i < this.patterns.length; i++) {
 				const pattern = this.patterns[i];
 				const patternEl = this.patternsContainerEl.createDiv({
-					cls: 'quartz-publish-pattern-item text-sm flex items-center gap-2 mb-1',
+					cls: "quartz-publish-pattern-item text-sm flex items-center gap-2 mb-1",
 				});
 
-				patternEl.createEl('code', {
+				patternEl.createEl("code", {
 					text: pattern,
-					cls: 'flex-1',
+					cls: "flex-1",
 				});
 
-				const removeBtn = patternEl.createEl('button', {
-					cls: 'clickable-icon text-obs-text-error',
-					attr: { 'aria-label': t('publishing.ignorePatterns.remove') },
+				const removeBtn = patternEl.createEl("button", {
+					cls: "clickable-icon text-obs-text-error",
+					attr: {
+						"aria-label": t("publishing.ignorePatterns.remove"),
+					},
 				});
-				setIcon(removeBtn, 'trash-2');
+				setIcon(removeBtn, "trash-2");
 
 				const index = i;
 				removeBtn.onclick = () => {
 					this.patterns.splice(index, 1);
 					this.renderPatternsList();
-					this.options.onChange('ignorePatterns', [...this.patterns]);
+					this.options.onChange("ignorePatterns", [...this.patterns]);
 				};
 			}
 		}
 
 		const addRowEl = this.patternsContainerEl.createDiv({
-			cls: 'quartz-publish-pattern-item flex items-center gap-2 mb-1',
+			cls: "quartz-publish-pattern-item flex items-center gap-2 mb-1",
 		});
 
-		const inputEl = addRowEl.createEl('input', {
-			type: 'text',
-			placeholder: t('publishing.ignorePatterns.placeholder'),
-			cls: 'flex-1 bg-obs-bg-secondary border-transparent focus:border-obs-interactive-accent text-obs-text-normal placeholder-obs-text-muted rounded px-2 py-1',
+		const inputEl = addRowEl.createEl("input", {
+			type: "text",
+			placeholder: t("publishing.ignorePatterns.placeholder"),
+			cls: "flex-1 bg-obs-bg-secondary border-transparent focus:border-obs-interactive-accent text-obs-text-normal placeholder-obs-text-muted rounded px-2 py-1",
 			attr: {
-				'aria-label': t('publishing.ignorePatterns.name'),
-				'aria-describedby': 'pattern-error',
+				"aria-label": t("publishing.ignorePatterns.name"),
+				"aria-describedby": "pattern-error",
 			},
 		});
 
-		const addBtn = addRowEl.createEl('button', {
-			cls: 'clickable-icon text-obs-text-success',
+		const addBtn = addRowEl.createEl("button", {
+			cls: "clickable-icon text-obs-text-success",
 			attr: {
-				'aria-label': t('publishing.ignorePatterns.add'),
+				"aria-label": t("publishing.ignorePatterns.add"),
 			},
 		});
-		setIcon(addBtn, 'plus');
+		setIcon(addBtn, "plus");
 
 		const errorEl = this.patternsContainerEl.createDiv({
-			cls: 'text-obs-text-error text-sm mt-1 mb-2 min-h-[20px]',
+			cls: "text-obs-text-error text-sm mt-1 mb-2 min-h-[20px]",
 			attr: {
-				id: 'pattern-error',
-				role: 'alert',
-				'aria-live': 'polite',
+				id: "pattern-error",
+				role: "alert",
+				"aria-live": "polite",
 			},
 		});
 
@@ -182,22 +187,24 @@ export class PublishingSection {
 
 			const validation = validateGlobPattern(newPattern);
 			if (!validation.valid) {
-				errorEl.textContent = validation.error || t('publishing.ignorePatterns.invalid');
+				errorEl.textContent =
+					validation.error || t("publishing.ignorePatterns.invalid");
 				return;
 			}
 
 			if (this.patterns.includes(newPattern)) {
-				errorEl.textContent = t('publishing.ignorePatterns.duplicate');
+				errorEl.textContent = t("publishing.ignorePatterns.duplicate");
 				return;
 			}
 
-			errorEl.textContent = '';
+			errorEl.textContent = "";
 			this.patterns.push(newPattern);
-			this.options.onChange('ignorePatterns', [...this.patterns]);
+			this.options.onChange("ignorePatterns", [...this.patterns]);
 			this.renderPatternsList();
-			
+
 			setTimeout(() => {
-				const newInput = this.patternsContainerEl?.querySelector('input');
+				const newInput =
+					this.patternsContainerEl?.querySelector("input");
 				newInput?.focus();
 			}, 0);
 		};
@@ -205,10 +212,10 @@ export class PublishingSection {
 		addBtn.onclick = handleAdd;
 
 		inputEl.onkeydown = (e) => {
-			if (e.key === 'Enter') {
+			if (e.key === "Enter") {
 				handleAdd();
 			} else {
-				if (errorEl.textContent) errorEl.textContent = '';
+				if (errorEl.textContent) errorEl.textContent = "";
 			}
 		};
 	}
@@ -217,7 +224,7 @@ export class PublishingSection {
 	 * 외부에서 값 업데이트
 	 */
 	updateValues(
-		config: Pick<QuartzSiteConfig, 'explicitPublish' | 'ignorePatterns'>
+		config: Pick<QuartzSiteConfig, "explicitPublish" | "ignorePatterns">,
 	): void {
 		if (this.explicitPublishToggleEl) {
 			this.explicitPublishToggleEl.checked = config.explicitPublish;

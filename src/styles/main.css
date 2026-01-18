@@ -931,3 +931,12 @@ textarea.is-invalid:focus {
 	width: min(600px, 90vw);
 }
 
+/* ============================================================================
+ * Utility Classes
+ * ============================================================================ */
+
+/* Setting Items Background Utility */
+.bg-obs-setting-items {
+	background-color: var(--background-secondary);
+}
+
