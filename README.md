@@ -1,3 +1,6 @@
+<img width="2816" height="1536" alt="Gemini_Generated_Image_bbpsx0bbpsx0bbps" src="https://github.com/user-attachments/assets/7bb95f7c-6b3e-4dd3-a993-d345d2bc63cf" />
+
+
 # Quartz Publish
 
 [![GitHub License](https://img.shields.io/github/license/jeongsk/obsidian-quartz-publish)](LICENSE)
