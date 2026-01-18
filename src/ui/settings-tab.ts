@@ -617,6 +617,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 	private createCustomCssSection(containerEl: HTMLElement): void {
 		const BASE_IMPORT = '@use "./base.scss";';
+		const CUSTOM_CSS_PATH = "quartz/styles/custom.scss";
 
 		new Setting(containerEl)
 			.setName(t("settings.customCss.title"))
@@ -629,6 +630,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		const textareaContainer = containerEl.createDiv({
 			cls: "setting-item-description",
 		});
+
+		// 로딩 상태 표시
+		const statusEl = textareaContainer.createDiv({
+			cls: "text-obs-text-muted text-sm mb-2",
+		});
+		statusEl.setText(t("settings.customCss.loading"));
 
 		const textarea = textareaContainer.createEl("textarea", {
 			cls: "w-full",
@@ -646,8 +653,51 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		textarea.style.fontFamily = "monospace";
 		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 		textarea.style.fontSize = "12px";
+		textarea.disabled = true;
 
-		textarea.value = this.plugin.settings.customCssContent ?? "";
+		// GitHub에서 custom.scss 로드
+		const loadCustomCss = async () => {
+			const { githubToken, repoUrl, defaultBranch } =
+				this.plugin.settings;
+			if (!githubToken || !repoUrl) {
+				statusEl.setText(t("notice.configureFirst"));
+				textarea.disabled = true;
+				return;
+			}
+
+			try {
+				const github = new GitHubService(
+					githubToken,
+					repoUrl,
+					defaultBranch,
+				);
+				const file = await github.getFile(CUSTOM_CSS_PATH);
+				if (file) {
+					textarea.value = file.content;
+					this.plugin.settings.customCssContent = file.content;
+					await this.plugin.saveSettings();
+					statusEl.setText(t("settings.customCss.loaded"));
+				} else {
+					textarea.value = "";
+					statusEl.setText(t("settings.customCss.notFound"));
+				}
+				textarea.disabled = false;
+			} catch (error) {
+				statusEl.setText(
+					t("settings.customCss.loadError", {
+						message:
+							error instanceof Error
+								? error.message
+								: "Unknown error",
+					}),
+				);
+				textarea.disabled = false;
+			}
+		};
+
+		// 초기 로드
+		loadCustomCss();
+
 		textarea.addEventListener("change", async () => {
 			this.plugin.settings.customCssContent = textarea.value;
 			await this.plugin.saveSettings();
@@ -682,7 +732,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 							defaultBranch,
 						);
 						const result = await github.createOrUpdateFile(
-							"quartz/styles/custom.scss",
+							CUSTOM_CSS_PATH,
 							finalContent,
 							"Update custom CSS",
 						);

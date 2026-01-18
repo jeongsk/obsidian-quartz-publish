@@ -176,6 +176,10 @@ export default {
 	"settings.customCss.contentDesc":
 		"Enter your custom CSS/SCSS code to style your Quartz site.",
 	"settings.customCss.upload": "Apply Custom CSS",
+	"settings.customCss.loading": "Loading custom CSS from GitHub...",
+	"settings.customCss.loaded": "Loaded from GitHub",
+	"settings.customCss.notFound": "custom.scss file not found in repository",
+	"settings.customCss.loadError": "Failed to load: {{message}}",
 
 	// Settings - Publish Filter
 	"settings.filter.title": "Publish Settings",

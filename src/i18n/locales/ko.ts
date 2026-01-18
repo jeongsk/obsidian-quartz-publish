@@ -168,6 +168,10 @@ const ko: { [K in TranslationKeys]?: string } = {
 	"settings.customCss.contentDesc":
 		"Quartz 사이트 스타일을 위한 커스텀 CSS/SCSS 코드를 입력하세요.",
 	"settings.customCss.upload": "커스텀 CSS 적용",
+	"settings.customCss.loading": "GitHub에서 커스텀 CSS 로딩 중...",
+	"settings.customCss.loaded": "GitHub에서 로드됨",
+	"settings.customCss.notFound": "리포지토리에 custom.scss 파일이 없습니다",
+	"settings.customCss.loadError": "로드 실패: {{message}}",
 
 	// Settings - Publish Filter
 	"settings.filter.title": "발행 설정",
