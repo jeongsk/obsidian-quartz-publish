@@ -34,7 +34,7 @@ export class PublishService {
 	private transformer: ContentTransformer;
 	private fileValidator: FileValidatorService;
 	private publishFilter: PublishFilterService;
-	private publishRecords: Record<string, PublishRecord>;
+	private getPublishRecords: () => Record<string, PublishRecord>;
 	private onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>;
 	private onRecordRemove: (localPath: string) => Promise<void>;
 	private isPublishing = false;
@@ -43,14 +43,14 @@ export class PublishService {
 		vault: Vault,
 		metadataCache: MetadataCache,
 		settings: PluginSettings,
-		publishRecords: Record<string, PublishRecord>,
+		getPublishRecords: () => Record<string, PublishRecord>,
 		onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>,
 		onRecordRemove: (localPath: string) => Promise<void>
 	) {
 		this.vault = vault;
 		this.metadataCache = metadataCache;
 		this.settings = settings;
-		this.publishRecords = publishRecords;
+		this.getPublishRecords = getPublishRecords;
 		this.onRecordUpdate = onRecordUpdate;
 		this.onRecordRemove = onRecordRemove;
 
@@ -305,7 +305,8 @@ export class PublishService {
 	 */
 	async unpublishNote(file: TFile): Promise<UnpublishResult> {
 		try {
-			const record = this.publishRecords[file.path];
+			const records = this.getPublishRecords();
+			const record = records[file.path];
 			if (!record) {
 				return {
 					success: false,
@@ -431,7 +432,8 @@ export class PublishService {
 	 */
 	private getPublishedNotes(): Set<string> {
 		const published = new Set<string>();
-		for (const path of Object.keys(this.publishRecords)) {
+		const records = this.getPublishRecords();
+		for (const path of Object.keys(records)) {
 			// .md 확장자 제거한 경로
 			published.add(path.replace(/\.md$/, ''));
 		}
