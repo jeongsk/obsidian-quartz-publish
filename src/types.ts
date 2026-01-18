@@ -260,8 +260,8 @@ export interface PluginSettings {
 	validationSettings?: FrontmatterValidationSettings;
 	/** 발행 전 Frontmatter 편집기 표시 여부 */
 	showFrontmatterEditor?: boolean;
-	/** 커스텀 CSS 파일 경로 */
-	customCssPath?: string;
+	/** 커스텀 CSS 내용 */
+	customCssContent?: string;
 }
 
 /**
@@ -277,7 +277,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	publishFilterSettings: DEFAULT_PUBLISH_FILTER_SETTINGS,
 	validationSettings: DEFAULT_VALIDATION_SETTINGS,
 	showFrontmatterEditor: false,
-	customCssPath: "",
+	customCssContent: "",
 };
 
 // ============================================================================

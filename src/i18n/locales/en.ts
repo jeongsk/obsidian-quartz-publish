@@ -172,10 +172,10 @@ export default {
 
 	// Settings - Custom CSS
 	"settings.customCss.title": "Custom CSS",
-	"settings.customCss.path": "Custom CSS Path",
-	"settings.customCss.pathDesc":
-		"Path to your custom CSS/SCSS file (relative to vault root). Uploading this will replace quartz/styles/custom.scss in your repository.",
-	"settings.customCss.upload": "Upload Custom CSS",
+	"settings.customCss.content": "CSS Content",
+	"settings.customCss.contentDesc":
+		"Enter your custom CSS/SCSS code to style your Quartz site.",
+	"settings.customCss.upload": "Apply Custom CSS",
 
 	// Settings - Publish Filter
 	"settings.filter.title": "Publish Settings",

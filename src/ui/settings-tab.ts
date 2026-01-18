@@ -11,7 +11,6 @@ import {
 	Notice,
 	TextComponent,
 	setIcon,
-	TFile,
 } from "obsidian";
 import type QuartzPublishPlugin from "../main";
 import { GitHubService } from "../services/github";
@@ -131,9 +130,6 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		// 발행 설정 섹션
 		this.createPublishFilterSection(containerEl);
-
-		// Custom CSS 섹션
-		this.createCustomCssSection(containerEl);
 
 		// Frontmatter 설정 섹션
 		this.createFrontmatterSection(containerEl);
@@ -620,81 +616,98 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 	}
 
 	private createCustomCssSection(containerEl: HTMLElement): void {
+		const BASE_IMPORT = '@use "./base.scss";';
+
 		new Setting(containerEl)
 			.setName(t("settings.customCss.title"))
 			.setHeading();
 
 		new Setting(containerEl)
-			.setName(t("settings.customCss.path"))
-			.setDesc(t("settings.customCss.pathDesc"))
-			.addText((text) => {
-				text.setPlaceholder("styles/custom.scss")
-					.setValue(this.plugin.settings.customCssPath ?? "")
-					.onChange(async (value) => {
-						this.plugin.settings.customCssPath = value;
-						await this.plugin.saveSettings();
-					});
-			})
-			.addButton((button) =>
-				button
-					.setButtonText(t("settings.customCss.upload"))
-					.setCta()
-					.onClick(async () => {
-						const path = this.plugin.settings.customCssPath;
-						if (!path) {
-							new Notice(t("notice.customCss.noPath"));
-							return;
-						}
+			.setName(t("settings.customCss.content"))
+			.setDesc(t("settings.customCss.contentDesc"));
 
-						const file = this.app.vault.getAbstractFileByPath(path);
-						if (!file || !(file instanceof TFile)) {
-							new Notice(t("notice.customCss.notFound"));
-							return;
-						}
+		const textareaContainer = containerEl.createDiv({
+			cls: "setting-item-description",
+		});
 
-						const content = await this.app.vault.read(file);
+		const textarea = textareaContainer.createEl("textarea", {
+			cls: "w-full",
+			attr: {
+				rows: "10",
+				placeholder:
+					"/* Add your custom CSS here */\nbody {\n  background: #f0f0f0;\n}",
+			},
+		});
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		textarea.style.width = "100%";
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		textarea.style.minHeight = "200px";
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		textarea.style.fontFamily = "monospace";
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		textarea.style.fontSize = "12px";
 
-						// GitHubService 초기화
-						const { githubToken, repoUrl, defaultBranch } =
-							this.plugin.settings;
-						if (!githubToken || !repoUrl) {
-							new Notice(t("notice.configureFirst"));
-							return;
-						}
+		textarea.value = this.plugin.settings.customCssContent ?? "";
+		textarea.addEventListener("change", async () => {
+			this.plugin.settings.customCssContent = textarea.value;
+			await this.plugin.saveSettings();
+		});
 
-						try {
-							const github = new GitHubService(
-								githubToken,
-								repoUrl,
-								defaultBranch,
-							);
-							const result = await github.createOrUpdateFile(
-								"quartz/styles/custom.scss",
-								content,
-								"Update custom CSS",
-							);
+		new Setting(containerEl).addButton((button) =>
+			button
+				.setButtonText(t("settings.customCss.upload"))
+				.setCta()
+				.onClick(async () => {
+					const userContent =
+						this.plugin.settings.customCssContent ?? "";
 
-							if (result.success) {
-								new Notice(t("notice.customCss.success"));
-							} else {
-								new Notice(
-									t("notice.customCss.failed", {
-										error: result.error ?? "Unknown error",
-									}),
-								);
-							}
-						} catch (error) {
+					// 자동으로 @use "./base.scss"; 추가 (없는 경우)
+					let finalContent = userContent;
+					if (!userContent.includes(BASE_IMPORT)) {
+						finalContent = `${BASE_IMPORT}\n\n// Custom CSS\n${userContent}`;
+					}
+
+					// GitHubService 초기화
+					const { githubToken, repoUrl, defaultBranch } =
+						this.plugin.settings;
+					if (!githubToken || !repoUrl) {
+						new Notice(t("notice.configureFirst"));
+						return;
+					}
+
+					try {
+						const github = new GitHubService(
+							githubToken,
+							repoUrl,
+							defaultBranch,
+						);
+						const result = await github.createOrUpdateFile(
+							"quartz/styles/custom.scss",
+							finalContent,
+							"Update custom CSS",
+						);
+
+						if (result.success) {
+							new Notice(t("notice.customCss.success"));
+						} else {
 							new Notice(
-								t("notice.customCss.error", {
-									message:
-										error instanceof Error
-											? error.message
-											: "Unknown error",
+								t("notice.customCss.failed", {
+									error: result.error ?? "Unknown error",
 								}),
 							);
 						}
-					}),
-			);
+					} catch (error) {
+						new Notice(
+							t("notice.customCss.error", {
+								message:
+									error instanceof Error
+										? error.message
+										: "Unknown error",
+							}),
+						);
+					}
+				}),
+		);
 	}
 
 	private async testConnection(): Promise<void> {
@@ -1106,6 +1119,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 		this.quartzSettingsContainerEl.empty();
 
 		this.renderAdvancedConfigSection(config);
+
+		// Custom CSS 섹션 (Quartz 고급 설정 내에서)
+		this.createCustomCssSection(this.quartzSettingsContainerEl);
 
 		this.renderUpgradeSection();
 	}

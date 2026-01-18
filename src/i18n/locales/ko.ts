@@ -164,10 +164,10 @@ const ko: { [K in TranslationKeys]?: string } = {
 
 	// Settings - Custom CSS
 	"settings.customCss.title": "커스텀 CSS",
-	"settings.customCss.path": "커스텀 CSS 경로",
-	"settings.customCss.pathDesc":
-		"커스텀 CSS/SCSS 파일 경로 (볼트 루트 기준). 업로드 시 리포지토리의 quartz/styles/custom.scss 파일이 교체됩니다.",
-	"settings.customCss.upload": "커스텀 CSS 업로드",
+	"settings.customCss.content": "CSS 내용",
+	"settings.customCss.contentDesc":
+		"Quartz 사이트 스타일을 위한 커스텀 CSS/SCSS 코드를 입력하세요.",
+	"settings.customCss.upload": "커스텀 CSS 적용",
 
 	// Settings - Publish Filter
 	"settings.filter.title": "발행 설정",
