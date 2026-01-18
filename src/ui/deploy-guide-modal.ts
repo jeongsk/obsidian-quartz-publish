@@ -1,8 +1,8 @@
-import { Modal } from 'obsidian';
-import type { App } from 'obsidian';
-import type { DeployGuideStep, CreatedRepository } from '../types';
-import { t } from '../i18n';
-import { cn } from '../utils/cn';
+import { Modal } from "obsidian";
+import type { App } from "obsidian";
+import type { DeployGuideStep, CreatedRepository } from "../types";
+import { t } from "../i18n";
+import { cn } from "../utils/cn";
 
 interface DeployGuideModalOptions {
 	repository: CreatedRepository;
@@ -38,26 +38,26 @@ export class DeployGuideModal extends Modal {
 		switch (stepNumber) {
 			case 1:
 				externalUrl = `${baseUrl}/settings`;
-				actionLabel = t('deployGuide.step1.action');
+				actionLabel = t("deployGuide.step1.action");
 				break;
 			case 2:
 				externalUrl = `${baseUrl}/settings/pages`;
-				actionLabel = t('deployGuide.step2.action');
+				actionLabel = t("deployGuide.step2.action");
 				break;
 			case 3:
 				// No external URL for step 3
 				break;
 			case 4:
 				externalUrl = `${baseUrl}/settings/actions`;
-				actionLabel = t('deployGuide.step4.action');
+				actionLabel = t("deployGuide.step4.action");
 				break;
 			case 5:
 				externalUrl = `${baseUrl}/actions`;
-				actionLabel = t('deployGuide.step5.action');
+				actionLabel = t("deployGuide.step5.action");
 				break;
 			case 6:
 				externalUrl = `https://${owner}.github.io/${name}/`;
-				actionLabel = t('deployGuide.step6.action');
+				actionLabel = t("deployGuide.step6.action");
 				break;
 		}
 
@@ -72,21 +72,21 @@ export class DeployGuideModal extends Modal {
 
 	onOpen() {
 		// 키보드 네비게이션 설정
-		this.scope.register([], 'ArrowLeft', () => {
+		this.scope.register([], "ArrowLeft", () => {
 			if (this.currentStep > 0) {
 				this.currentStep--;
 				this.render();
 			}
 			return false;
 		});
-		this.scope.register([], 'ArrowRight', () => {
+		this.scope.register([], "ArrowRight", () => {
 			if (this.currentStep < this.totalSteps - 1) {
 				this.currentStep++;
 				this.render();
 			}
 			return false;
 		});
-		this.scope.register([], 'Enter', () => {
+		this.scope.register([], "Enter", () => {
 			if (this.currentStep === this.totalSteps - 1) {
 				this.close();
 			} else {
@@ -106,85 +106,89 @@ export class DeployGuideModal extends Modal {
 	private render() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.addClass('p-4');
+		contentEl.addClass("p-4");
 		// 반응형 너비 설정
-		contentEl.style.minWidth = 'min(450px, 90vw)';
-		contentEl.style.maxWidth = 'min(550px, 95vw)';
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		contentEl.style.minWidth = "min(450px, 90vw)";
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		contentEl.style.maxWidth = "min(550px, 95vw)";
 
 		const step = this.getCurrentStepInfo();
-		const stepOfText = t('deployGuide.stepOf', {
+		const stepOfText = t("deployGuide.stepOf", {
 			current: String(step.stepNumber),
 			total: String(this.totalSteps),
 		});
 
-		contentEl.createEl('h2', {
-			text: t('deployGuide.title'),
-			cls: 'text-lg font-semibold mb-4',
+		contentEl.createEl("h2", {
+			text: t("deployGuide.title"),
+			cls: "text-lg font-semibold mb-4",
 		});
 
 		const progressContainer = contentEl.createDiv({
-			cls: 'mb-4',
+			cls: "mb-4",
 		});
 
-		progressContainer.createEl('span', {
+		progressContainer.createEl("span", {
 			text: stepOfText,
-			cls: 'text-sm text-obs-text-muted',
+			cls: "text-sm text-obs-text-muted",
 		});
 
-		const progressValue = Math.round(((this.currentStep + 1) / this.totalSteps) * 100);
+		const progressValue = Math.round(
+			((this.currentStep + 1) / this.totalSteps) * 100,
+		);
 		const progressBar = progressContainer.createDiv({
-			cls: 'w-full h-2 bg-obs-bg-modifier-border rounded mt-2',
+			cls: "w-full h-2 bg-obs-bg-modifier-border rounded mt-2",
 			attr: {
-				role: 'progressbar',
-				'aria-valuenow': String(this.currentStep + 1),
-				'aria-valuemin': '1',
-				'aria-valuemax': String(this.totalSteps),
-				'aria-label': stepOfText,
+				role: "progressbar",
+				"aria-valuenow": String(this.currentStep + 1),
+				"aria-valuemin": "1",
+				"aria-valuemax": String(this.totalSteps),
+				"aria-label": stepOfText,
 			},
 		});
 
 		const progressFill = progressBar.createDiv({
-			cls: 'h-full bg-obs-interactive-accent rounded transition-all',
+			cls: "h-full bg-obs-interactive-accent rounded transition-all",
 		});
 		progressFill.style.width = `${progressValue}%`;
 
-		contentEl.createEl('h3', {
+		contentEl.createEl("h3", {
 			text: step.title,
-			cls: 'text-base font-medium mb-2',
+			cls: "text-base font-medium mb-2",
 		});
 
-		contentEl.createEl('p', {
+		contentEl.createEl("p", {
 			text: step.description,
-			cls: 'text-sm text-obs-text-muted mb-4',
+			cls: "text-sm text-obs-text-muted mb-4",
 		});
 
 		if (step.externalUrl && step.actionLabel) {
-			const actionBtn = contentEl.createEl('button', {
+			const actionBtn = contentEl.createEl("button", {
 				text: step.actionLabel,
-				cls: 'w-full px-4 py-2 bg-obs-interactive-accent/10 text-obs-interactive-accent rounded mb-4 cursor-pointer hover:bg-obs-interactive-accent/20',
+				cls: "w-full px-4 py-2 bg-obs-interactive-accent/10 text-obs-interactive-accent rounded mb-4 cursor-pointer hover:bg-obs-interactive-accent/20",
 			});
-			actionBtn.addEventListener('click', () => {
-				window.open(step.externalUrl, '_blank');
+			actionBtn.addEventListener("click", () => {
+				window.open(step.externalUrl, "_blank");
 			});
 		}
 
 		const navContainer = contentEl.createDiv({
-			cls: 'flex justify-between gap-2 mt-4',
+			cls: "flex justify-between gap-2 mt-4",
 		});
 
 		const isFirstStep = this.currentStep === 0;
-		const backBtn = navContainer.createEl('button', {
-			text: t('deployGuide.back'),
+		const backBtn = navContainer.createEl("button", {
+			text: t("deployGuide.back"),
 			cls: cn(
-				'px-4 py-2',
-				isFirstStep && 'opacity-50 cursor-not-allowed'
+				"px-4 py-2",
+				isFirstStep && "opacity-50 cursor-not-allowed",
 			),
 			attr: {
-				'aria-label': t('deployGuide.back'),
+				"aria-label": t("deployGuide.back"),
 			},
 		});
 		backBtn.disabled = isFirstStep;
-		backBtn.addEventListener('click', () => {
+		backBtn.addEventListener("click", () => {
 			if (this.currentStep > 0) {
 				this.currentStep--;
 				this.render();
@@ -192,15 +196,17 @@ export class DeployGuideModal extends Modal {
 		});
 
 		const isLastStep = this.currentStep === this.totalSteps - 1;
-		const nextBtnText = isLastStep ? t('deployGuide.done') : t('deployGuide.next');
-		const nextBtn = navContainer.createEl('button', {
+		const nextBtnText = isLastStep
+			? t("deployGuide.done")
+			: t("deployGuide.next");
+		const nextBtn = navContainer.createEl("button", {
 			text: nextBtnText,
-			cls: 'mod-cta px-4 py-2',
+			cls: "mod-cta px-4 py-2",
 			attr: {
-				'aria-label': nextBtnText,
+				"aria-label": nextBtnText,
 			},
 		});
-		nextBtn.addEventListener('click', () => {
+		nextBtn.addEventListener("click", () => {
 			if (isLastStep) {
 				this.close();
 			} else {

@@ -124,7 +124,7 @@ export class TypographySection {
 	}
 
 	private applyFontStyle(el: HTMLElement, font: string): void {
-		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		 
 		el.style.fontFamily = `"${font}", sans-serif`;
 		// 폰트가 로드되지 않았을 수 있으므로 다시 한번 로드 시도
 		this.fontService.loadFont(font);

@@ -90,7 +90,9 @@ export class GitHubGuideModal extends Modal {
 		contentEl.empty();
 		contentEl.addClass("p-4");
 		// 반응형 너비: 작은 화면에서는 90vw, 큰 화면에서는 500-600px
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 		contentEl.style.minWidth = "min(500px, 90vw)";
+		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 		contentEl.style.maxWidth = "min(600px, 95vw)";
 
 		// 문제 해결 모드인 경우
@@ -142,11 +144,11 @@ export class GitHubGuideModal extends Modal {
 				"text-xs px-2 py-1 rounded text-[var(--color-base-00)]",
 				isComplete
 					? "bg-obs-bg-modifier-success"
-					: "bg-obs-bg-modifier-message"
+					: "bg-obs-bg-modifier-message",
 			),
 		});
 		statusBadge.textContent = `${completedCount}/${TOTAL_GUIDE_STEPS} ${t(
-			"guide.complete"
+			"guide.complete",
 		)}`;
 	}
 
@@ -169,7 +171,7 @@ export class GitHubGuideModal extends Modal {
 
 		// 진행 바
 		const progressValue = Math.round(
-			((this.currentStep + 1) / totalSteps) * 100
+			((this.currentStep + 1) / totalSteps) * 100,
 		);
 		const progressBar = progressContainer.createDiv({
 			cls: "w-full h-2 bg-obs-bg-modifier-border rounded mt-2",

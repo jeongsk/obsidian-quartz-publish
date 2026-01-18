@@ -42,7 +42,7 @@ export class FontPickerModal extends FuzzySuggestModal<GoogleFont> {
 		super.renderSuggestion(match, el);
 
 		// 폰트 스타일 적용
-		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+		 
 		el.style.fontFamily = `"${match.item.family}", sans-serif`;
 		// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 		el.style.fontSize = '1.1em';

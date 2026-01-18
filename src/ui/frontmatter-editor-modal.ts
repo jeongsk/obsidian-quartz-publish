@@ -4,16 +4,15 @@
  * 발행 전 frontmatter를 편집할 수 있는 모달입니다.
  */
 
-import { App, Modal, Setting, TFile } from 'obsidian';
+import { App, Modal, Setting, TFile } from "obsidian";
 import type {
 	QuartzFrontmatter,
-	FrontmatterValidationResult,
 	FrontmatterValidationSettings,
 	ValidationIssue,
-} from '../types';
-import { DEFAULT_VALIDATION_SETTINGS } from '../types';
-import { ContentTransformer } from '../services/transformer';
-import { t } from '../i18n';
+} from "../types";
+import { DEFAULT_VALIDATION_SETTINGS } from "../types";
+import { ContentTransformer } from "../services/transformer";
+import { t } from "../i18n";
 
 /**
  * Frontmatter 편집 모달 옵션
@@ -45,7 +44,8 @@ export interface FrontmatterEditorResult {
 export class FrontmatterEditorModal extends Modal {
 	private options: FrontmatterEditorModalOptions;
 	private editedFrontmatter: QuartzFrontmatter;
-	private resolvePromise: ((value: FrontmatterEditorResult) => void) | null = null;
+	private resolvePromise: ((value: FrontmatterEditorResult) => void) | null =
+		null;
 	private validationContainer: HTMLElement | null = null;
 
 	constructor(app: App, options: FrontmatterEditorModalOptions) {
@@ -57,18 +57,18 @@ export class FrontmatterEditorModal extends Modal {
 	onOpen(): void {
 		const { contentEl, modalEl } = this;
 		contentEl.empty();
-		modalEl.addClass('quartz-publish-frontmatter-editor-modal');
+		modalEl.addClass("quartz-publish-frontmatter-editor-modal");
 
 		// 헤더
 		this.renderHeader();
 
 		// 검증 결과 영역
 		this.validationContainer = contentEl.createDiv({
-			cls: 'mb-4',
+			cls: "mb-4",
 			attr: {
-				role: 'status',
-				'aria-live': 'polite',
-				'aria-label': t('modal.frontmatter.validationStatus'),
+				role: "status",
+				"aria-live": "polite",
+				"aria-label": t("modal.frontmatter.validationStatus"),
 			},
 		});
 		this.updateValidation();
@@ -106,27 +106,27 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const headerEl = contentEl.createDiv({
-			cls: 'flex items-center gap-3 mb-4 pb-3 border-b border-obs-bg-modifier-border',
+			cls: "flex items-center gap-3 mb-4 pb-3 border-b border-obs-bg-modifier-border",
 		});
 
 		// 아이콘
 		const iconEl = headerEl.createDiv({
-			cls: 'flex-shrink-0 w-10 h-10 rounded-full bg-obs-bg-modifier-hover flex items-center justify-center',
+			cls: "flex-shrink-0 w-10 h-10 rounded-full bg-obs-bg-modifier-hover flex items-center justify-center",
 		});
 		iconEl.createSpan({
-			text: '📝',
-			cls: 'text-xl',
+			text: "📝",
+			cls: "text-xl",
 		});
 
 		// 제목
-		const titleContainer = headerEl.createDiv({ cls: 'flex-1' });
-		titleContainer.createEl('h3', {
-			text: t('modal.frontmatter.title'),
-			cls: 'm-0 text-lg font-semibold',
+		const titleContainer = headerEl.createDiv({ cls: "flex-1" });
+		titleContainer.createEl("h3", {
+			text: t("modal.frontmatter.title"),
+			cls: "m-0 text-lg font-semibold",
 		});
 		titleContainer.createDiv({
 			text: this.options.file.path,
-			cls: 'text-sm text-obs-text-muted mt-1',
+			cls: "text-sm text-obs-text-muted mt-1",
 		});
 	}
 
@@ -137,56 +137,61 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const formEl = contentEl.createDiv({
-			cls: 'space-y-2',
+			cls: "space-y-2",
 		});
 
 		// Title
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.titleName'))
-			.setDesc(t('modal.frontmatter.titleDesc'))
+			.setName(t("modal.frontmatter.titleName"))
+			.setDesc(t("modal.frontmatter.titleDesc"))
 			.addText((text) => {
-				text
-					.setPlaceholder(this.options.file.basename)
-					.setValue(this.editedFrontmatter.title || '')
+				text.setPlaceholder(this.options.file.basename)
+					.setValue(this.editedFrontmatter.title || "")
 					.onChange((value) => {
 						this.editedFrontmatter.title = value || undefined;
 						this.updateValidation();
 					});
-				text.inputEl.style.width = '100%';
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+				text.inputEl.style.width = "100%";
 				// 모달 열릴 때 첫 번째 입력 필드에 포커스
 				setTimeout(() => text.inputEl.focus(), 50);
 			});
 
 		// Description
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.descriptionName'))
-			.setDesc(t('modal.frontmatter.descriptionDesc'))
+			.setName(t("modal.frontmatter.descriptionName"))
+			.setDesc(t("modal.frontmatter.descriptionDesc"))
 			.addTextArea((textarea) => {
 				textarea
-					.setPlaceholder(t('modal.frontmatter.descriptionPlaceholder'))
-					.setValue(this.editedFrontmatter.description || '')
+					.setPlaceholder(
+						t("modal.frontmatter.descriptionPlaceholder"),
+					)
+					.setValue(this.editedFrontmatter.description || "")
 					.onChange((value) => {
 						this.editedFrontmatter.description = value || undefined;
 						this.updateValidation();
 					});
-				textarea.inputEl.style.width = '100%';
-				textarea.inputEl.style.minHeight = '60px';
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+				textarea.inputEl.style.width = "100%";
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+				textarea.inputEl.style.minHeight = "60px";
 			});
 
 		// Tags
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.tagsName'))
-			.setDesc(t('modal.frontmatter.tagsDesc'))
+			.setName(t("modal.frontmatter.tagsName"))
+			.setDesc(t("modal.frontmatter.tagsDesc"))
 			.addText((text) => {
 				const currentTags = this.editedFrontmatter.tags;
-				const tagsString = Array.isArray(currentTags) ? currentTags.join(', ') : '';
-				text
-					.setPlaceholder('tag1, tag2, tag3')
+				const tagsString = Array.isArray(currentTags)
+					? currentTags.join(", ")
+					: "";
+				text.setPlaceholder("tag1, tag2, tag3")
 					.setValue(tagsString)
 					.onChange((value) => {
 						if (value.trim()) {
 							this.editedFrontmatter.tags = value
-								.split(',')
+								.split(",")
 								.map((t) => t.trim())
 								.filter((t) => t.length > 0);
 						} else {
@@ -194,38 +199,41 @@ export class FrontmatterEditorModal extends Modal {
 						}
 						this.updateValidation();
 					});
-				text.inputEl.style.width = '100%';
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+				text.inputEl.style.width = "100%";
 			});
 
 		// Draft
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.draftName'))
-			.setDesc(t('modal.frontmatter.draftDesc'))
+			.setName(t("modal.frontmatter.draftName"))
+			.setDesc(t("modal.frontmatter.draftDesc"))
 			.addToggle((toggle) => {
-				toggle.setValue(this.editedFrontmatter.draft === true).onChange((value) => {
-					this.editedFrontmatter.draft = value || undefined;
-					this.updateValidation();
-				});
+				toggle
+					.setValue(this.editedFrontmatter.draft === true)
+					.onChange((value) => {
+						this.editedFrontmatter.draft = value || undefined;
+						this.updateValidation();
+					});
 			});
 
 		// Permalink
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.permalinkName'))
-			.setDesc(t('modal.frontmatter.permalinkDesc'))
+			.setName(t("modal.frontmatter.permalinkName"))
+			.setDesc(t("modal.frontmatter.permalinkDesc"))
 			.addText((text) => {
-				text
-					.setPlaceholder('/custom-url')
-					.setValue(this.editedFrontmatter.permalink || '')
+				text.setPlaceholder("/custom-url")
+					.setValue(this.editedFrontmatter.permalink || "")
 					.onChange((value) => {
 						this.editedFrontmatter.permalink = value || undefined;
 					});
-				text.inputEl.style.width = '100%';
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+				text.inputEl.style.width = "100%";
 			});
 
 		// Enable TOC
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.tocName'))
-			.setDesc(t('modal.frontmatter.tocDesc'))
+			.setName(t("modal.frontmatter.tocName"))
+			.setDesc(t("modal.frontmatter.tocDesc"))
 			.addToggle((toggle) => {
 				toggle
 					.setValue(this.editedFrontmatter.enableToc !== false)
@@ -236,25 +244,27 @@ export class FrontmatterEditorModal extends Modal {
 
 		// CSS Classes
 		new Setting(formEl)
-			.setName(t('modal.frontmatter.cssName'))
-			.setDesc(t('modal.frontmatter.cssDesc'))
+			.setName(t("modal.frontmatter.cssName"))
+			.setDesc(t("modal.frontmatter.cssDesc"))
 			.addText((text) => {
 				const currentClasses = this.editedFrontmatter.cssclasses;
-				const classesString = Array.isArray(currentClasses) ? currentClasses.join(', ') : '';
-				text
-					.setPlaceholder('class1, class2')
+				const classesString = Array.isArray(currentClasses)
+					? currentClasses.join(", ")
+					: "";
+				text.setPlaceholder("class1, class2")
 					.setValue(classesString)
 					.onChange((value) => {
 						if (value.trim()) {
 							this.editedFrontmatter.cssclasses = value
-								.split(',')
+								.split(",")
 								.map((c) => c.trim())
 								.filter((c) => c.length > 0);
 						} else {
 							this.editedFrontmatter.cssclasses = undefined;
 						}
 					});
-				text.inputEl.style.width = '100%';
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
+				text.inputEl.style.width = "100%";
 			});
 	}
 
@@ -266,26 +276,27 @@ export class FrontmatterEditorModal extends Modal {
 
 		this.validationContainer.empty();
 
-		const settings = this.options.validationSettings ?? DEFAULT_VALIDATION_SETTINGS;
+		const settings =
+			this.options.validationSettings ?? DEFAULT_VALIDATION_SETTINGS;
 		const result = this.options.transformer.validateFrontmatter(
 			this.editedFrontmatter,
-			settings
+			settings,
 		);
 
 		if (result.issues.length === 0) {
 			const successEl = this.validationContainer.createDiv({
-				cls: 'flex items-center gap-2 p-3 rounded-md bg-obs-bg-modifier-success bg-opacity-20',
+				cls: "flex items-center gap-2 p-3 rounded-md bg-obs-bg-modifier-success bg-opacity-20",
 			});
-			successEl.createSpan({ text: '✓', cls: 'text-obs-text-success' });
+			successEl.createSpan({ text: "✓", cls: "text-obs-text-success" });
 			successEl.createSpan({
-				text: t('modal.frontmatter.validationSuccess'),
-				cls: 'text-sm',
+				text: t("modal.frontmatter.validationSuccess"),
+				cls: "text-sm",
 			});
 			return;
 		}
 
 		const issuesEl = this.validationContainer.createDiv({
-			cls: 'space-y-2',
+			cls: "space-y-2",
 		});
 
 		for (const issue of result.issues) {
@@ -298,15 +309,16 @@ export class FrontmatterEditorModal extends Modal {
 	 */
 	private renderIssue(container: HTMLElement, issue: ValidationIssue): void {
 		const severityColors: Record<string, string> = {
-			error: 'bg-obs-bg-modifier-error bg-opacity-20 border-obs-text-error',
-			warning: 'bg-obs-bg-modifier-warning bg-opacity-20 border-obs-text-warning',
-			info: 'bg-obs-bg-modifier-hover border-obs-bg-modifier-border',
+			error: "bg-obs-bg-modifier-error bg-opacity-20 border-obs-text-error",
+			warning:
+				"bg-obs-bg-modifier-warning bg-opacity-20 border-obs-text-warning",
+			info: "bg-obs-bg-modifier-hover border-obs-bg-modifier-border",
 		};
 
 		const severityIcons: Record<string, string> = {
-			error: '❌',
-			warning: '⚠️',
-			info: 'ℹ️',
+			error: "❌",
+			warning: "⚠️",
+			info: "ℹ️",
 		};
 
 		const issueEl = container.createDiv({
@@ -314,24 +326,24 @@ export class FrontmatterEditorModal extends Modal {
 		});
 
 		const headerEl = issueEl.createDiv({
-			cls: 'flex items-center gap-2',
+			cls: "flex items-center gap-2",
 		});
 
 		headerEl.createSpan({ text: severityIcons[issue.severity] });
 		headerEl.createSpan({
 			text: issue.field,
-			cls: 'font-medium',
+			cls: "font-medium",
 		});
 
 		issueEl.createDiv({
 			text: issue.message,
-			cls: 'text-sm mt-1',
+			cls: "text-sm mt-1",
 		});
 
 		if (issue.suggestion) {
 			issueEl.createDiv({
 				text: `💡 ${issue.suggestion}`,
-				cls: 'text-sm text-obs-text-muted mt-1',
+				cls: "text-sm text-obs-text-muted mt-1",
 			});
 		}
 	}
@@ -343,14 +355,14 @@ export class FrontmatterEditorModal extends Modal {
 		const { contentEl } = this;
 
 		const actionsEl = contentEl.createDiv({
-			cls: 'flex justify-end gap-2 mt-4 pt-3 border-t border-obs-bg-modifier-border',
+			cls: "flex justify-end gap-2 mt-4 pt-3 border-t border-obs-bg-modifier-border",
 		});
 
 		// 취소 버튼
-		const cancelBtn = actionsEl.createEl('button', {
-			text: t('modal.confirm.cancel'),
+		const cancelBtn = actionsEl.createEl("button", {
+			text: t("modal.confirm.cancel"),
 		});
-		cancelBtn.addEventListener('click', () => {
+		cancelBtn.addEventListener("click", () => {
 			this.resolvePromise?.({
 				saved: false,
 				frontmatter: this.options.frontmatter,
@@ -359,11 +371,11 @@ export class FrontmatterEditorModal extends Modal {
 		});
 
 		// 저장 버튼
-		const saveBtn = actionsEl.createEl('button', {
-			text: t('modal.frontmatter.save'),
-			cls: 'mod-cta',
+		const saveBtn = actionsEl.createEl("button", {
+			text: t("modal.frontmatter.save"),
+			cls: "mod-cta",
 		});
-		saveBtn.addEventListener('click', () => {
+		saveBtn.addEventListener("click", () => {
 			this.resolvePromise?.({
 				saved: true,
 				frontmatter: this.editedFrontmatter,
