@@ -17,6 +17,7 @@ import { PublishService } from "./services/publish";
 import { StatusService } from "./services/status";
 import { NetworkService } from "./services/network";
 import { ContentTransformer } from "./services/transformer";
+import { PublishRecordStorage } from "./services/publish-record-storage";
 import { DashboardModal } from "./ui/dashboard-modal";
 import { FrontmatterEditorModal } from "./ui/frontmatter-editor-modal";
 import { initI18n, t } from "./i18n";
@@ -33,7 +34,7 @@ import {
  */
 export default class QuartzPublishPlugin extends Plugin {
 	settings!: PluginSettings;
-	publishRecords!: Record<string, PublishRecord>;
+	private recordStorage!: PublishRecordStorage;
 	private statusService!: StatusService;
 	private networkService!: NetworkService;
 
@@ -45,6 +46,13 @@ export default class QuartzPublishPlugin extends Plugin {
 		initI18n();
 		await this.loadSettings();
 
+		// PublishRecordStorage 초기화
+		this.recordStorage = new PublishRecordStorage(this);
+		await this.recordStorage.load();
+
+		// 마이그레이션: data.json의 레코드를 별도 파일로 이동
+		await this.migratePublishRecords();
+
 		// NetworkService 초기화
 		this.networkService = new NetworkService();
 
@@ -52,7 +60,7 @@ export default class QuartzPublishPlugin extends Plugin {
 		this.statusService = new StatusService({
 			vault: this.app.vault,
 			metadataCache: this.app.metadataCache,
-			getPublishRecords: () => this.publishRecords,
+			getPublishRecords: () => this.recordStorage.getAllRecords(),
 			getFilterSettings: () =>
 				this.settings.publishFilterSettings ??
 				DEFAULT_PUBLISH_FILTER_SETTINGS,
@@ -160,18 +168,44 @@ export default class QuartzPublishPlugin extends Plugin {
 	async loadSettings(): Promise<void> {
 		const data = (await this.loadData()) as PluginData | null;
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, data?.settings);
-		this.publishRecords = data?.publishRecords ?? {};
 	}
 
 	/**
 	 * 플러그인 설정 저장
 	 */
 	async saveSettings(): Promise<void> {
+		// 기존 데이터 로드 (lastSync 유지용)
+		const existingData = (await this.loadData()) as PluginData | null;
 		const data: PluginData = {
 			settings: this.settings,
-			publishRecords: this.publishRecords,
+			lastSync: existingData?.lastSync,
+			publishRecordsMigrated: true,
 		};
 		await this.saveData(data);
+	}
+
+	/**
+	 * 발행 기록을 data.json에서 별도 파일로 마이그레이션
+	 */
+	private async migratePublishRecords(): Promise<void> {
+		const data = (await this.loadData()) as PluginData | null;
+		const hasMigrated = data?.publishRecordsMigrated ?? false;
+
+		if (hasMigrated) {
+			return;
+		}
+
+		// data.json에 레거시 publishRecords가 있는지 확인
+		const oldRecords = (data as { publishRecords?: Record<string, PublishRecord> })?.publishRecords;
+
+		if (oldRecords && Object.keys(oldRecords).length > 0) {
+			console.log('[QuartzPublish] Migrating publish records to separate file...');
+			await this.recordStorage.migrateFromOldData(oldRecords);
+
+			// 마이그레이션 플래그 설정
+			await this.saveSettings();
+			console.log('[QuartzPublish] Migration complete.');
+		}
 	}
 
 	/**
@@ -181,23 +215,21 @@ export default class QuartzPublishPlugin extends Plugin {
 		localPath: string,
 		record: PublishRecord
 	): Promise<void> {
-		this.publishRecords[localPath] = record;
-		await this.saveSettings();
+		await this.recordStorage.updateRecord(localPath, record);
 	}
 
 	/**
 	 * 발행 기록 삭제
 	 */
 	async removePublishRecord(localPath: string): Promise<void> {
-		delete this.publishRecords[localPath];
-		await this.saveSettings();
+		await this.recordStorage.removeRecord(localPath);
 	}
 
 	/**
 	 * 발행 기록 조회
 	 */
 	getPublishRecord(localPath: string): PublishRecord | undefined {
-		return this.publishRecords[localPath];
+		return this.recordStorage.getRecord(localPath);
 	}
 
 	/**
@@ -256,7 +288,7 @@ export default class QuartzPublishPlugin extends Plugin {
 				this.app.vault,
 				this.app.metadataCache,
 				this.settings,
-				this.publishRecords,
+				() => this.recordStorage.getAllRecords(),
 				this.updatePublishRecord.bind(this),
 				this.removePublishRecord.bind(this)
 			);
@@ -338,7 +370,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			this.app.vault,
 			this.app.metadataCache,
 			this.settings,
-			this.publishRecords,
+			() => this.recordStorage.getAllRecords(),
 			this.updatePublishRecord.bind(this),
 			this.removePublishRecord.bind(this)
 		);
@@ -361,7 +393,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			this.app.vault,
 			this.app.metadataCache,
 			this.settings,
-			this.publishRecords,
+			() => this.recordStorage.getAllRecords(),
 			this.updatePublishRecord.bind(this),
 			this.removePublishRecord.bind(this)
 		);
