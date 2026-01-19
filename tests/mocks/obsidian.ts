@@ -535,3 +535,15 @@ export function sanitizeHTMLToDom(html: string): DocumentFragment {
 export const moment = {
 	locale: () => 'en',
 };
+
+// ============================================================================
+// Icon & Tooltip Utilities
+// ============================================================================
+
+export async function setIcon(element: HTMLElement, iconId: string): Promise<void> {
+	// 테스트에서는 아무 동작 하지 않음
+}
+
+export function setTooltip(element: HTMLElement, tooltip: string): void {
+	// 테스트에서는 아무 동작 하지 않음
+}
