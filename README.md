@@ -8,98 +8,100 @@
 [![GitHub Downloads](https://img.shields.io/github/downloads/jeongsk/obsidian-quartz-publish/total)](https://github.com/jeongsk/obsidian-quartz-publish/releases)
 [![CI](https://github.com/jeongsk/obsidian-quartz-publish/actions/workflows/test.yml/badge.svg)](https://github.com/jeongsk/obsidian-quartz-publish/actions/workflows/test.yml)
 
-Obsidian 노트를 [Quartz](https://quartz.jzhao.xyz/) 블로그에 직접 발행하는 플러그인입니다.
+[**한국어 문서 보기**](README.ko.md)
 
-## 기능
+An Obsidian plugin for publishing notes directly to your [Quartz](https://quartz.jzhao.xyz/) blog.
 
-### 발행
+## Features
 
-- Obsidian 노트를 Quartz 저장소에 직접 발행
-- 프론트매터를 활용한 발행 경로 설정
-- 초안(draft) 또는 공개(publish) 상태로 발행 선택
-- GitHub 저장소와 연동하여 자동 배포
+### Publishing
 
-### 발행 필터링
+- Publish Obsidian notes directly to Quartz repository
+- Configure publish paths using frontmatter
+- Choose between draft or publish status
+- Automatic deployment via GitHub repository integration
 
-- 폴더 기반 발행 대상 필터링
-- 태그 기반 발행 대상 필터링
-- Glob 패턴을 활용한 유연한 필터 설정
+### Publish Filtering
 
-### Quartz 관리
+- Folder-based publish target filtering
+- Tag-based publish target filtering
+- Flexible filter settings using Glob patterns
 
-- Quartz 설정 관리 (사이트 정보, 분석, 로케일 등)
-- Quartz 버전 업그레이드 지원
-- 원격 파일 관리 (Quartz 저장소의 파일 직접 관리)
+### Quartz Management
 
-### 초보자 지원
+- Quartz configuration management (site info, analytics, locale, etc.)
+- Quartz version upgrade support
+- Remote file management (direct management of files in Quartz repository)
 
-- GitHub 리포지토리 자동 생성
-- 배포 가이드 제공
+### Beginner Support
 
-### 기타
+- Automatic GitHub repository creation
+- Deployment guide provided
 
-- 네트워크 오프라인 감지
-- 대용량 파일 발행 시 경고
-- 다국어 지원 (영어, 한국어)
+### Other
 
-## 설치
+- Network offline detection
+- Warning for large file publishing
+- Multi-language support (English, Korean)
 
-### 수동 설치
+## Installation
 
-1. [Releases](https://github.com/jeongsk/obsidian-quartz-publish/releases)에서 최신 버전을 다운로드합니다.
-2. `main.js`, `manifest.json`, `styles.css` 파일을 Obsidian vault의 `.obsidian/plugins/quartz-publish/` 폴더에 복사합니다.
-3. Obsidian을 재시작하고 설정 > 커뮤니티 플러그인에서 "Quartz Publish"를 활성화합니다.
+### Manual Installation
 
-### BRAT을 통한 설치
+1. Download the latest version from [Releases](https://github.com/jeongsk/obsidian-quartz-publish/releases).
+2. Copy `main.js`, `manifest.json`, and `styles.css` to the `.obsidian/plugins/quartz-publish/` folder in your Obsidian vault.
+3. Restart Obsidian and enable "Quartz Publish" in Settings > Community Plugins.
 
-1. [BRAT](https://github.com/TfTHacker/obsidian42-brat) 플러그인을 설치합니다.
-2. BRAT 설정에서 "Add Beta plugin"을 선택합니다.
-3. `jeongsk/obsidian-quartz-publish`를 입력하고 추가합니다.
+### Installation via BRAT
 
-## 설정
+1. Install the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin.
+2. Select "Add Beta plugin" in BRAT settings.
+3. Enter `jeongsk/obsidian-quartz-publish` and add it.
 
-플러그인 설정에서 다음 항목을 구성합니다:
+## Configuration
 
-- **GitHub Token**: GitHub Personal Access Token (repo 권한 필요)
-- **Repository**: Quartz가 설치된 GitHub 저장소 (예: `username/quartz`)
-- **Branch**: 발행할 브랜치 (기본값: `main`)
-- **Content Path**: Quartz 콘텐츠 경로 (기본값: `content`)
+Configure the following items in the plugin settings:
 
-## 사용법
+- **GitHub Token**: GitHub Personal Access Token (repo permission required)
+- **Repository**: GitHub repository where Quartz is installed (e.g., `username/quartz`)
+- **Branch**: Branch to publish to (default: `main`)
+- **Content Path**: Quartz content path (default: `content`)
 
-1. 발행하려는 노트를 엽니다.
-2. 명령어 팔레트(Cmd/Ctrl + P)에서 "Quartz Publish"를 검색합니다.
-3. 발행 옵션을 선택하고 발행합니다.
+## Usage
 
-### 프론트매터 설정
+1. Open the note you want to publish.
+2. Search for "Quartz Publish" in the command palette (Cmd/Ctrl + P).
+3. Select publishing options and publish.
 
-노트의 프론트매터에서 발행 옵션을 설정할 수 있습니다:
+### Frontmatter Settings
+
+You can configure publishing options in your note's frontmatter:
 
 ```yaml
 ---
-title: 노트 제목
+title: Note Title
 draft: false
 publish: true
 path: custom-url-path
 ---
 ```
 
-## 문서
+## Documentation
 
-- [Quartz 블로그 만들기 가이드](docs/quartz-blog-setup-guide.md) - GitHub 템플릿으로 Quartz 블로그 생성 및 배포 가이드
-- [Quartz 날짜 처리 방식](docs/quartz-date-handling.md) - Quartz에서 작성일/수정일을 처리하는 방법
-- [Quartz 설정 가이드](docs/quartz-settings-guide.md) - Quartz 설정 옵션 상세 가이드
-- [대시보드 사용 가이드](docs/dashboard-guide.md) - 발행 대시보드 사용법
-- [플러그인 사용 가이드](docs/plugin-usage-guide.md) - 플러그인 전체 사용 가이드
+- [Quartz Blog Setup Guide](docs/quartz-blog-setup-guide.md) - Create and deploy a Quartz blog using a GitHub template
+- [Quartz Date Handling](docs/quartz-date-handling.md) - How Quartz handles created/updated dates
+- [Quartz Settings Guide](docs/quartz-settings-guide.md) - Detailed guide to Quartz configuration options
+- [Dashboard Guide](docs/dashboard-guide.md) - How to use the publishing dashboard
+- [Plugin Usage Guide](docs/plugin-usage-guide.md) - Complete plugin usage guide
 
-## 개발
+## Development
 
-### 요구 사항
+### Requirements
 
 - Node.js >= 22.0.0
 - npm
 
-### 설치
+### Installation
 
 ```bash
 git clone https://github.com/jeongsk/obsidian-quartz-publish.git
@@ -107,71 +109,94 @@ cd obsidian-quartz-publish
 npm install
 ```
 
-### 개발 명령어
+### Development Commands
 
 ```bash
-npm run dev            # 개발 모드 (watch)
-npm run build          # 프로덕션 빌드
-npm run test           # 테스트 실행
-npm run test:watch     # 테스트 watch 모드
-npm run test:coverage  # 커버리지 보고서
-npm run lint           # 린트 검사
-npm run lint:fix       # 린트 자동 수정
-npm run version        # 버전 업그레이드
+npm run dev            # Development mode (watch)
+npm run build          # Production build
+npm run test           # Run tests
+npm run test:watch     # Test watch mode
+npm run test:coverage  # Coverage report
+npm run lint           # Lint check
+npm run lint:fix       # Auto-fix linting
+npm run version        # Version upgrade
 ```
 
-### 프로젝트 구조
+### Project Structure
 
 ```
 src/
-├── main.ts                           # 플러그인 메인 클래스
-├── types.ts                          # 타입 정의
-├── constants/                        # 상수 정의
-│   ├── analytics.ts                  # 분석 관련 상수
-│   └── locales.ts                    # 로케일 상수
-├── i18n/                             # 다국어 지원
-│   ├── index.ts                      # i18n 초기화
+├── main.ts                           # Plugin main class
+├── types.ts                          # Type definitions
+├── constants/                        # Constants
+│   ├── analytics.ts                  # Analytics constants
+│   ├── locales.ts                    # Locale constants
+│   ├── guide-steps.ts                # Guide steps constants
+│   └── icons.ts                      # Icon constants
+├── i18n/                             # Internationalization
+│   ├── index.ts                      # i18n initialization
 │   └── locales/
-│       ├── en.ts                     # 영어 번역
-│       └── ko.ts                     # 한국어 번역
+│       ├── en.ts                     # English translations
+│       └── ko.ts                     # Korean translations
 ├── services/
-│   ├── github.ts                     # GitHub API 서비스
-│   ├── publish.ts                    # 발행 서비스
-│   ├── quartz-config.ts              # Quartz 설정 관리
-│   ├── quartz-upgrade.ts             # Quartz 업그레이드
-│   ├── status.ts                     # 상태 관리
-│   ├── transformer.ts                # 콘텐츠 변환
-│   ├── network.ts                    # 네트워크 감지
-│   ├── file-validator.ts             # 파일 검증
-│   ├── publish-filter.ts             # 발행 필터링
-│   ├── pending-changes.ts            # 변경사항 추적
-│   ├── repository-creator.ts         # 리포지토리 생성
-│   └── remote-file.ts                # 원격 파일 관리
+│   ├── github.ts                     # GitHub API service
+│   ├── publish.ts                    # Publishing service
+│   ├── quartz-config.ts              # Quartz configuration management
+│   ├── quartz-upgrade.ts             # Quartz upgrade
+│   ├── status.ts                     # Status management
+│   ├── transformer.ts                # Content transformation
+│   ├── network.ts                    # Network detection
+│   ├── file-validator.ts             # File validation
+│   ├── publish-filter.ts             # Publish filtering
+│   ├── pending-changes.ts            # Change tracking
+│   ├── publish-record-storage.ts     # Publish record storage
+│   ├── repository-creator.ts         # Repository creation
+│   ├── remote-file.ts                # Remote file management
+│   ├── google-fonts.ts               # Google Fonts service
+│   └── setup-status.ts               # Setup status management
 ├── ui/
-│   ├── settings-tab.ts               # 설정 탭
-│   ├── dashboard-modal.ts            # 대시보드 모달
-│   ├── deploy-guide-modal.ts         # 배포 가이드 모달
-│   ├── create-repo-modal.ts          # 리포지토리 생성 모달
-│   ├── remote-file-manager-modal.ts  # 원격 파일 관리 모달
-│   ├── large-file-warning-modal.ts   # 대용량 파일 경고
-│   ├── components/                   # 공통 UI 컴포넌트
-│   └── sections/                     # 설정 탭 섹션
+│   ├── settings-tab.ts               # Settings tab
+│   ├── dashboard-modal.ts            # Dashboard modal
+│   ├── deploy-guide-modal.ts         # Deployment guide modal
+│   ├── github-guide-modal.ts         # GitHub guide modal
+│   ├── create-repo-modal.ts          # Repository creation modal
+│   ├── remote-file-manager-modal.ts  # Remote file manager modal
+│   ├── frontmatter-editor-modal.ts   # Frontmatter editor modal
+│   ├── large-file-warning-modal.ts   # Large file warning
+│   ├── components/                   # Common UI components
+│   │   ├── confirm-modal.ts          # Confirmation modal
+│   │   ├── unsaved-warning.ts        # Unsaved warning
+│   │   ├── note-suggest-modal.ts     # Note suggest modal
+│   │   ├── folder-suggest-modal.ts   # Folder suggest modal
+│   │   ├── conflict-modal.ts         # Conflict modal
+│   │   ├── font-picker-modal.ts      # Font picker modal
+│   │   └── apply-button.ts           # Apply button
+│   └── sections/                     # Settings tab sections
+│       ├── publish-filter-section.ts # Publish filter section
+│       ├── site-info-section.ts      # Site info section
+│       ├── typography-section.ts     # Typography section
+│       ├── analytics-section.ts      # Analytics section
+│       ├── comments-section.ts       # Comments section
+│       ├── behavior-section.ts       # Behavior section
+│       └── publishing-section.ts     # Publishing section
 ├── utils/
-│   ├── glob-validator.ts             # Glob 패턴 검증
-│   ├── path-matcher.ts               # 경로 매칭
-│   └── validators.ts                 # 유효성 검사
+│   ├── glob-validator.ts             # Glob pattern validation
+│   ├── path-matcher.ts               # Path matching
+│   ├── validators.ts                 # Validation utilities
+│   ├── cn.ts                         # Classname utility
+│   └── url.ts                        # URL utility
 └── styles/
-    └── main.css                      # TailwindCSS 스타일
+    └── main.css                      # TailwindCSS styles
 ```
 
-### 기술 스택
+### Tech Stack
 
-- **언어**: TypeScript 5.9+
-- **스타일링**: TailwindCSS v4
-- **번들러**: esbuild
-- **테스트**: Vitest
-- **린터**: ESLint + eslint-plugin-obsidianmd
+- **Language**: TypeScript 5.9+
+- **Styling**: TailwindCSS v4
+- **Bundler**: esbuild
+- **Testing**: Vitest
+- **Linter**: ESLint + eslint-plugin-obsidianmd
 
-## 라이선스
+## License
 
 [MIT](LICENSE) © Jeongsk
