@@ -280,6 +280,9 @@ const ko: { [K in TranslationKeys]?: string } = {
 	"modal.confirm.title": "확인",
 	"modal.confirm.ok": "확인",
 	"modal.confirm.cancel": "취소",
+	"modal.fileNotFound.title": "파일을 찾을 수 없음",
+	"modal.fileNotFound.message": "원격 저장소에서 '{{fileName}}' 파일을 찾을 수 없습니다. 다시 발행하시겠습니까?",
+	"dashboard.modified.koreanFilenameWarning": "한글 파일명이 포함된 항목을 클릭하면 파일을 찾지 못할 수 있습니다. 이 경우 다시 발행해 주세요.",
 	"modal.delete.title": "삭제 확인",
 	"modal.delete.message": "GitHub에서 {{count}}개 노트를 삭제하시겠습니까?",
 	"modal.sync.title": "동기화 확인",
@@ -655,6 +658,13 @@ const ko: { [K in TranslationKeys]?: string } = {
 		"Umami 대시보드에서 확인할 수 있는 Website ID (UUID 형식)",
 	"analytics.umami.host.name": "호스트",
 	"analytics.umami.host.desc": "Umami 인스턴스 URL",
+
+	// Diff View
+	"diff.title": "변경 사항: {{file}}",
+	"common.close": "닫기",
+	"dashboard.tooltip.diff": "변경 사항 보기",
+	"error.remoteFileNotFound": "원격 파일을 찾을 수 없습니다. 다시 발행해 주세요.",
+	"error.diffFailed": "변경 사항 로드 실패: {{message}}",
 };
 
 export default ko;

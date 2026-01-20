@@ -86,14 +86,6 @@ path: custom-url-path
 ---
 ```
 
-## 문서
-
-- [Quartz 블로그 만들기 가이드](docs/quartz-blog-setup-guide.md) - GitHub 템플릿으로 Quartz 블로그 생성 및 배포 가이드
-- [Quartz 날짜 처리 방식](docs/quartz-date-handling.md) - Quartz에서 작성일/수정일을 처리하는 방법
-- [Quartz 설정 가이드](docs/quartz-settings-guide.md) - Quartz 설정 옵션 상세 가이드
-- [대시보드 사용 가이드](docs/dashboard-guide.md) - 발행 대시보드 사용법
-- [플러그인 사용 가이드](docs/plugin-usage-guide.md) - 플러그인 전체 사용 가이드
-
 ## 개발
 
 ### 요구 사항

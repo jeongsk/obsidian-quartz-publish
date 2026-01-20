@@ -86,14 +86,6 @@ path: custom-url-path
 ---
 ```
 
-## Documentation
-
-- [Quartz Blog Setup Guide](docs/quartz-blog-setup-guide.md) - Create and deploy a Quartz blog using a GitHub template
-- [Quartz Date Handling](docs/quartz-date-handling.md) - How Quartz handles created/updated dates
-- [Quartz Settings Guide](docs/quartz-settings-guide.md) - Detailed guide to Quartz configuration options
-- [Dashboard Guide](docs/dashboard-guide.md) - How to use the publishing dashboard
-- [Plugin Usage Guide](docs/plugin-usage-guide.md) - Complete plugin usage guide
-
 ## Development
 
 ### Requirements

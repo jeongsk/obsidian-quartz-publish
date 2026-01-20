@@ -289,6 +289,9 @@ export default {
 	"modal.confirm.title": "Confirm",
 	"modal.confirm.ok": "OK",
 	"modal.confirm.cancel": "Cancel",
+	"modal.fileNotFound.title": "File Not Found",
+	"modal.fileNotFound.message": "Could not find '{{fileName}}' in the remote repository. Would you like to publish it?",
+	"dashboard.modified.koreanFilenameWarning": "Items with Korean filenames may not be found when clicked. If this happens, please re-publish.",
 	"modal.delete.title": "Confirm Delete",
 	"modal.delete.message": "Delete {{count}} notes from GitHub?",
 	"modal.sync.title": "Confirm Sync",
@@ -673,4 +676,11 @@ export default {
 		"Website ID from Umami dashboard (UUID format)",
 	"analytics.umami.host.name": "Host",
 	"analytics.umami.host.desc": "Umami instance URL",
+
+	// Diff View
+	"diff.title": "Diff: {{file}}",
+	"common.close": "Close",
+	"dashboard.tooltip.diff": "View changes",
+	"error.remoteFileNotFound": "Remote file not found. Please re-publish the file.",
+	"error.diffFailed": "Failed to load diff: {{message}}",
 } as const;

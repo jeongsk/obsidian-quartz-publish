@@ -14,6 +14,7 @@ import {
 } from "./types";
 import { QuartzPublishSettingTab } from "./ui/settings-tab";
 import { PublishService } from "./services/publish";
+import { GitHubService } from "./services/github";
 import { StatusService } from "./services/status";
 import { NetworkService } from "./services/network";
 import { ContentTransformer } from "./services/transformer";
@@ -31,6 +32,9 @@ import {
  * Quartz Publish Plugin
  *
  * Obsidian 노트를 Quartz 정적 사이트로 발행하는 플러그인입니다.
+ *
+ * VERSION: 0.7.1
+ * BUILD: 2025-01-20T17:03:00Z
  */
 export default class QuartzPublishPlugin extends Plugin {
 	settings!: PluginSettings;
@@ -39,12 +43,33 @@ export default class QuartzPublishPlugin extends Plugin {
 	private networkService!: NetworkService;
 
 	async onload(): Promise<void> {
+		// ========== IMPORTANT: 플러그인 로드 확인 ==========
+		// 이 메시지가 보이지 않으면 Obsidian을 완전히 재시작하세요
+		console.log(
+			"╔══════════════════════════════════════════════════════════════╗",
+		);
+		console.log(
+			"║     Quartz Publish Plugin v0.7.1 - LOADED                    ║",
+		);
+		console.log(
+			"╚══════════════════════════════════════════════════════════════╝",
+		);
+		// ========================================================
+
 		if (typeof addIcon === "function") {
 			addIcon(ICON_QUARTZ_PUBLISH, ICON_QUARTZ_PUBLISH_SVG);
 		}
 
 		initI18n();
 		await this.loadSettings();
+
+		// 안내 메시지 (한글 파일명 수정 사용자)
+		setTimeout(() => {
+			new Notice(
+				"Quartz Publish v0.7.1 업데이트 완료! 한글 파일명 404 에러가 수정되었습니다.",
+				8000,
+			);
+		}, 2000);
 
 		// PublishRecordStorage 초기화
 		this.recordStorage = new PublishRecordStorage(this);
@@ -130,7 +155,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			t("command.openDashboard"),
 			() => {
 				this.openDashboard();
-			}
+			},
 		);
 
 		// 리본 아이콘 등록: 현재 노트 발행
@@ -153,7 +178,7 @@ export default class QuartzPublishPlugin extends Plugin {
 							.onClick(() => this.publishNote(file));
 					});
 				}
-			})
+			}),
 		);
 	}
 
@@ -196,15 +221,19 @@ export default class QuartzPublishPlugin extends Plugin {
 		}
 
 		// data.json에 레거시 publishRecords가 있는지 확인
-		const oldRecords = (data as { publishRecords?: Record<string, PublishRecord> })?.publishRecords;
+		const oldRecords = (
+			data as { publishRecords?: Record<string, PublishRecord> }
+		)?.publishRecords;
 
 		if (oldRecords && Object.keys(oldRecords).length > 0) {
-			console.log('[QuartzPublish] Migrating publish records to separate file...');
+			console.log(
+				"[QuartzPublish] Migrating publish records to separate file...",
+			);
 			await this.recordStorage.migrateFromOldData(oldRecords);
 
 			// 마이그레이션 플래그 설정
 			await this.saveSettings();
-			console.log('[QuartzPublish] Migration complete.');
+			console.log("[QuartzPublish] Migration complete.");
 		}
 	}
 
@@ -213,7 +242,7 @@ export default class QuartzPublishPlugin extends Plugin {
 	 */
 	async updatePublishRecord(
 		localPath: string,
-		record: PublishRecord
+		record: PublishRecord,
 	): Promise<void> {
 		await this.recordStorage.updateRecord(localPath, record);
 	}
@@ -255,7 +284,7 @@ export default class QuartzPublishPlugin extends Plugin {
 				this.app.vault,
 				this.app.metadataCache,
 				this.settings.contentPath,
-				this.settings.staticPath
+				this.settings.staticPath,
 			);
 			const currentFrontmatter =
 				transformer.getFrontmatterFromCache(file);
@@ -290,7 +319,7 @@ export default class QuartzPublishPlugin extends Plugin {
 				this.settings,
 				() => this.recordStorage.getAllRecords(),
 				this.updatePublishRecord.bind(this),
-				this.removePublishRecord.bind(this)
+				this.removePublishRecord.bind(this),
 			);
 
 			const result = await publishService.publishNote(file);
@@ -300,14 +329,14 @@ export default class QuartzPublishPlugin extends Plugin {
 					t("notice.publish.success", {
 						filename: file.basename,
 						path: result.remotePath ?? "",
-					})
+					}),
 				);
 			} else {
 				new Notice(
 					t("notice.publish.failed", {
 						filename: file.basename,
 						error: result.error ?? "",
-					})
+					}),
 				);
 			}
 		} catch (error) {
@@ -323,7 +352,7 @@ export default class QuartzPublishPlugin extends Plugin {
 	 */
 	private async applyFrontmatterToFile(
 		file: TFile,
-		frontmatter: QuartzFrontmatter
+		frontmatter: QuartzFrontmatter,
 	): Promise<void> {
 		await this.app.fileManager.processFrontMatter(file, (fm) => {
 			// 기존 frontmatter 유지하면서 편집된 값만 업데이트
@@ -347,6 +376,75 @@ export default class QuartzPublishPlugin extends Plugin {
 			onLoadStatus: async (onProgress) =>
 				this.statusService.calculateStatusOverview(onProgress),
 			networkService: this.networkService,
+			onGetRemoteContent: async (file) => {
+				console.log("=== [onGetRemoteContent] START ===");
+				console.log(
+					"[onGetRemoteContent] file:",
+					file.name,
+					"path:",
+					file.path,
+				);
+
+				const { githubToken, repoUrl } = this.settings;
+				if (!githubToken || !repoUrl) {
+					console.warn(
+						"[onGetRemoteContent] No githubToken or repoUrl",
+					);
+					return null;
+				}
+
+				const github = new GitHubService(
+					githubToken,
+					repoUrl,
+					this.settings.defaultBranch,
+				);
+				const records = this.recordStorage.getAllRecords();
+				const record = records[file.path];
+
+				console.log("[onGetRemoteContent] record:", record);
+
+				// 여러 경로를 순차적으로 시도
+				const pathsToTry: string[] = [];
+
+				// 1. 발행 기록의 remotePath가 있으면 추가
+				if (record?.remotePath) {
+					pathsToTry.push(record.remotePath.normalize("NFC"));
+				}
+
+				// 2. 로컬 파일 경로 (content/ 접두사 포함)
+				pathsToTry.push(`content/${file.path}`.normalize("NFC"));
+
+				console.log("[onGetRemoteContent] paths to try:", pathsToTry);
+
+				// 각 경로를 순차적으로 시도
+				for (let i = 0; i < pathsToTry.length; i++) {
+					const path = pathsToTry[i];
+					console.log(
+						`[onGetRemoteContent] [${i + 1}/${pathsToTry.length}] trying:`,
+						path,
+					);
+
+					const content = await github.getFile(path);
+					if (content !== null) {
+						console.log(
+							"[onGetRemoteContent] ✓ Found file at:",
+							path,
+						);
+						return content.content;
+					}
+				}
+
+				console.warn(
+					"[onGetRemoteContent] ✗ File not found after all attempts",
+				);
+				console.warn(
+					"[onGetRemoteContent] The file may not exist on GitHub or was published with a different path.",
+				);
+				console.warn(
+					"[onGetRemoteContent] Please re-publish this file to fix the issue.",
+				);
+				return null;
+			},
 		}).open();
 	}
 
@@ -372,7 +470,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			this.settings,
 			() => this.recordStorage.getAllRecords(),
 			this.updatePublishRecord.bind(this),
-			this.removePublishRecord.bind(this)
+			this.removePublishRecord.bind(this),
 		);
 
 		return publishService.publishNotes(files);
@@ -395,7 +493,7 @@ export default class QuartzPublishPlugin extends Plugin {
 			this.settings,
 			() => this.recordStorage.getAllRecords(),
 			this.updatePublishRecord.bind(this),
-			this.removePublishRecord.bind(this)
+			this.removePublishRecord.bind(this),
 		);
 
 		for (const file of files) {

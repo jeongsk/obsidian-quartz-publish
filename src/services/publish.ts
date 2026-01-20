@@ -4,8 +4,8 @@
  * 노트 발행 핵심 로직을 담당합니다.
  */
 
-import { TFile } from 'obsidian';
-import type { Vault, MetadataCache } from 'obsidian';
+import { TFile } from "obsidian";
+import type { Vault, MetadataCache } from "obsidian";
 import type {
 	PluginSettings,
 	PublishRecord,
@@ -15,13 +15,17 @@ import type {
 	AttachmentRecord,
 	PublishError,
 	QuartzFrontmatter,
-} from '../types';
-import { MAX_FILE_SIZE, DEFAULT_AUTO_DATE_SETTINGS, DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
-import type { LargeFileInfo, FileValidationResult } from '../types';
-import { GitHubService } from './github';
-import { ContentTransformer } from './transformer';
-import { FileValidatorService } from './file-validator';
-import { PublishFilterService } from './publish-filter';
+} from "../types";
+import {
+	MAX_FILE_SIZE,
+	DEFAULT_AUTO_DATE_SETTINGS,
+	DEFAULT_PUBLISH_FILTER_SETTINGS,
+} from "../types";
+import type { LargeFileInfo, FileValidationResult } from "../types";
+import { GitHubService } from "./github";
+import { ContentTransformer } from "./transformer";
+import { FileValidatorService } from "./file-validator";
+import { PublishFilterService } from "./publish-filter";
 
 /**
  * 발행 서비스 클래스
@@ -35,7 +39,10 @@ export class PublishService {
 	private fileValidator: FileValidatorService;
 	private publishFilter: PublishFilterService;
 	private getPublishRecords: () => Record<string, PublishRecord>;
-	private onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>;
+	private onRecordUpdate: (
+		localPath: string,
+		record: PublishRecord,
+	) => Promise<void>;
 	private onRecordRemove: (localPath: string) => Promise<void>;
 	private isPublishing = false;
 
@@ -44,8 +51,11 @@ export class PublishService {
 		metadataCache: MetadataCache,
 		settings: PluginSettings,
 		getPublishRecords: () => Record<string, PublishRecord>,
-		onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>,
-		onRecordRemove: (localPath: string) => Promise<void>
+		onRecordUpdate: (
+			localPath: string,
+			record: PublishRecord,
+		) => Promise<void>,
+		onRecordRemove: (localPath: string) => Promise<void>,
 	) {
 		this.vault = vault;
 		this.metadataCache = metadataCache;
@@ -57,7 +67,7 @@ export class PublishService {
 		this.github = new GitHubService(
 			settings.githubToken,
 			settings.repoUrl,
-			settings.defaultBranch
+			settings.defaultBranch,
 		);
 
 		this.transformer = new ContentTransformer(
@@ -65,14 +75,16 @@ export class PublishService {
 			metadataCache,
 			settings.contentPath,
 			settings.staticPath,
-			settings.publishFilterSettings?.rootFolder ?? ''
+			settings.publishFilterSettings?.rootFolder ?? "",
 		);
 
 		this.fileValidator = new FileValidatorService();
 
 		this.publishFilter = new PublishFilterService({
 			metadataCache,
-			getSettings: () => this.settings.publishFilterSettings ?? DEFAULT_PUBLISH_FILTER_SETTINGS,
+			getSettings: () =>
+				this.settings.publishFilterSettings ??
+				DEFAULT_PUBLISH_FILTER_SETTINGS,
 		});
 	}
 
@@ -110,16 +122,23 @@ export class PublishService {
 	}
 
 	getRemotePath(file: TFile, frontmatter: QuartzFrontmatter): string {
+		let remotePath: string;
+
 		if (this.publishFilter.isHomePage(file)) {
-			return `${this.settings.contentPath}/index.md`;
+			remotePath = `${this.settings.contentPath}/index.md`;
+		} else if (
+			typeof frontmatter.path === "string" &&
+			frontmatter.path.trim()
+		) {
+			remotePath = this.transformer.getRemotePath(file, frontmatter);
+		} else {
+			const filteredPath = this.publishFilter.getPublishPath(file);
+			remotePath = `${this.settings.contentPath}/${filteredPath}`;
 		}
 
-		if (typeof frontmatter.path === 'string' && frontmatter.path.trim()) {
-			return this.transformer.getRemotePath(file, frontmatter);
-		}
-
-		const filteredPath = this.publishFilter.getPublishPath(file);
-		return `${this.settings.contentPath}/${filteredPath}`;
+		// NFC 정규화: macOS는 NFD를 사용하지만 GitHub과 대부분의 시스템은 NFC를 사용
+		// 경로를 NFC로 정규화하여 일관성 유지
+		return remotePath.normalize("NFC");
 	}
 
 	async publishNote(file: TFile): Promise<PublishResult> {
@@ -127,7 +146,7 @@ export class PublishService {
 			return {
 				success: false,
 				file,
-				error: 'unknown',
+				error: "unknown",
 			};
 		}
 
@@ -135,7 +154,7 @@ export class PublishService {
 			return {
 				success: false,
 				file,
-				error: 'no_publish_flag',
+				error: "no_publish_flag",
 			};
 		}
 
@@ -144,7 +163,8 @@ export class PublishService {
 		try {
 			// 2. 프론트매터 파싱 (MetadataCache 사용으로 배열/중첩 객체 완전 지원)
 			const frontmatter = this.transformer.getFrontmatterFromCache(file);
-			const autoDateSettings = this.settings.autoDateSettings ?? DEFAULT_AUTO_DATE_SETTINGS;
+			const autoDateSettings =
+				this.settings.autoDateSettings ?? DEFAULT_AUTO_DATE_SETTINGS;
 
 			// 3. publish 플래그 및 날짜 필드 원자적 추가 (vault.process 사용)
 			let content = await this.vault.process(file, (data) => {
@@ -156,7 +176,11 @@ export class PublishService {
 				}
 
 				// 날짜 필드 자동 추가
-				result = this.transformer.addDateFields(result, file, autoDateSettings);
+				result = this.transformer.addDateFields(
+					result,
+					file,
+					autoDateSettings,
+				);
 
 				return result;
 			});
@@ -165,7 +189,11 @@ export class PublishService {
 			const publishedNotes = this.getPublishedNotes();
 
 			// 6. 콘텐츠 변환
-			const transformed = this.transformer.transform(content, file, publishedNotes);
+			const transformed = this.transformer.transform(
+				content,
+				file,
+				publishedNotes,
+			);
 
 			const remotePath = this.getRemotePath(file, frontmatter);
 
@@ -177,22 +205,24 @@ export class PublishService {
 			const commitResult = await this.github.createOrUpdateFile(
 				remotePath,
 				transformed.content,
-				existingSha ? `Update: ${file.basename}` : `Publish: ${file.basename}`,
 				existingSha
+					? `Update: ${file.basename}`
+					: `Publish: ${file.basename}`,
+				existingSha,
 			);
 
 			if (!commitResult.success) {
 				return {
 					success: false,
 					file,
-					error: 'network_error',
+					error: "network_error",
 				};
 			}
 
 			// 10. 첨부파일 업로드
 			const attachmentRecords = await this.uploadAttachments(
 				transformed.attachments,
-				file.basename
+				file.basename,
 			);
 
 			// 11. 발행 기록 저장
@@ -205,7 +235,7 @@ export class PublishService {
 				remotePath,
 				contentHash,
 				publishedAt: Date.now(),
-				remoteSha: commitResult.sha || '',
+				remoteSha: commitResult.sha || "",
 				attachments: attachmentRecords,
 			};
 
@@ -217,7 +247,7 @@ export class PublishService {
 				remotePath,
 			};
 		} catch (error) {
-			console.error('[QuartzPublish] Publish error:', error);
+			console.error("[QuartzPublish] Publish error:", error);
 
 			// 에러 타입 분석
 			const errorType = this.classifyError(error);
@@ -236,30 +266,38 @@ export class PublishService {
 	 * 에러 타입을 분류합니다.
 	 */
 	private classifyError(error: unknown): PublishError {
-		if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('network'))) {
-			return 'offline';
+		if (
+			error instanceof TypeError &&
+			(error.message.includes("fetch") ||
+				error.message.includes("network"))
+		) {
+			return "offline";
 		}
 
 		if (error instanceof Error) {
 			const message = error.message.toLowerCase();
 
 			// 네트워크 관련 에러
-			if (message.includes('failed to fetch') || message.includes('network') || message.includes('offline')) {
-				return 'offline';
+			if (
+				message.includes("failed to fetch") ||
+				message.includes("network") ||
+				message.includes("offline")
+			) {
+				return "offline";
 			}
 
 			// Rate limit 에러
-			if (message.includes('rate limit') || message.includes('403')) {
-				return 'rate_limited';
+			if (message.includes("rate limit") || message.includes("403")) {
+				return "rate_limited";
 			}
 
 			// 충돌 에러
-			if (message.includes('409') || message.includes('conflict')) {
-				return 'conflict';
+			if (message.includes("409") || message.includes("conflict")) {
+				return "conflict";
 			}
 		}
 
-		return 'unknown';
+		return "unknown";
 	}
 
 	/**
@@ -267,7 +305,7 @@ export class PublishService {
 	 */
 	async publishNotes(
 		files: TFile[],
-		onProgress?: (current: number, total: number, file: TFile) => void
+		onProgress?: (current: number, total: number, file: TFile) => void,
 	): Promise<BatchPublishResult> {
 		const results: PublishResult[] = [];
 		let succeeded = 0;
@@ -311,7 +349,7 @@ export class PublishService {
 				return {
 					success: false,
 					file,
-					error: 'No publish record found',
+					error: "No publish record found",
 				};
 			}
 
@@ -319,7 +357,7 @@ export class PublishService {
 			const result = await this.github.deleteFile(
 				record.remotePath,
 				record.remoteSha,
-				`Unpublish: ${file.basename}`
+				`Unpublish: ${file.basename}`,
 			);
 
 			if (!result.success) {
@@ -335,7 +373,7 @@ export class PublishService {
 				await this.github.deleteFile(
 					attachment.remotePath,
 					attachment.remoteSha,
-					`Remove attachment: ${attachment.localPath}`
+					`Remove attachment: ${attachment.localPath}`,
 				);
 			}
 
@@ -347,24 +385,24 @@ export class PublishService {
 				file,
 			};
 		} catch (error) {
-			console.error('[QuartzPublish] Unpublish error:', error);
+			console.error("[QuartzPublish] Unpublish error:", error);
 
 			// 네트워크 에러 감지 시 재시도 안내
 			const isNetworkError =
 				error instanceof TypeError ||
 				(error instanceof Error &&
-					(error.message.toLowerCase().includes('fetch') ||
-						error.message.toLowerCase().includes('network') ||
-						error.message.toLowerCase().includes('offline')));
+					(error.message.toLowerCase().includes("fetch") ||
+						error.message.toLowerCase().includes("network") ||
+						error.message.toLowerCase().includes("offline")));
 
 			return {
 				success: false,
 				file,
 				error: isNetworkError
-					? '네트워크 연결을 확인하고 다시 시도해주세요.'
+					? "네트워크 연결을 확인하고 다시 시도해주세요."
 					: error instanceof Error
 						? error.message
-						: 'Unknown error',
+						: "Unknown error",
 			};
 		}
 	}
@@ -374,22 +412,28 @@ export class PublishService {
 	 */
 	private async uploadAttachments(
 		attachments: Array<{ localPath: string; remotePath: string }>,
-		noteBasename: string
+		noteBasename: string,
 	): Promise<AttachmentRecord[]> {
 		const records: AttachmentRecord[] = [];
 
 		for (const attachment of attachments) {
 			try {
 				// 볼트에서 파일 찾기
-				const file = this.vault.getAbstractFileByPath(attachment.localPath);
+				const file = this.vault.getAbstractFileByPath(
+					attachment.localPath,
+				);
 				if (!file || !(file instanceof TFile)) {
-					console.warn(`[QuartzPublish] Attachment not found: ${attachment.localPath}`);
+					console.warn(
+						`[QuartzPublish] Attachment not found: ${attachment.localPath}`,
+					);
 					continue;
 				}
 
 				// 파일 크기 확인
 				if (file.stat.size > MAX_FILE_SIZE) {
-					console.warn(`[QuartzPublish] File too large: ${attachment.localPath}`);
+					console.warn(
+						`[QuartzPublish] File too large: ${attachment.localPath}`,
+					);
 					continue;
 				}
 
@@ -397,7 +441,9 @@ export class PublishService {
 				const content = await this.vault.readBinary(file);
 
 				// 기존 파일 확인
-				const existingFile = await this.github.getFile(attachment.remotePath);
+				const existingFile = await this.github.getFile(
+					attachment.remotePath,
+				);
 
 				// 업로드
 				const result = await this.github.createOrUpdateBinaryFile(
@@ -406,7 +452,7 @@ export class PublishService {
 					existingFile
 						? `Update attachment: ${file.name}`
 						: `Add attachment: ${file.name}`,
-					existingFile?.sha
+					existingFile?.sha,
 				);
 
 				if (result.success && result.sha) {
@@ -420,7 +466,10 @@ export class PublishService {
 					});
 				}
 			} catch (error) {
-				console.error(`[QuartzPublish] Failed to upload attachment: ${attachment.localPath}`, error);
+				console.error(
+					`[QuartzPublish] Failed to upload attachment: ${attachment.localPath}`,
+					error,
+				);
 			}
 		}
 
@@ -435,7 +484,7 @@ export class PublishService {
 		const records = this.getPublishRecords();
 		for (const path of Object.keys(records)) {
 			// .md 확장자 제거한 경로
-			published.add(path.replace(/\.md$/, ''));
+			published.add(path.replace(/\.md$/, ""));
 		}
 		return published;
 	}
@@ -445,18 +494,18 @@ export class PublishService {
 	 */
 	private async calculateHash(content: string): Promise<string> {
 		const data = new TextEncoder().encode(content);
-		const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+		const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+		return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 	}
 
 	/**
 	 * 바이너리 SHA-256 해시 계산
 	 */
 	private async calculateBinaryHash(content: ArrayBuffer): Promise<string> {
-		const hashBuffer = await crypto.subtle.digest('SHA-256', content);
+		const hashBuffer = await crypto.subtle.digest("SHA-256", content);
 		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+		return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 	}
 
 	/**

@@ -4,7 +4,7 @@
  * 노트 발행 상태를 확인하고 일괄 발행/삭제를 수행하는 대시보드 모달입니다.
  */
 
-import { App, Modal, TFile, Notice, setIcon, setTooltip } from 'obsidian';
+import { App, Modal, TFile, Notice, setIcon, setTooltip } from "obsidian";
 import type {
 	DashboardTab,
 	DashboardState,
@@ -12,14 +12,15 @@ import type {
 	BatchPublishResult,
 	UnpublishResult,
 	NoteStatus,
-} from '../types';
-import { TAB_LABELS } from '../types';
-import type { NetworkService } from '../services/network';
-import { FileValidatorService } from '../services/file-validator';
-import { LargeFileWarningModal } from './large-file-warning-modal';
-import { MAX_FILE_SIZE } from '../types';
-import { t } from '../i18n';
-import { cn } from '../utils/cn';
+} from "../types";
+import { TAB_LABELS } from "../types";
+import type { NetworkService } from "../services/network";
+import { FileValidatorService } from "../services/file-validator";
+import { LargeFileWarningModal } from "./large-file-warning-modal";
+import { MAX_FILE_SIZE } from "../types";
+import { t } from "../i18n";
+import { cn } from "../utils/cn";
+import { DiffModal } from "./diff-modal";
 
 /**
  * 진행 상황 정보
@@ -28,14 +29,14 @@ export interface ProgressInfo {
 	current: number;
 	total: number;
 	currentFile: string;
-	operation: 'loading' | 'publishing' | 'deleting';
+	operation: "loading" | "publishing" | "deleting";
 }
 
 /**
  * 일괄 작업 결과 요약
  */
 export interface OperationSummary {
-	operation: 'publish' | 'delete';
+	operation: "publish" | "delete";
 	succeeded: number;
 	failed: number;
 	errors: Array<{ path: string; message: string }>;
@@ -53,16 +54,18 @@ export interface DashboardModalOptions {
 	onDelete: (files: TFile[]) => Promise<UnpublishResult[]>;
 	/** 상태 개요 로드 콜백 */
 	onLoadStatus: (
-		onProgress?: (processed: number, total: number) => void
+		onProgress?: (processed: number, total: number) => void,
 	) => Promise<StatusOverview>;
 	/** 네트워크 서비스 (오프라인 감지용) */
 	networkService?: NetworkService;
+	/** 원격 콘텐츠 조회 콜백 */
+	onGetRemoteContent?: (file: TFile) => Promise<string | null>;
 }
 
 /**
  * 탭 키 목록
  */
-const TAB_KEYS: DashboardTab[] = ['new', 'modified', 'deleted', 'synced'];
+const TAB_KEYS: DashboardTab[] = ["new", "modified", "deleted", "synced"];
 
 /**
  * 대시보드 모달 클래스
@@ -82,7 +85,7 @@ export class DashboardModal extends Modal {
 		super(app);
 		this.options = options;
 		this.state = {
-			activeTab: options.initialTab ?? 'new',
+			activeTab: options.initialTab ?? "new",
 			selectedPaths: new Set(),
 			statusOverview: null,
 			isLoading: false,
@@ -93,10 +96,11 @@ export class DashboardModal extends Modal {
 		// 네트워크 상태 초기화 및 리스너 등록
 		if (options.networkService) {
 			this.isOffline = !options.networkService.isOnline();
-			this.networkStatusUnsubscribe = options.networkService.onStatusChange((status) => {
-				this.isOffline = status === 'offline';
-				this.render();
-			});
+			this.networkStatusUnsubscribe =
+				options.networkService.onStatusChange((status) => {
+					this.isOffline = status === "offline";
+					this.render();
+				});
 		}
 
 		// 파일 검증 서비스 초기화
@@ -109,8 +113,8 @@ export class DashboardModal extends Modal {
 	async onOpen(): Promise<void> {
 		const { contentEl, modalEl } = this;
 		contentEl.empty();
-		contentEl.addClass('quartz-publish-dashboard');
-		modalEl.addClass('quartz-publish-dashboard-modal');
+		contentEl.addClass("quartz-publish-dashboard");
+		modalEl.addClass("quartz-publish-dashboard-modal");
 
 		// 상태 로딩
 		await this.loadStatus();
@@ -147,19 +151,21 @@ export class DashboardModal extends Modal {
 		this.render();
 
 		try {
-			const overview = await this.options.onLoadStatus((processed, total) => {
-				this.updateProgress({
-					current: processed,
-					total,
-					currentFile: '',
-					operation: 'loading',
-				});
-			});
+			const overview = await this.options.onLoadStatus(
+				(processed, total) => {
+					this.updateProgress({
+						current: processed,
+						total,
+						currentFile: "",
+						operation: "loading",
+					});
+				},
+			);
 			this.state.statusOverview = overview;
 			this.progressInfo = null;
 		} catch (error) {
 			this.state.error =
-				error instanceof Error ? error.message : 'Unknown error';
+				error instanceof Error ? error.message : "Unknown error";
 		} finally {
 			this.state.isLoading = false;
 			this.setRefreshButtonLoading(false);
@@ -173,15 +179,15 @@ export class DashboardModal extends Modal {
 	private setRefreshButtonLoading(isLoading: boolean): void {
 		if (!this.refreshBtn) return;
 
-		const svg = this.refreshBtn.querySelector('svg');
+		const svg = this.refreshBtn.querySelector("svg");
 		if (isLoading) {
-			if (svg) svg.classList.add('qp-animate-spin');
-			this.refreshBtn.addClass('pointer-events-none');
-			this.refreshBtn.setAttribute('aria-disabled', 'true');
+			if (svg) svg.classList.add("qp-animate-spin");
+			this.refreshBtn.addClass("pointer-events-none");
+			this.refreshBtn.setAttribute("aria-disabled", "true");
 		} else {
-			if (svg) svg.classList.remove('qp-animate-spin');
-			this.refreshBtn.removeClass('pointer-events-none');
-			this.refreshBtn.removeAttribute('aria-disabled');
+			if (svg) svg.classList.remove("qp-animate-spin");
+			this.refreshBtn.removeClass("pointer-events-none");
+			this.refreshBtn.removeAttribute("aria-disabled");
 		}
 	}
 
@@ -212,18 +218,18 @@ export class DashboardModal extends Modal {
 	private toggleSelectAll(): void {
 		const currentNotes = this.getCurrentTabNotes();
 		const allSelected = currentNotes.every((note) =>
-			this.state.selectedPaths.has(note.file.path)
+			this.state.selectedPaths.has(note.file.path),
 		);
 
 		if (allSelected) {
 			// 전체 해제
 			currentNotes.forEach((note) =>
-				this.state.selectedPaths.delete(note.file.path)
+				this.state.selectedPaths.delete(note.file.path),
 			);
 		} else {
 			// 전체 선택
 			currentNotes.forEach((note) =>
-				this.state.selectedPaths.add(note.file.path)
+				this.state.selectedPaths.add(note.file.path),
 			);
 		}
 		this.render();
@@ -245,7 +251,7 @@ export class DashboardModal extends Modal {
 
 		// 네트워크 연결 확인
 		if (this.isOffline) {
-			new Notice(t('notice.network.offline'));
+			new Notice(t("notice.network.offline"));
 			return;
 		}
 
@@ -276,10 +282,15 @@ export class DashboardModal extends Modal {
 			// 결과 표시
 			if (result.failed > 0) {
 				new Notice(
-					t('notice.batch.partial', { succeeded: result.succeeded, failed: result.failed })
+					t("notice.batch.partial", {
+						succeeded: result.succeeded,
+						failed: result.failed,
+					}),
 				);
 			} else {
-				new Notice(t('notice.batch.success', { count: result.succeeded }));
+				new Notice(
+					t("notice.batch.success", { count: result.succeeded }),
+				);
 			}
 
 			// 상태 새로고침
@@ -287,8 +298,8 @@ export class DashboardModal extends Modal {
 			await this.loadStatus();
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : t('error.unknown');
-			new Notice(t('notice.publish.error', { message }));
+				error instanceof Error ? error.message : t("error.unknown");
+			new Notice(t("notice.publish.error", { message }));
 		} finally {
 			this.state.isOperating = false;
 			this.render();
@@ -303,7 +314,7 @@ export class DashboardModal extends Modal {
 
 		// 네트워크 연결 확인
 		if (this.isOffline) {
-			new Notice(t('notice.network.offline'));
+			new Notice(t("notice.network.offline"));
 			return;
 		}
 
@@ -316,10 +327,10 @@ export class DashboardModal extends Modal {
 
 		// 확인 모달 표시
 		const confirmed = await new ConfirmModal(this.app, {
-			title: t('modal.delete.title'),
-			message: t('modal.delete.message', { count: selectedFiles.length }),
-			confirmText: t('dashboard.action.delete'),
-			cancelText: t('modal.confirm.cancel'),
+			title: t("modal.delete.title"),
+			message: t("modal.delete.message", { count: selectedFiles.length }),
+			confirmText: t("dashboard.action.delete"),
+			cancelText: t("modal.confirm.cancel"),
 			isDangerous: true,
 		}).waitForConfirmation();
 
@@ -335,9 +346,9 @@ export class DashboardModal extends Modal {
 			const failed = results.filter((r) => !r.success).length;
 
 			if (failed > 0) {
-				new Notice(t('notice.delete.partial', { succeeded, failed }));
+				new Notice(t("notice.delete.partial", { succeeded, failed }));
 			} else {
-				new Notice(t('notice.delete.success', { count: succeeded }));
+				new Notice(t("notice.delete.success", { count: succeeded }));
 			}
 
 			// 상태 새로고침
@@ -345,8 +356,8 @@ export class DashboardModal extends Modal {
 			await this.loadStatus();
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : t('error.unknown');
-			new Notice(t('notice.publish.error', { message }));
+				error instanceof Error ? error.message : t("error.unknown");
+			new Notice(t("notice.publish.error", { message }));
 		} finally {
 			this.state.isOperating = false;
 			this.render();
@@ -362,7 +373,7 @@ export class DashboardModal extends Modal {
 
 		// 네트워크 연결 확인
 		if (this.isOffline) {
-			new Notice(t('notice.network.offline'));
+			new Notice(t("notice.network.offline"));
 			return;
 		}
 
@@ -373,7 +384,7 @@ export class DashboardModal extends Modal {
 
 		// 작업할 내용이 없으면 리턴
 		if (toPublish.length === 0 && toDelete.length === 0) {
-			new Notice(t('notice.sync.noChanges'));
+			new Notice(t("notice.sync.noChanges"));
 			return;
 		}
 
@@ -394,10 +405,14 @@ export class DashboardModal extends Modal {
 		// 삭제가 포함된 경우 확인 모달 표시
 		if (toDelete.length > 0) {
 			const confirmed = await new ConfirmModal(this.app, {
-				title: t('modal.sync.title'),
-				message: t('modal.sync.message', { newCount: newNotes.length, modifiedCount: modified.length, deleteCount: toDelete.length }),
-				confirmText: t('dashboard.action.syncAll'),
-				cancelText: t('modal.confirm.cancel'),
+				title: t("modal.sync.title"),
+				message: t("modal.sync.message", {
+					newCount: newNotes.length,
+					modifiedCount: modified.length,
+					deleteCount: toDelete.length,
+				}),
+				confirmText: t("dashboard.action.syncAll"),
+				cancelText: t("modal.confirm.cancel"),
 				isDangerous: true,
 			}).waitForConfirmation();
 
@@ -416,7 +431,8 @@ export class DashboardModal extends Modal {
 			// 1. 발행 (신규 + 수정)
 			if (toPublish.length > 0) {
 				const publishFiles = toPublish.map((note) => note.file);
-				const publishResult = await this.options.onPublish(publishFiles);
+				const publishResult =
+					await this.options.onPublish(publishFiles);
 				publishSucceeded = publishResult.succeeded;
 				publishFailed = publishResult.failed;
 			}
@@ -435,10 +451,13 @@ export class DashboardModal extends Modal {
 
 			if (totalFailed > 0) {
 				new Notice(
-					t('notice.batch.partial', { succeeded: totalSucceeded, failed: totalFailed })
+					t("notice.batch.partial", {
+						succeeded: totalSucceeded,
+						failed: totalFailed,
+					}),
 				);
 			} else {
-				new Notice(t('notice.sync.success', { count: totalSucceeded }));
+				new Notice(t("notice.sync.success", { count: totalSucceeded }));
 			}
 
 			// 상태 새로고침
@@ -446,8 +465,8 @@ export class DashboardModal extends Modal {
 			await this.loadStatus();
 		} catch (error) {
 			const message =
-				error instanceof Error ? error.message : t('error.unknown');
-			new Notice(t('notice.publish.error', { message }));
+				error instanceof Error ? error.message : t("error.unknown");
+			new Notice(t("notice.publish.error", { message }));
 		} finally {
 			this.state.isOperating = false;
 			this.render();
@@ -467,29 +486,30 @@ export class DashboardModal extends Modal {
 	 */
 	private renderProgress(): void {
 		const progressEl = this.contentEl.querySelector(
-			'.quartz-publish-loading-progress'
+			".quartz-publish-loading-progress",
 		);
 		if (!progressEl || !this.progressInfo) return;
 
 		const percentage =
 			this.progressInfo.total > 0
 				? Math.round(
-						(this.progressInfo.current / this.progressInfo.total) * 100
+						(this.progressInfo.current / this.progressInfo.total) *
+							100,
 					)
 				: 0;
 
 		const progressBar = progressEl.querySelector(
-			'.quartz-publish-progress-bar'
+			".quartz-publish-progress-bar",
 		) as HTMLElement;
 		if (progressBar) {
 			progressBar.style.width = `${percentage}%`;
 		}
 
 		const progressText = progressEl.querySelector(
-			'.quartz-publish-loading-text'
+			".quartz-publish-loading-text",
 		);
 		if (progressText) {
-			progressText.textContent = `${t('dashboard.status.loading')} ${this.progressInfo.current}/${this.progressInfo.total}`;
+			progressText.textContent = `${t("dashboard.status.loading")} ${this.progressInfo.current}/${this.progressInfo.total}`;
 		}
 	}
 
@@ -531,34 +551,34 @@ export class DashboardModal extends Modal {
 	private renderLoading(): void {
 		const { contentEl } = this;
 		const loadingEl = contentEl.createDiv({
-			cls: 'quartz-publish-loading',
+			cls: "quartz-publish-loading",
 			attr: {
-				role: 'status',
-				'aria-live': 'polite',
-				'aria-busy': 'true',
+				role: "status",
+				"aria-live": "polite",
+				"aria-busy": "true",
 			},
 		});
 
 		loadingEl.createDiv({
-			cls: 'quartz-publish-loading-spinner',
+			cls: "quartz-publish-loading-spinner",
 			attr: {
-				'aria-hidden': 'true',
+				"aria-hidden": "true",
 			},
 		});
 		loadingEl.createDiv({
-			cls: 'quartz-publish-loading-text',
-			text: t('dashboard.status.loading'),
+			cls: "quartz-publish-loading-text",
+			text: t("dashboard.status.loading"),
 		});
 
 		// 프로그레스 바
 		const progressEl = loadingEl.createDiv({
-			cls: 'quartz-publish-loading-progress w-full mt-4',
+			cls: "quartz-publish-loading-progress w-full mt-4",
 		});
 		const progressBarContainer = progressEl.createDiv({
-			cls: 'quartz-publish-progress',
+			cls: "quartz-publish-progress",
 		});
 		progressBarContainer.createDiv({
-			cls: 'quartz-publish-progress-bar',
+			cls: "quartz-publish-progress-bar",
 		});
 	}
 
@@ -572,58 +592,58 @@ export class DashboardModal extends Modal {
 	} {
 		// 네트워크 오류
 		if (
-			error.includes('fetch') ||
-			error.includes('network') ||
-			error.includes('NetworkError') ||
-			error.includes('Failed to fetch')
+			error.includes("fetch") ||
+			error.includes("network") ||
+			error.includes("NetworkError") ||
+			error.includes("Failed to fetch")
 		) {
 			return {
-				title: t('error.formatted.network'),
-				message: t('error.formatted.networkMessage'),
-				suggestion: t('error.formatted.networkSuggestion'),
+				title: t("error.formatted.network"),
+				message: t("error.formatted.networkMessage"),
+				suggestion: t("error.formatted.networkSuggestion"),
 			};
 		}
 
 		// GitHub Rate Limit
 		if (
-			error.includes('rate limit') ||
-			error.includes('403') ||
-			error.includes('API rate limit exceeded')
+			error.includes("rate limit") ||
+			error.includes("403") ||
+			error.includes("API rate limit exceeded")
 		) {
 			return {
-				title: t('error.formatted.rateLimit'),
-				message: t('error.formatted.rateLimitMessage'),
-				suggestion: t('error.formatted.rateLimitSuggestion'),
+				title: t("error.formatted.rateLimit"),
+				message: t("error.formatted.rateLimitMessage"),
+				suggestion: t("error.formatted.rateLimitSuggestion"),
 			};
 		}
 
 		// 인증 오류
 		if (
-			error.includes('401') ||
-			error.includes('Unauthorized') ||
-			error.includes('Bad credentials')
+			error.includes("401") ||
+			error.includes("Unauthorized") ||
+			error.includes("Bad credentials")
 		) {
 			return {
-				title: t('error.formatted.auth'),
-				message: t('error.formatted.authMessage'),
-				suggestion: t('error.formatted.authSuggestion'),
+				title: t("error.formatted.auth"),
+				message: t("error.formatted.authMessage"),
+				suggestion: t("error.formatted.authSuggestion"),
 			};
 		}
 
 		// 권한 오류
-		if (error.includes('404') || error.includes('Not Found')) {
+		if (error.includes("404") || error.includes("Not Found")) {
 			return {
-				title: t('error.formatted.notFound'),
-				message: t('error.formatted.notFoundMessage'),
-				suggestion: t('error.formatted.notFoundSuggestion'),
+				title: t("error.formatted.notFound"),
+				message: t("error.formatted.notFoundMessage"),
+				suggestion: t("error.formatted.notFoundSuggestion"),
 			};
 		}
 
 		// 기본 오류
 		return {
-			title: t('error.formatted.default'),
+			title: t("error.formatted.default"),
 			message: error,
-			suggestion: t('error.formatted.defaultSuggestion'),
+			suggestion: t("error.formatted.defaultSuggestion"),
 		};
 	}
 
@@ -632,35 +652,35 @@ export class DashboardModal extends Modal {
 	 */
 	private renderError(): void {
 		const { contentEl } = this;
-		const errorInfo = this.formatErrorMessage(this.state.error ?? '');
+		const errorInfo = this.formatErrorMessage(this.state.error ?? "");
 
 		const errorEl = contentEl.createDiv({
-			cls: 'quartz-publish-result-summary quartz-publish-result-summary--error',
-			attr: { role: 'alert', 'aria-live': 'assertive' },
+			cls: "quartz-publish-result-summary quartz-publish-result-summary--error",
+			attr: { role: "alert", "aria-live": "assertive" },
 		});
 
 		errorEl.createDiv({
-			cls: 'quartz-publish-result-summary-title',
+			cls: "quartz-publish-result-summary-title",
 			text: errorInfo.title,
 		});
 
 		errorEl.createDiv({
-			cls: 'quartz-publish-result-summary-stats',
+			cls: "quartz-publish-result-summary-stats",
 			text: errorInfo.message,
 		});
 
 		errorEl.createDiv({
-			cls: 'text-sm mt-2 text-obs-text-muted',
+			cls: "text-sm mt-2 text-obs-text-muted",
 			text: errorInfo.suggestion,
 		});
 
 		// 다시 시도 버튼
-		const buttonEl = errorEl.createEl('button', {
-			text: t('error.formatted.retry'),
-			cls: 'mod-cta mt-4',
-			attr: { 'aria-label': t('error.formatted.retry') },
+		const buttonEl = errorEl.createEl("button", {
+			text: t("error.formatted.retry"),
+			cls: "mod-cta mt-4",
+			attr: { "aria-label": t("error.formatted.retry") },
 		});
-		buttonEl.addEventListener('click', () => this.loadStatus());
+		buttonEl.addEventListener("click", () => this.loadStatus());
 	}
 
 	/**
@@ -669,42 +689,42 @@ export class DashboardModal extends Modal {
 	private renderHeader(): void {
 		const { contentEl } = this;
 		const headerEl = contentEl.createDiv({
-			cls: 'quartz-publish-dashboard-header',
+			cls: "quartz-publish-dashboard-header",
 		});
 
 		// 제목과 오프라인 표시기를 포함하는 컨테이너
 		const titleContainer = headerEl.createDiv({
-			cls: 'flex items-center gap-2',
+			cls: "flex items-center gap-2",
 		});
 
-		titleContainer.createEl('h2', {
-			text: t('dashboard.title'),
-			cls: 'quartz-publish-dashboard-title',
+		titleContainer.createEl("h2", {
+			text: t("dashboard.title"),
+			cls: "quartz-publish-dashboard-title",
 		});
 
 		// 새로고침 버튼 (아이콘 버튼)
 		this.refreshBtn = titleContainer.createDiv({
-			cls: 'clickable-icon',
+			cls: "clickable-icon",
 			attr: {
-				'aria-label': t('dashboard.action.refresh'),
-				role: 'button',
-				tabindex: '0',
+				"aria-label": t("dashboard.action.refresh"),
+				role: "button",
+				tabindex: "0",
 			},
 		});
-		setIcon(this.refreshBtn, 'refresh-cw');
-		setTooltip(this.refreshBtn, t('dashboard.action.refresh'));
+		setIcon(this.refreshBtn, "refresh-cw");
+		setTooltip(this.refreshBtn, t("dashboard.action.refresh"));
 
 		// 로딩 상태일 때 애니메이션 적용
 		if (this.state.isLoading) {
-			const svg = this.refreshBtn.querySelector('svg');
-			if (svg) svg.classList.add('qp-animate-spin');
-			this.refreshBtn.addClass('pointer-events-none');
-			this.refreshBtn.setAttribute('aria-disabled', 'true');
+			const svg = this.refreshBtn.querySelector("svg");
+			if (svg) svg.classList.add("qp-animate-spin");
+			this.refreshBtn.addClass("pointer-events-none");
+			this.refreshBtn.setAttribute("aria-disabled", "true");
 		}
 
-		this.refreshBtn.addEventListener('click', () => this.refresh());
-		this.refreshBtn.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
+		this.refreshBtn.addEventListener("click", () => this.refresh());
+		this.refreshBtn.addEventListener("keydown", (e) => {
+			if (e.key === "Enter" || e.key === " ") {
 				e.preventDefault();
 				this.refresh();
 			}
@@ -713,15 +733,17 @@ export class DashboardModal extends Modal {
 		// 오프라인 상태 표시기
 		if (this.isOffline) {
 			const offlineIndicator = titleContainer.createSpan({
-				cls: 'inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-obs-bg-modifier-error text-obs-text-error',
+				cls: "inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-obs-bg-modifier-error text-obs-text-error",
 				attr: {
-					role: 'status',
-					'aria-live': 'polite',
-					'aria-label': t('notice.network.offline'),
+					role: "status",
+					"aria-live": "polite",
+					"aria-label": t("notice.network.offline"),
 				},
 			});
-			offlineIndicator.createSpan({ text: '●', cls: 'text-[8px]' });
-			offlineIndicator.createSpan({ text: t('dashboard.status.offline') });
+			offlineIndicator.createSpan({ text: "●", cls: "text-[8px]" });
+			offlineIndicator.createSpan({
+				text: t("dashboard.status.offline"),
+			});
 		}
 	}
 
@@ -731,36 +753,43 @@ export class DashboardModal extends Modal {
 	private renderTabs(): void {
 		const { contentEl } = this;
 		const tabsEl = contentEl.createDiv({
-			cls: 'quartz-publish-tabs',
-			attr: { role: 'tablist', 'aria-label': t('dashboard.aria.tabs') },
+			cls: "quartz-publish-tabs",
+			attr: { role: "tablist", "aria-label": t("dashboard.aria.tabs") },
 		});
 
 		TAB_KEYS.forEach((tabKey, index) => {
 			const count = this.getTabCount(tabKey);
 			const isActive = this.state.activeTab === tabKey;
 
-			const tabEl = tabsEl.createEl('button', {
-				cls: cn('quartz-publish-tab', isActive && 'quartz-publish-tab--active'),
+			const tabEl = tabsEl.createEl("button", {
+				cls: cn(
+					"quartz-publish-tab",
+					isActive && "quartz-publish-tab--active",
+				),
 				attr: {
-					role: 'tab',
-					'aria-selected': String(isActive),
-					'aria-controls': `tabpanel-${tabKey}`,
+					role: "tab",
+					"aria-selected": String(isActive),
+					"aria-controls": `tabpanel-${tabKey}`,
 					id: `tab-${tabKey}`,
-					tabindex: isActive ? '0' : '-1',
+					tabindex: isActive ? "0" : "-1",
 				},
 			});
 
 			tabEl.createSpan({ text: TAB_LABELS[tabKey] });
 			tabEl.createSpan({
 				text: String(count),
-				cls: 'quartz-publish-tab-badge',
-				attr: { 'aria-label': t('dashboard.aria.itemCount', { count: String(count) }) },
+				cls: "quartz-publish-tab-badge",
+				attr: {
+					"aria-label": t("dashboard.aria.itemCount", {
+						count: String(count),
+					}),
+				},
 			});
 
-			tabEl.addEventListener('click', () => this.switchTab(tabKey));
+			tabEl.addEventListener("click", () => this.switchTab(tabKey));
 
 			// 키보드 네비게이션
-			tabEl.addEventListener('keydown', (e) => {
+			tabEl.addEventListener("keydown", (e) => {
 				this.handleTabKeydown(e, index);
 			});
 		});
@@ -777,7 +806,7 @@ export class DashboardModal extends Modal {
 		const description = this.getTabDescription();
 
 		contentEl.createDiv({
-			cls: 'quartz-publish-tab-description',
+			cls: "quartz-publish-tab-description",
 			text: description,
 		});
 	}
@@ -787,10 +816,10 @@ export class DashboardModal extends Modal {
 	 */
 	private getTabDescription(): string {
 		const descriptions: Record<DashboardTab, string> = {
-			new: t('dashboard.tabDescription.new'),
-			modified: t('dashboard.tabDescription.modified'),
-			deleted: t('dashboard.tabDescription.deleted'),
-			synced: t('dashboard.tabDescription.synced'),
+			new: t("dashboard.tabDescription.new"),
+			modified: t("dashboard.tabDescription.modified"),
+			deleted: t("dashboard.tabDescription.deleted"),
+			synced: t("dashboard.tabDescription.synced"),
 		};
 		return descriptions[this.state.activeTab];
 	}
@@ -802,18 +831,18 @@ export class DashboardModal extends Modal {
 		let newIndex = currentIndex;
 
 		switch (e.key) {
-			case 'ArrowLeft':
+			case "ArrowLeft":
 				newIndex =
 					currentIndex === 0 ? TAB_KEYS.length - 1 : currentIndex - 1;
 				break;
-			case 'ArrowRight':
+			case "ArrowRight":
 				newIndex =
 					currentIndex === TAB_KEYS.length - 1 ? 0 : currentIndex + 1;
 				break;
-			case 'Home':
+			case "Home":
 				newIndex = 0;
 				break;
-			case 'End':
+			case "End":
 				newIndex = TAB_KEYS.length - 1;
 				break;
 			default:
@@ -826,7 +855,7 @@ export class DashboardModal extends Modal {
 
 		// 새 탭에 포커스 이동
 		const newTabEl = this.contentEl.querySelector(
-			`#tab-${newTab}`
+			`#tab-${newTab}`,
 		) as HTMLElement;
 		newTabEl?.focus();
 	}
@@ -840,6 +869,17 @@ export class DashboardModal extends Modal {
 	}
 
 	/**
+	 * 한글 파일명이 포함된 노트가 있는지 확인합니다.
+	 */
+	private hasKoreanFilename(notes: NoteStatus[]): boolean {
+		return notes.some((note) => {
+			const basename = note.file.basename || "";
+			// 한글 유니코드 범위: 가-힣 (Hangul Syllables)
+			return /[\uAC00-\uD7AF]/.test(basename);
+		});
+	}
+
+	/**
 	 * 노트 목록을 렌더링합니다.
 	 */
 	private renderNoteList(): void {
@@ -847,50 +887,52 @@ export class DashboardModal extends Modal {
 		const notes = this.getCurrentTabNotes();
 
 		const listEl = contentEl.createDiv({
-			cls: 'quartz-publish-note-list',
+			cls: "quartz-publish-note-list",
 			attr: {
-				role: 'tabpanel',
+				role: "tabpanel",
 				id: `tabpanel-${this.state.activeTab}`,
-				'aria-labelledby': `tab-${this.state.activeTab}`,
-				'aria-live': 'polite',
+				"aria-labelledby": `tab-${this.state.activeTab}`,
+				"aria-live": "polite",
 			},
 		});
 
 		// 목록 헤더 (전체 선택)
 		if (notes.length > 0) {
 			const headerEl = listEl.createDiv({
-				cls: 'quartz-publish-note-list-header',
+				cls: "quartz-publish-note-list-header",
 			});
 
 			const allSelected =
 				notes.length > 0 &&
 				notes.every((note) =>
-					this.state.selectedPaths.has(note.file.path)
+					this.state.selectedPaths.has(note.file.path),
 				);
 
-			const checkboxEl = headerEl.createEl('input', {
+			const checkboxEl = headerEl.createEl("input", {
 				attr: {
-					type: 'checkbox',
-					'aria-label': t('dashboard.selectAll', { count: notes.length }),
+					type: "checkbox",
+					"aria-label": t("dashboard.selectAll", {
+						count: notes.length,
+					}),
 				},
 			}) as HTMLInputElement;
 			checkboxEl.checked = allSelected;
-			checkboxEl.addEventListener('change', () => this.toggleSelectAll());
+			checkboxEl.addEventListener("change", () => this.toggleSelectAll());
 
 			headerEl.createSpan({
-				text: t('dashboard.selectAll', { count: notes.length }),
-				attr: { id: 'select-all-label' },
+				text: t("dashboard.selectAll", { count: notes.length }),
+				attr: { id: "select-all-label" },
 			});
 		}
 
 		// 빈 목록
 		if (notes.length === 0) {
 			listEl.createDiv({
-				cls: 'quartz-publish-note-list-empty',
+				cls: "quartz-publish-note-list-empty",
 				text: this.getEmptyMessage(),
 				attr: {
-					role: 'status',
-					'aria-live': 'polite',
+					role: "status",
+					"aria-live": "polite",
 				},
 			});
 			return;
@@ -905,16 +947,16 @@ export class DashboardModal extends Modal {
 	 */
 	private getEmptyMessage(): string {
 		switch (this.state.activeTab) {
-			case 'new':
-				return t('dashboard.empty.new');
-			case 'modified':
-				return t('dashboard.empty.modified');
-			case 'deleted':
-				return t('dashboard.empty.deleted');
-			case 'synced':
-				return t('dashboard.empty.synced');
+			case "new":
+				return t("dashboard.empty.new");
+			case "modified":
+				return t("dashboard.empty.modified");
+			case "deleted":
+				return t("dashboard.empty.deleted");
+			case "synced":
+				return t("dashboard.empty.synced");
 			default:
-				return t('dashboard.empty.new');
+				return t("dashboard.empty.new");
 		}
 	}
 
@@ -923,45 +965,137 @@ export class DashboardModal extends Modal {
 	 */
 	private renderNoteItem(container: HTMLElement, note: NoteStatus): void {
 		const isSelected = this.state.selectedPaths.has(note.file.path);
-		const noteName = note.file.basename || note.file.path.split('/').pop() || 'Untitled';
+		const noteName =
+			note.file.basename || note.file.path.split("/").pop() || "Untitled";
 		const itemEl = container.createDiv({
-			cls: cn('quartz-publish-note-item', isSelected && 'quartz-publish-note-item--selected'),
+			cls: cn(
+				"quartz-publish-note-item",
+				isSelected && "quartz-publish-note-item--selected",
+			),
 		});
 
 		// 체크박스
-		const selectLabel = t('dashboard.aria.selectNote', { name: noteName });
-		const checkboxEl = itemEl.createEl('input', {
+		const selectLabel = t("dashboard.aria.selectNote", { name: noteName });
+		const checkboxEl = itemEl.createEl("input", {
 			attr: {
-				type: 'checkbox',
-				'aria-label': selectLabel,
+				type: "checkbox",
+				"aria-label": selectLabel,
 			},
-			cls: 'mr-3',
+			cls: "mr-3",
 		}) as HTMLInputElement;
 		checkboxEl.checked = isSelected;
-		checkboxEl.addEventListener('change', () =>
-			this.toggleSelection(note.file.path)
+		checkboxEl.addEventListener("change", () =>
+			this.toggleSelection(note.file.path),
 		);
 
 		// 노트 정보
-		const infoEl = itemEl.createDiv({ cls: 'flex-1 min-w-0' });
+		const infoEl = itemEl.createDiv({ cls: "flex-1 min-w-0" });
 
 		// 파일명
 		infoEl.createDiv({
-			text: note.file.basename || note.file.path.split('/').pop(),
-			cls: 'font-medium truncate',
+			text: note.file.basename || note.file.path.split("/").pop(),
+			cls: "font-medium truncate",
 		});
 
 		// 경로
 		infoEl.createDiv({
 			text: note.file.path,
-			cls: 'text-xs text-obs-text-muted truncate',
+			cls: "text-xs text-obs-text-muted truncate",
 		});
 
 		// 상태 뱃지
-		itemEl.createSpan({
+		const badge = itemEl.createSpan({
 			text: TAB_LABELS[note.status as DashboardTab] ?? note.status,
 			cls: `quartz-publish-status-badge quartz-publish-status-badge--${note.status}`,
 		});
+
+		// 수정된 항목인 경우 클릭 이벤트 추가 (Diff View) (T066)
+		if (note.status === "modified") {
+			itemEl.addClass("quartz-publish-note-item--clickable");
+			itemEl.addEventListener("click", (e) => {
+				// 체크박스 클릭 시에는 동작하지 않음
+				if ((e.target as HTMLElement).tagName === "INPUT") return;
+				this.openDiffView(note.file);
+			});
+			setTooltip(badge, t("dashboard.tooltip.diff"));
+		}
+	}
+
+	/**
+	 * Diff View를 엽니다. (T066)
+	 */
+	private async openDiffView(file: TFile): Promise<void> {
+		if (!this.options.onGetRemoteContent) return;
+
+		// 네트워크 연결 확인
+		if (this.isOffline) {
+			new Notice(t("notice.network.offline"));
+			return;
+		}
+
+		this.state.isLoading = true;
+		this.render();
+
+		try {
+			// 1. 로컬 콘텐츠 읽기
+			const localContent = await this.app.vault.read(file);
+
+			// 2. 원격 콘텐츠 읽기
+			const remoteContent = await this.options.onGetRemoteContent(file);
+
+			if (remoteContent === null) {
+				// 파일이 존재하지 않을 때 명확한 안내 모달 표시
+				const confirmed = await new ConfirmModal(this.app, {
+					title: t("modal.fileNotFound.title"),
+					message: t("modal.fileNotFound.message", { fileName: file.basename }),
+					confirmText: t("dashboard.action.publish"),
+					cancelText: t("modal.confirm.cancel"),
+				}).waitForConfirmation();
+
+				if (confirmed) {
+					// 발행 로직 수행 (선택된 파일만 발행)
+					await this.publishSingleFile(file);
+				}
+				return;
+			}
+
+			// 3. Diff Modal 열기
+			new DiffModal(this.app, {
+				fileName: file.basename,
+				originalContent: remoteContent,
+				modifiedContent: localContent,
+			}).open();
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : t("error.unknown");
+			new Notice(t("error.diffFailed", { message }));
+		} finally {
+			this.state.isLoading = false;
+			this.render();
+		}
+	}
+
+	/**
+	 * 단일 파일 발행 (Diff View에서 파일을 찾지 못했을 때)
+	 */
+	private async publishSingleFile(file: TFile): Promise<void> {
+		const result = await this.options.onPublish([file]);
+
+		if (result.failed > 0) {
+			new Notice(
+				t("notice.batch.partial", {
+					succeeded: result.succeeded,
+					failed: result.failed,
+				}),
+			);
+		} else {
+			new Notice(
+				t("notice.batch.success", { count: result.succeeded }),
+			);
+		}
+
+		// 상태 새로고침
+		await this.loadStatus();
 	}
 
 	/**
@@ -970,76 +1104,81 @@ export class DashboardModal extends Modal {
 	private renderActions(): void {
 		const { contentEl } = this;
 		const actionsEl = contentEl.createDiv({
-			cls: 'quartz-publish-actions',
-			attr: { role: 'toolbar', 'aria-label': t('dashboard.aria.toolbar') },
+			cls: "quartz-publish-actions",
+			attr: {
+				role: "toolbar",
+				"aria-label": t("dashboard.aria.toolbar"),
+			},
 		});
 
-		const leftEl = actionsEl.createDiv({ cls: 'quartz-publish-actions-left' });
+		const leftEl = actionsEl.createDiv({
+			cls: "quartz-publish-actions-left",
+		});
 		const rightEl = actionsEl.createDiv({
-			cls: 'quartz-publish-actions-right',
+			cls: "quartz-publish-actions-right",
 		});
 
 		// 선택된 항목 개수
 		const selectedCount = this.state.selectedPaths.size;
 		if (selectedCount > 0) {
 			leftEl.createSpan({
-				text: t('dashboard.selected', { count: selectedCount }),
-				cls: 'text-sm text-obs-text-muted',
-				attr: { 'aria-live': 'polite' },
+				text: t("dashboard.selected", { count: selectedCount }),
+				cls: "text-sm text-obs-text-muted",
+				attr: { "aria-live": "polite" },
 			});
 		}
 
 		// 닫기 버튼
-		const closeBtn = rightEl.createEl('button', {
-			text: t('dashboard.action.close'),
-			attr: { 'aria-label': t('dashboard.action.close') },
+		const closeBtn = rightEl.createEl("button", {
+			text: t("dashboard.action.close"),
+			attr: { "aria-label": t("dashboard.action.close") },
 		});
-		closeBtn.addEventListener('click', () => this.close());
+		closeBtn.addEventListener("click", () => this.close());
 
 		// 전체 동기화 버튼 (항상 표시)
 		const hasPendingChanges = this.hasPendingChanges();
 		const pendingCount = this.getPendingChangesCount();
-		const syncAllBtn = rightEl.createEl('button', {
-			text: t('dashboard.action.syncAll'),
+		const syncAllBtn = rightEl.createEl("button", {
+			text: t("dashboard.action.syncAll"),
 			attr: {
-				'aria-label': hasPendingChanges
-					? `${t('dashboard.action.syncAll')}: ${pendingCount}`
-					: t('notice.sync.noChanges'),
+				"aria-label": hasPendingChanges
+					? `${t("dashboard.action.syncAll")}: ${pendingCount}`
+					: t("notice.sync.noChanges"),
 			},
 		});
 		syncAllBtn.disabled = !hasPendingChanges || this.state.isOperating;
-		syncAllBtn.addEventListener('click', () => this.syncAll());
+		syncAllBtn.addEventListener("click", () => this.syncAll());
 
 		// 발행/삭제 버튼 (탭에 따라 다름)
-		if (this.state.activeTab === 'deleted') {
-			const deleteBtn = rightEl.createEl('button', {
-				text: t('dashboard.action.delete'),
-				cls: 'mod-warning',
+		if (this.state.activeTab === "deleted") {
+			const deleteBtn = rightEl.createEl("button", {
+				text: t("dashboard.action.delete"),
+				cls: "mod-warning",
 				attr: {
-					'aria-label':
+					"aria-label":
 						selectedCount > 0
-							? `${t('dashboard.action.delete')}: ${selectedCount}`
-							: t('dashboard.action.delete'),
+							? `${t("dashboard.action.delete")}: ${selectedCount}`
+							: t("dashboard.action.delete"),
 				},
 			});
 			deleteBtn.disabled = selectedCount === 0 || this.state.isOperating;
-			deleteBtn.addEventListener('click', () => this.deleteSelected());
+			deleteBtn.addEventListener("click", () => this.deleteSelected());
 		} else if (
-			this.state.activeTab === 'new' ||
-			this.state.activeTab === 'modified'
+			this.state.activeTab === "new" ||
+			this.state.activeTab === "modified"
 		) {
-			const publishBtn = rightEl.createEl('button', {
-				text: t('dashboard.action.publish'),
-				cls: 'mod-cta',
+			const publishBtn = rightEl.createEl("button", {
+				text: t("dashboard.action.publish"),
+				cls: "mod-cta",
 				attr: {
-					'aria-label':
+					"aria-label":
 						selectedCount > 0
-							? `${t('dashboard.action.publish')}: ${selectedCount}`
-							: t('dashboard.action.publish'),
+							? `${t("dashboard.action.publish")}: ${selectedCount}`
+							: t("dashboard.action.publish"),
 				},
 			});
 			publishBtn.disabled = selectedCount === 0 || this.state.isOperating;
-			publishBtn.addEventListener('click', () => this.publishSelected());
+			publishBtn.addEventListener("click", () => this.publishSelected());
 		}
 	}
 
@@ -1083,13 +1222,13 @@ export class ConfirmModal extends Modal {
 			confirmText?: string;
 			cancelText?: string;
 			isDangerous?: boolean;
-		}
+		},
 	) {
 		super(app);
 		this.title = options.title;
 		this.message = options.message;
-		this.confirmText = options.confirmText ?? t('modal.confirm.ok');
-		this.cancelText = options.cancelText ?? t('modal.confirm.cancel');
+		this.confirmText = options.confirmText ?? t("modal.confirm.ok");
+		this.cancelText = options.cancelText ?? t("modal.confirm.cancel");
 		this.isDangerous = options.isDangerous ?? false;
 	}
 
@@ -1097,28 +1236,28 @@ export class ConfirmModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		contentEl.createEl('h3', { text: this.title });
-		contentEl.createEl('p', { text: this.message });
+		contentEl.createEl("h3", { text: this.title });
+		contentEl.createEl("p", { text: this.message });
 
 		const buttonContainer = contentEl.createDiv({
-			cls: 'flex justify-end gap-2 mt-4',
+			cls: "flex justify-end gap-2 mt-4",
 		});
 
-		const cancelBtn = buttonContainer.createEl('button', {
+		const cancelBtn = buttonContainer.createEl("button", {
 			text: this.cancelText,
-			attr: { 'aria-label': this.cancelText },
+			attr: { "aria-label": this.cancelText },
 		});
-		cancelBtn.addEventListener('click', () => {
+		cancelBtn.addEventListener("click", () => {
 			this.resolvePromise?.(false);
 			this.close();
 		});
 
-		const confirmBtn = buttonContainer.createEl('button', {
+		const confirmBtn = buttonContainer.createEl("button", {
 			text: this.confirmText,
-			cls: this.isDangerous ? 'mod-warning' : 'mod-cta',
-			attr: { 'aria-label': this.confirmText },
+			cls: this.isDangerous ? "mod-warning" : "mod-cta",
+			attr: { "aria-label": this.confirmText },
 		});
-		confirmBtn.addEventListener('click', () => {
+		confirmBtn.addEventListener("click", () => {
 			this.resolvePromise?.(true);
 			this.close();
 		});

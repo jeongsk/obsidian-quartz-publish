@@ -11,8 +11,8 @@ import type {
 	GitHubCommitResult,
 	RateLimitInfo,
 	PublishedFile,
-} from '../types';
-import { GITHUB_API_BASE_URL } from '../types';
+} from "../types";
+import { GITHUB_API_BASE_URL } from "../types";
 
 /**
  * GitHub API 오류 클래스
@@ -21,10 +21,10 @@ export class GitHubError extends Error {
 	constructor(
 		public statusCode: number,
 		public responseBody: string,
-		public errorType?: ConnectionError
+		public errorType?: ConnectionError,
 	) {
 		super(`GitHub API Error: ${statusCode} - ${responseBody}`);
-		this.name = 'GitHubError';
+		this.name = "GitHubError";
 	}
 }
 
@@ -89,11 +89,11 @@ export class GitHubService {
 	private repo: string;
 	private branch: string;
 
-	constructor(token: string, repoUrl: string, branch: string = 'main') {
+	constructor(token: string, repoUrl: string, branch: string = "main") {
 		this.token = token;
 		const parsed = this.parseRepoUrl(repoUrl);
 		if (!parsed) {
-			throw new Error('Invalid repository URL');
+			throw new Error("Invalid repository URL");
 		}
 		this.owner = parsed.owner;
 		this.repo = parsed.repo;
@@ -109,7 +109,7 @@ export class GitHubService {
 		if (httpsMatch) {
 			return {
 				owner: httpsMatch[1],
-				repo: httpsMatch[2].replace(/\.git$/, ''),
+				repo: httpsMatch[2].replace(/\.git$/, ""),
 			};
 		}
 
@@ -118,7 +118,7 @@ export class GitHubService {
 		if (sshMatch) {
 			return {
 				owner: sshMatch[1],
-				repo: sshMatch[2].replace(/\.git$/, ''),
+				repo: sshMatch[2].replace(/\.git$/, ""),
 			};
 		}
 
@@ -126,31 +126,48 @@ export class GitHubService {
 	}
 
 	/**
+	 * 경로를 NFC 정규화하고 URL 인코딩합니다.
+	 *
+	 * macOS는 NFD 정규화를 사용하지만 GitHub과 대부분의 웹 시스템은 NFC를 사용합니다.
+	 * 또한 GitHub API는 URL 인코딩된 경로를 요구합니다.
+	 *
+	 * @param path 파일 경로 (예: "content/맥OS/파일.md")
+	 * @returns URL 인코딩된 경로 (예: "content/%EB%A7%A5OS/%ED%8C%8C%EC%9D%BC.md")
+	 */
+	private encodePath(path: string): string {
+		return path
+			.normalize("NFC")
+			.split("/")
+			.map(encodeURIComponent)
+			.join("/");
+	}
+
+	/**
 	 * GitHub API 요청 헬퍼
 	 */
 	private async request<T>(
 		endpoint: string,
-		options: RequestInit = {}
+		options: RequestInit = {},
 	): Promise<T> {
 		const response = await fetch(`${GITHUB_API_BASE_URL}${endpoint}`, {
 			...options,
 			headers: {
 				Authorization: `Bearer ${this.token}`,
-				Accept: 'application/vnd.github.v3+json',
-				'Content-Type': 'application/json',
-				'X-GitHub-Api-Version': '2022-11-28',
+				Accept: "application/vnd.github.v3+json",
+				"Content-Type": "application/json",
+				"X-GitHub-Api-Version": "2022-11-28",
 				...options.headers,
 			},
 		});
 
 		// Rate limit 정보 추출 (헤더에서)
-		const remaining = response.headers.get('X-RateLimit-Remaining');
+		const remaining = response.headers.get("X-RateLimit-Remaining");
 		if (remaining && parseInt(remaining) === 0) {
-			const resetTime = response.headers.get('X-RateLimit-Reset');
+			const resetTime = response.headers.get("X-RateLimit-Reset");
 			throw new GitHubError(
 				429,
-				`Rate limit exceeded. Resets at ${new Date(parseInt(resetTime ?? '0') * 1000).toISOString()}`,
-				'rate_limited'
+				`Rate limit exceeded. Resets at ${new Date(parseInt(resetTime ?? "0") * 1000).toISOString()}`,
+				"rate_limited",
 			);
 		}
 
@@ -160,24 +177,24 @@ export class GitHubService {
 
 			switch (response.status) {
 				case 401:
-					errorType = 'invalid_token';
+					errorType = "invalid_token";
 					break;
 				case 403:
-					errorType = 'rate_limited';
+					errorType = "rate_limited";
 					break;
 				case 404:
-					errorType = 'not_found';
+					errorType = "not_found";
 					break;
 				default:
-					errorType = 'network_error';
+					errorType = "network_error";
 			}
 
 			throw new GitHubError(response.status, errorBody, errorType);
 		}
 
 		// DELETE 요청 등 빈 응답 처리
-		const contentLength = response.headers.get('content-length');
-		if (contentLength === '0' || response.status === 204) {
+		const contentLength = response.headers.get("content-length");
+		if (contentLength === "0" || response.status === 204) {
 			return {} as T;
 		}
 
@@ -188,14 +205,16 @@ export class GitHubService {
 	 * 토큰 유효성 검증 (GET /user)
 	 */
 	async validateToken(): Promise<GitHubUserResponse> {
-		return this.request<GitHubUserResponse>('/user');
+		return this.request<GitHubUserResponse>("/user");
 	}
 
 	/**
 	 * 리포지토리 정보 조회 (GET /repos/{owner}/{repo})
 	 */
 	async getRepositoryInfo(): Promise<GitHubRepoResponse> {
-		return this.request<GitHubRepoResponse>(`/repos/${this.owner}/${this.repo}`);
+		return this.request<GitHubRepoResponse>(
+			`/repos/${this.owner}/${this.repo}`,
+		);
 	}
 
 	/**
@@ -204,7 +223,7 @@ export class GitHubService {
 	async verifyQuartzRepository(): Promise<boolean> {
 		try {
 			await this.request<GitHubContentsResponse>(
-				`/repos/${this.owner}/${this.repo}/contents/quartz.config.ts`
+				`/repos/${this.owner}/${this.repo}/contents/quartz.config.ts`,
 			);
 			return true;
 		} catch (error) {
@@ -233,8 +252,9 @@ export class GitHubService {
 				return {
 					success: false,
 					error: {
-						type: 'not_quartz',
-						message: 'This repository does not appear to be a Quartz site. quartz.config.ts not found.',
+						type: "not_quartz",
+						message:
+							"This repository does not appear to be a Quartz site. quartz.config.ts not found.",
 					},
 				};
 			}
@@ -253,7 +273,7 @@ export class GitHubService {
 				return {
 					success: false,
 					error: {
-						type: error.errorType ?? 'network_error',
+						type: error.errorType ?? "network_error",
 						message: error.message,
 					},
 				};
@@ -262,8 +282,11 @@ export class GitHubService {
 			return {
 				success: false,
 				error: {
-					type: 'network_error',
-					message: error instanceof Error ? error.message : 'Unknown error',
+					type: "network_error",
+					message:
+						error instanceof Error
+							? error.message
+							: "Unknown error",
 				},
 			};
 		}
@@ -271,37 +294,112 @@ export class GitHubService {
 
 	/**
 	 * 파일 내용 조회 (GET /repos/{owner}/{repo}/contents/{path})
+	 *
+	 * 경로를 시도한 후 실패하면 파일명으로 검색하여 대체 경로를 시도합니다.
 	 */
 	async getFile(path: string): Promise<GitHubFileContent | null> {
+		// 1. Try with NFC normalization (Standard for Web/Git)
+		const nfcPath = this.encodePath(path);
+
+		console.log("[GitHubService.getFile] Input path:", path);
+		console.log("[GitHubService.getFile] NFC encoded:", nfcPath);
+
 		try {
 			const response = await this.request<GitHubContentsResponse>(
-				`/repos/${this.owner}/${this.repo}/contents/${path}?ref=${this.branch}`
+				`/repos/${this.owner}/${this.repo}/contents/${nfcPath}?ref=${this.branch}`,
 			);
-
-			if (response.type !== 'file' || !response.content) {
-				return null;
-			}
-
-			// Base64 디코딩
-			const content = decodeURIComponent(
-				atob(response.content.replace(/\n/g, ''))
-					.split('')
-					.map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-					.join('')
-			);
-
-			return {
-				path: response.path,
-				sha: response.sha,
-				content,
-				size: response.size,
-			};
+			return this.processFileResponse(response);
 		} catch (error) {
+			// If 404, try NFD normalization (common on macOS)
 			if (error instanceof GitHubError && error.statusCode === 404) {
-				return null;
+				const nfdPath = path
+					.normalize("NFD")
+					.split("/")
+					.map(encodeURIComponent)
+					.join("/");
+
+				console.log("[GitHubService.getFile] NFD encoded:", nfdPath);
+
+				// Prevent infinite loop if NFC === NFD
+				if (nfcPath !== nfdPath) {
+					try {
+						const response =
+							await this.request<GitHubContentsResponse>(
+								`/repos/${this.owner}/${this.repo}/contents/${nfdPath}?ref=${this.branch}`,
+							);
+						return this.processFileResponse(response);
+					} catch (retryError) {
+						if (
+							retryError instanceof GitHubError &&
+							retryError.statusCode === 404
+						) {
+							console.log("[GitHubService.getFile] Both NFC and NFD failed, trying filename search");
+							// 3. 파일명으로 검색 시도 (Git Tree API)
+							const fileName = path.split("/").pop();
+							if (fileName) {
+								const actualPath = await this.findFileByName(fileName);
+								if (actualPath) {
+									console.log("[GitHubService.getFile] Found file at:", actualPath);
+									const encodedActualPath = this.encodePath(actualPath);
+									const response =
+										await this.request<GitHubContentsResponse>(
+											`/repos/${this.owner}/${this.repo}/contents/${encodedActualPath}?ref=${this.branch}`,
+										);
+									return this.processFileResponse(response);
+								}
+							}
+							console.log("[GitHubService.getFile] File not found anywhere, returning null");
+							return null;
+						}
+						throw retryError;
+					}
+				} else {
+					console.log("[GitHubService.getFile] NFC === NFD, trying filename search");
+					// NFC와 NFD가 같은 경우 파일명으로 검색
+					const fileName = path.split("/").pop();
+					if (fileName) {
+						const actualPath = await this.findFileByName(fileName);
+						if (actualPath) {
+							console.log("[GitHubService.getFile] Found file at:", actualPath);
+							const encodedActualPath = this.encodePath(actualPath);
+							const response =
+								await this.request<GitHubContentsResponse>(
+									`/repos/${this.owner}/${this.repo}/contents/${encodedActualPath}?ref=${this.branch}`,
+								);
+							return this.processFileResponse(response);
+						}
+					}
+					return null;
+				}
 			}
 			throw error;
 		}
+	}
+
+	private processFileResponse(
+		response: GitHubContentsResponse,
+	): GitHubFileContent | null {
+		if (response.type !== "file" || !response.content) {
+			return null;
+		}
+
+		// Base64 디코딩
+		const content = decodeURIComponent(
+			atob(response.content.replace(/\n/g, ""))
+				.split("")
+				.map(
+					(c) =>
+						"%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2),
+				)
+				.join(""),
+		);
+
+		return {
+			path: response.path,
+			sha: response.sha,
+			content,
+			size: response.size,
+		};
 	}
 
 	/**
@@ -311,14 +409,15 @@ export class GitHubService {
 		path: string,
 		content: string,
 		message: string,
-		existingSha?: string
+		existingSha?: string,
 	): Promise<GitHubCommitResult> {
 		try {
 			// UTF-8 안전 Base64 인코딩
 			const base64Content = btoa(
-				encodeURIComponent(content).replace(/%([0-9A-F]{2})/g, (_, p1) =>
-					String.fromCharCode(parseInt(p1, 16))
-				)
+				encodeURIComponent(content).replace(
+					/%([0-9A-F]{2})/g,
+					(_, p1) => String.fromCharCode(parseInt(p1, 16)),
+				),
 			);
 
 			const body: Record<string, unknown> = {
@@ -331,12 +430,15 @@ export class GitHubService {
 				body.sha = existingSha;
 			}
 
+			// 경로를 NFC 정규화하고 URL 인코딩
+			const encodedPath = this.encodePath(path);
+
 			const response = await this.request<GitHubCommitResponse>(
-				`/repos/${this.owner}/${this.repo}/contents/${path}`,
+				`/repos/${this.owner}/${this.repo}/contents/${encodedPath}`,
 				{
-					method: 'PUT',
+					method: "PUT",
 					body: JSON.stringify(body),
-				}
+				},
 			);
 
 			return {
@@ -354,7 +456,7 @@ export class GitHubService {
 
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Unknown error',
+				error: error instanceof Error ? error.message : "Unknown error",
 			};
 		}
 	}
@@ -366,12 +468,12 @@ export class GitHubService {
 		path: string,
 		content: ArrayBuffer,
 		message: string,
-		existingSha?: string
+		existingSha?: string,
 	): Promise<GitHubCommitResult> {
 		try {
 			// ArrayBuffer를 Base64로 변환
 			const bytes = new Uint8Array(content);
-			let binary = '';
+			let binary = "";
 			for (let i = 0; i < bytes.byteLength; i++) {
 				binary += String.fromCharCode(bytes[i]);
 			}
@@ -387,12 +489,15 @@ export class GitHubService {
 				body.sha = existingSha;
 			}
 
+			// 경로를 NFC 정규화하고 URL 인코딩
+			const encodedPath = this.encodePath(path);
+
 			const response = await this.request<GitHubCommitResponse>(
-				`/repos/${this.owner}/${this.repo}/contents/${path}`,
+				`/repos/${this.owner}/${this.repo}/contents/${encodedPath}`,
 				{
-					method: 'PUT',
+					method: "PUT",
 					body: JSON.stringify(body),
-				}
+				},
 			);
 
 			return {
@@ -410,7 +515,7 @@ export class GitHubService {
 
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Unknown error',
+				error: error instanceof Error ? error.message : "Unknown error",
 			};
 		}
 	}
@@ -421,19 +526,22 @@ export class GitHubService {
 	async deleteFile(
 		path: string,
 		sha: string,
-		message: string
+		message: string,
 	): Promise<GitHubCommitResult> {
 		try {
+			// 경로를 NFC 정규화하고 URL 인코딩
+			const encodedPath = this.encodePath(path);
+
 			await this.request<GitHubCommitResponse>(
-				`/repos/${this.owner}/${this.repo}/contents/${path}`,
+				`/repos/${this.owner}/${this.repo}/contents/${encodedPath}`,
 				{
-					method: 'DELETE',
+					method: "DELETE",
 					body: JSON.stringify({
 						message,
 						sha,
 						branch: this.branch,
 					}),
-				}
+				},
 			);
 
 			return {
@@ -449,7 +557,7 @@ export class GitHubService {
 
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Unknown error',
+				error: error instanceof Error ? error.message : "Unknown error",
 			};
 		}
 	}
@@ -458,7 +566,8 @@ export class GitHubService {
 	 * Rate Limit 정보 조회 (GET /rate_limit)
 	 */
 	async getRateLimit(): Promise<RateLimitInfo> {
-		const response = await this.request<GitHubRateLimitResponse>('/rate_limit');
+		const response =
+			await this.request<GitHubRateLimitResponse>("/rate_limit");
 
 		return {
 			limit: response.resources.core.limit,
@@ -504,28 +613,34 @@ export class GitHubService {
 	 */
 	async getDirectoryContents(
 		path: string,
-		recursive: boolean = true
+		recursive: boolean = true,
 	): Promise<PublishedFile[]> {
+		// 경로를 NFC 정규화하고 URL 인코딩
+		const encodedPath = this.encodePath(path);
+
 		const items = await this.request<GitHubContentsResponse[]>(
-			`/repos/${this.owner}/${this.repo}/contents/${path}?ref=${this.branch}`
+			`/repos/${this.owner}/${this.repo}/contents/${encodedPath}?ref=${this.branch}`,
 		);
 
 		const files: PublishedFile[] = [];
 
 		for (const item of items) {
-			if (item.type === 'file') {
+			if (item.type === "file") {
 				files.push({
 					path: item.path,
 					name: item.name,
 					sha: item.sha,
 					size: item.size,
-					type: 'file',
+					type: "file",
 					htmlUrl: item.html_url,
 					downloadUrl: item.download_url,
 				});
-			} else if (item.type === 'dir' && recursive) {
+			} else if (item.type === "dir" && recursive) {
 				// 재귀적으로 하위 디렉토리 조회
-				const subFiles = await this.getDirectoryContents(item.path, true);
+				const subFiles = await this.getDirectoryContents(
+					item.path,
+					true,
+				);
 				files.push(...subFiles);
 			}
 		}
@@ -546,7 +661,7 @@ export class GitHubService {
 	 */
 	async getLatestRelease(
 		owner: string,
-		repo: string
+		repo: string,
 	): Promise<{
 		tagName: string;
 		name: string;
@@ -586,12 +701,12 @@ export class GitHubService {
 	async getExternalTree(
 		owner: string,
 		repo: string,
-		ref: string
+		ref: string,
 	): Promise<
 		Array<{
 			path: string;
 			mode: string;
-			type: 'blob' | 'tree';
+			type: "blob" | "tree";
 			sha: string;
 			size?: number;
 		}>
@@ -600,13 +715,80 @@ export class GitHubService {
 			tree: Array<{
 				path: string;
 				mode: string;
-				type: 'blob' | 'tree';
+				type: "blob" | "tree";
 				sha: string;
 				size?: number;
 			}>;
 		}>(`/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`);
 
 		return response.tree;
+	}
+
+	/**
+	 * 현재 리포지토리의 Git Tree 조회 (재귀)
+	 *
+	 * @returns Tree 항목 목록
+	 */
+	async getTree(): Promise<
+		Array<{
+			path: string;
+			mode: string;
+			type: "blob" | "tree";
+			sha: string;
+			size?: number;
+		}>
+	> {
+		const response = await this.request<{
+			tree: Array<{
+				path: string;
+				mode: string;
+				type: "blob" | "tree";
+				sha: string;
+				size?: number;
+			}>;
+		}>(`/repos/${this.owner}/${this.repo}/git/trees/${this.branch}?recursive=1`);
+
+		return response.tree;
+	}
+
+	/**
+	 * 파일명으로 파일 검색 (Git Tree 사용)
+	 *
+	 * 파일이 존재하지 않을 때 대체 경로를 찾기 위해 사용합니다.
+	 *
+	 * @param fileName 파일명 (확장자 포함)
+	 * @returns 파일의 실제 경로 또는 null
+	 */
+	async findFileByName(fileName: string): Promise<string | null> {
+		try {
+			const tree = await this.getTree();
+
+			// 검색할 파일명을 NFC 정규화
+			const normalizedFileName = fileName.normalize("NFC");
+
+			console.log(`[GitHubService.findFileByName] Searching for: ${normalizedFileName}`);
+
+			// 파일명으로 정규화된 경로 찾기 (NFC 정규화 비교)
+			for (const item of tree) {
+				if (item.type === "blob") {
+					const itemFileName = item.path.split("/").pop();
+					if (itemFileName) {
+						// NFC 정규화하여 비교
+						const normalizedItemFileName = itemFileName.normalize("NFC");
+						if (normalizedItemFileName === normalizedFileName) {
+							console.log(`[GitHubService.findFileByName] Found file: ${item.path}`);
+							return item.path;
+						}
+					}
+				}
+			}
+
+			console.log(`[GitHubService.findFileByName] File not found: ${normalizedFileName}`);
+			return null;
+		} catch (error) {
+			console.error("[GitHubService.findFileByName] Error:", error);
+			return null;
+		}
 	}
 
 	/**
@@ -622,23 +804,30 @@ export class GitHubService {
 		owner: string,
 		repo: string,
 		path: string,
-		ref: string
+		ref: string,
 	): Promise<string | null> {
 		try {
+			// 경로를 NFC 정규화하고 URL 인코딩
+			const encodedPath = this.encodePath(path);
+
 			const response = await this.request<GitHubContentsResponse>(
-				`/repos/${owner}/${repo}/contents/${path}?ref=${ref}`
+				`/repos/${owner}/${repo}/contents/${encodedPath}?ref=${ref}`,
 			);
 
-			if (response.type !== 'file' || !response.content) {
+			if (response.type !== "file" || !response.content) {
 				return null;
 			}
 
 			// Base64 디코딩
 			const content = decodeURIComponent(
-				atob(response.content.replace(/\n/g, ''))
-					.split('')
-					.map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-					.join('')
+				atob(response.content.replace(/\n/g, ""))
+					.split("")
+					.map(
+						(c) =>
+							"%" +
+							("00" + c.charCodeAt(0).toString(16)).slice(-2),
+					)
+					.join(""),
 			);
 
 			return content;
@@ -663,19 +852,22 @@ export class GitHubService {
 		owner: string,
 		repo: string,
 		path: string,
-		ref: string
+		ref: string,
 	): Promise<string | null> {
 		try {
+			// 경로를 NFC 정규화하고 URL 인코딩
+			const encodedPath = this.encodePath(path);
+
 			const response = await this.request<GitHubContentsResponse>(
-				`/repos/${owner}/${repo}/contents/${path}?ref=${ref}`
+				`/repos/${owner}/${repo}/contents/${encodedPath}?ref=${ref}`,
 			);
 
-			if (response.type !== 'file' || !response.content) {
+			if (response.type !== "file" || !response.content) {
 				return null;
 			}
 
 			// Base64 문자열 그대로 반환 (줄바꿈 제거)
-			return response.content.replace(/\n/g, '');
+			return response.content.replace(/\n/g, "");
 		} catch (error) {
 			if (error instanceof GitHubError && error.statusCode === 404) {
 				return null;
@@ -695,19 +887,19 @@ export class GitHubService {
 	 */
 	async commitMultipleFiles(
 		files: Array<{ path: string; content: string }>,
-		message: string
+		message: string,
 	): Promise<{ success: boolean; commitSha?: string; error?: string }> {
 		try {
 			// 1. 현재 브랜치의 HEAD 참조 가져오기
 			const refResponse = await this.request<{ object: { sha: string } }>(
-				`/repos/${this.owner}/${this.repo}/git/ref/heads/${this.branch}`
+				`/repos/${this.owner}/${this.repo}/git/ref/heads/${this.branch}`,
 			);
 			const headSha = refResponse.object.sha;
 
 			// 2. HEAD 커밋의 tree SHA 가져오기
-			const commitResponse = await this.request<{ tree: { sha: string } }>(
-				`/repos/${this.owner}/${this.repo}/git/commits/${headSha}`
-			);
+			const commitResponse = await this.request<{
+				tree: { sha: string };
+			}>(`/repos/${this.owner}/${this.repo}/git/commits/${headSha}`);
 			const baseTreeSha = commitResponse.tree.sha;
 
 			// 3. 각 파일에 대해 blob 생성
@@ -722,18 +914,18 @@ export class GitHubService {
 				const blobResponse = await this.request<{ sha: string }>(
 					`/repos/${this.owner}/${this.repo}/git/blobs`,
 					{
-						method: 'POST',
+						method: "POST",
 						body: JSON.stringify({
 							content: file.content,
-							encoding: 'utf-8',
+							encoding: "utf-8",
 						}),
-					}
+					},
 				);
 
 				treeItems.push({
 					path: file.path,
-					mode: '100644',
-					type: 'blob',
+					mode: "100644",
+					type: "blob",
 					sha: blobResponse.sha,
 				});
 			}
@@ -742,36 +934,36 @@ export class GitHubService {
 			const newTreeResponse = await this.request<{ sha: string }>(
 				`/repos/${this.owner}/${this.repo}/git/trees`,
 				{
-					method: 'POST',
+					method: "POST",
 					body: JSON.stringify({
 						base_tree: baseTreeSha,
 						tree: treeItems,
 					}),
-				}
+				},
 			);
 
 			// 5. 새 commit 생성
 			const newCommitResponse = await this.request<{ sha: string }>(
 				`/repos/${this.owner}/${this.repo}/git/commits`,
 				{
-					method: 'POST',
+					method: "POST",
 					body: JSON.stringify({
 						message,
 						tree: newTreeResponse.sha,
 						parents: [headSha],
 					}),
-				}
+				},
 			);
 
 			// 6. 브랜치 참조 업데이트
 			await this.request(
 				`/repos/${this.owner}/${this.repo}/git/refs/heads/${this.branch}`,
 				{
-					method: 'PATCH',
+					method: "PATCH",
 					body: JSON.stringify({
 						sha: newCommitResponse.sha,
 					}),
-				}
+				},
 			);
 
 			return {
@@ -788,7 +980,7 @@ export class GitHubService {
 
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Unknown error',
+				error: error instanceof Error ? error.message : "Unknown error",
 			};
 		}
 	}

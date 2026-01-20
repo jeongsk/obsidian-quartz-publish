@@ -29,6 +29,7 @@
 	"devDependencies": {
 		"@eslint/compat": "^2.0.1",
 		"@tailwindcss/postcss": "^4.1.18",
+		"@types/diff": "^7.0.2",
 		"@types/node": "^24.10.7",
 		"@typescript-eslint/eslint-plugin": "^8.53.0",
 		"@typescript-eslint/parser": "^8.53.0",
@@ -51,6 +52,7 @@
 	},
 	"dependencies": {
 		"clsx": "^2.1.1",
+		"diff": "^8.0.3",
 		"tailwind-merge": "^3.4.0"
 	}
 }
