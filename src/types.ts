@@ -1144,7 +1144,7 @@ export const TAB_LABELS: Record<DashboardTab, string> = {
 	new: "신규",
 	modified: "수정됨",
 	deleted: "삭제 필요",
-	synced: "최신",
+	synced: "동기화됨",
 };
 
 /**
