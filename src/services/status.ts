@@ -31,6 +31,10 @@ export interface StatusServiceOptions {
 	getFilterSettings?: () => PublishFilterSettings;
 	contentPath: string;
 	staticPath: string;
+	// JEO-18: 원격 동기화 추가
+	remoteSyncService?: import('./remote-sync').RemoteSyncService;
+	getRemoteSyncCache?: () => import('../types').RemoteSyncCache | undefined;
+	setRemoteSyncCache?: (cache: import('../types').RemoteSyncCache) => Promise<void>;
 }
 
 /**
@@ -45,6 +49,10 @@ export class StatusService {
 	private contentPath: string;
 	private staticPath: string;
 	private publishFilter: PublishFilterService;
+	// JEO-18: 원격 동기화 서비스
+	private remoteSyncService?: import('./remote-sync').RemoteSyncService;
+	private getRemoteSyncCache?: () => import('../types').RemoteSyncCache | undefined;
+	private setRemoteSyncCache?: (cache: import('../types').RemoteSyncCache) => Promise<void>;
 
 	private static readonly CHUNK_SIZE = 20;
 
@@ -59,6 +67,11 @@ export class StatusService {
 			metadataCache: options.metadataCache,
 			getSettings: options.getFilterSettings ?? (() => DEFAULT_PUBLISH_FILTER_SETTINGS),
 		});
+
+		// JEO-18: 원격 동기화 서비스 초기화
+		this.remoteSyncService = options.remoteSyncService;
+		this.getRemoteSyncCache = options.getRemoteSyncCache;
+		this.setRemoteSyncCache = options.setRemoteSyncCache;
 	}
 
 	/**
@@ -171,6 +184,17 @@ export class StatusService {
 			};
 		}
 
+		// JEO-18: 원격 파일 변경 확인
+		const remoteChanged = await this.isRemoteChanged(record);
+		if (remoteChanged) {
+			return {
+				file,
+				status: 'modified',
+				localHash: currentHash,
+				record,
+			};
+		}
+
 		// 최신 상태
 		return {
 			file,
@@ -221,6 +245,59 @@ export class StatusService {
 	}
 
 	/**
+	 * 원격 저장소와 동기화하여 발행 기록을 업데이트합니다.
+	 * (JEO-18)
+	 *
+	 * @param onProgress 진행 상황 콜백
+	 * @returns 동기화 성공 여부
+	 */
+	async syncWithRemote(
+		onProgress?: (message: string) => void,
+	): Promise<boolean> {
+		if (!this.remoteSyncService) {
+			return false; // 원격 동기화 비활성화
+		}
+
+		try {
+			// 1. 캐시 확인
+			const cache = this.getRemoteSyncCache?.();
+
+			if (this.remoteSyncService.isCacheValid(cache)) {
+				onProgress?.('Using cached remote data...');
+				return true;
+			}
+
+			onProgress?.('Fetching remote files from GitHub...');
+
+			// 2. 원격 파일 가져오기
+			const result = await this.remoteSyncService.fetchRemoteFiles(
+				onProgress,
+			);
+
+			if (!result.success) {
+				console.error('[StatusService] Remote sync failed:', result.error);
+				return false;
+			}
+
+			// 3. 캐시 저장
+			if (this.setRemoteSyncCache) {
+				await this.setRemoteSyncCache({
+					files: result.files,
+					fetchedAt: result.fetchedAt,
+					validUntil: result.fetchedAt + this.remoteSyncService.getCacheValidityMs(),
+				});
+			}
+
+			onProgress?.(`Synced with ${result.files.length} remote files`);
+
+			return true;
+		} catch (error) {
+			console.error('[StatusService] Remote sync error:', error);
+			return false;
+		}
+	}
+
+	/**
 	 * 모든 발행 대상 파일 목록을 반환합니다.
 	 * (publish: true인 파일)
 	 *
@@ -253,6 +330,30 @@ export class StatusService {
 		const hashBuffer = await crypto.subtle.digest('SHA-256', data);
 		const hashArray = Array.from(new Uint8Array(hashBuffer));
 		return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+	}
+
+	/**
+	 * 원격 파일이 변경되었는지 확인합니다.
+	 * (JEO-18)
+	 *
+	 * @param record 발행 기록
+	 * @returns 원격 변경 여부
+	 */
+	private async isRemoteChanged(record: PublishRecord): Promise<boolean> {
+		const cache = this.getRemoteSyncCache?.();
+		if (!cache) return false;
+
+		// 원격 파일 찾기
+		const remoteFile = cache.files.find(f => {
+			// remotePath로 비교
+			return f.path === record.remotePath;
+		});
+
+		// 원격에 파일이 없으면 변경된 것으로 간주
+		if (!remoteFile) return true;
+
+		// SHA 비교
+		return remoteFile.sha !== record.remoteSha;
 	}
 
 	/**
