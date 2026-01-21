@@ -234,6 +234,12 @@ const ko: { [K in TranslationKeys]?: string } = {
 	"dashboard.aria.itemCount": "{{count}}개",
 	"dashboard.aria.selectNote": "{{name}} 선택",
 	"dashboard.aria.toolbar": "대시보드 작업",
+	// Dashboard - Remote Sync (JEO-18)
+	"dashboard.remoteSync.fetching": "원격 저장소와 동기화 중...",
+	"dashboard.remoteSync.success": "원격 저장소와 동기화 완료",
+	"dashboard.remoteSync.failed": "원격 동기화 실패. 로컬 데이터를 사용합니다.",
+	"dashboard.remoteSync.cacheUsed": "캐시된 원격 데이터 사용",
+	"dashboard.remoteSync.progress": "원격에서 {{count}}개 파일 동기화됨",
 
 	// Notices
 	"notice.publish.start": "{{filename}} 발행 중...",

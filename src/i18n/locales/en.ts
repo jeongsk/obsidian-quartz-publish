@@ -242,6 +242,12 @@ export default {
 	"dashboard.aria.itemCount": "{{count}} items",
 	"dashboard.aria.selectNote": "Select {{name}}",
 	"dashboard.aria.toolbar": "Dashboard actions",
+	// Dashboard - Remote Sync (JEO-18)
+	"dashboard.remoteSync.fetching": "Syncing with remote repository...",
+	"dashboard.remoteSync.success": "Synced with remote repository",
+	"dashboard.remoteSync.failed": "Remote sync failed. Using local data.",
+	"dashboard.remoteSync.cacheUsed": "Using cached remote data",
+	"dashboard.remoteSync.progress": "Synced {{count}} files from remote",
 
 	// Notices
 	"notice.publish.start": "Publishing {{filename}}...",
