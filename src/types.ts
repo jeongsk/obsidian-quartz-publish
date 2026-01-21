@@ -398,6 +398,52 @@ export interface StatusOverview {
 }
 
 // ============================================================================
+// Remote Sync Types (JEO-18)
+// ============================================================================
+
+/**
+ * 원격 저장소 파일 정보 (Git Tree에서 가져온 최소 정보)
+ */
+export interface RemoteFileInfo {
+	/** 파일 경로 (content/posts/hello.md) */
+	path: string;
+	/** GitHub blob SHA */
+	sha: string;
+	/** 파일 크기 (bytes) */
+	size: number;
+	/** 파일 타입 */
+	type: "blob" | "tree";
+}
+
+/**
+ * 원격 동기화 결과
+ */
+export interface RemoteSyncResult {
+	/** 원격 파일 목록 (content 경로 내의 .md 파일만) */
+	files: RemoteFileInfo[];
+	/** 조회 시간 (Unix timestamp) */
+	fetchedAt: number;
+	/** 성공 여부 */
+	success: boolean;
+	/** 오류 메시지 (실패 시) */
+	error?: string;
+	/** 오프라인 여부 (캐시 사용 시) */
+	isFromCache?: boolean;
+}
+
+/**
+ * 원격 동기화 캐시 (PluginData에 추가)
+ */
+export interface RemoteSyncCache {
+	/** 원격 파일 데이터 */
+	files: RemoteFileInfo[];
+	/** 캐시 시간 */
+	fetchedAt: number;
+	/** 캐시 유효 시간 (밀리초, 기본 5분) */
+	validUntil: number;
+}
+
+// ============================================================================
 // Quartz Settings (Phase 3)
 // ============================================================================
 
@@ -718,6 +764,8 @@ export interface PluginData {
 	lastSync?: number;
 	/** 발행 기록이 별도 파일로 이동되었는지 여부 */
 	publishRecordsMigrated?: boolean;
+	/** 원격 동기화 캐시 (JEO-18) */
+	remoteSyncCache?: RemoteSyncCache;
 }
 
 // ============================================================================
