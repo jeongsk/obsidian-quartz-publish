@@ -70,14 +70,6 @@ export default class QuartzPublishPlugin extends Plugin {
 		// JEO-18: 원격 동기화 캐시 로드
 		await this.loadRemoteSyncCache();
 
-		// 안내 메시지 (한글 파일명 수정 사용자)
-		setTimeout(() => {
-			new Notice(
-				"Quartz Publish v0.7.1 업데이트 완료! 한글 파일명 404 에러가 수정되었습니다.",
-				8000,
-			);
-		}, 2000);
-
 		// PublishRecordStorage 초기화
 		this.recordStorage = new PublishRecordStorage(this);
 		await this.recordStorage.load();
@@ -202,6 +194,24 @@ export default class QuartzPublishPlugin extends Plugin {
 	async loadSettings(): Promise<void> {
 		const data = (await this.loadData()) as PluginData | null;
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, data?.settings);
+
+		// GitHub 설정 검증
+		if (this.settings.githubToken && this.settings.repoUrl) {
+			if (!GitHubService.validateRepoUrl(this.settings.repoUrl)) {
+				console.warn('[QuartzPublish] Invalid repoUrl, resetting to default');
+				this.settings.repoUrl = DEFAULT_SETTINGS.repoUrl;
+			}
+
+			if (!GitHubService.validateContentPath(this.settings.contentPath)) {
+				console.warn('[QuartzPublish] Invalid contentPath, using default');
+				this.settings.contentPath = DEFAULT_SETTINGS.contentPath;
+			}
+
+			if (!this.settings.defaultBranch || this.settings.defaultBranch.trim() === '') {
+				console.warn('[QuartzPublish] Invalid defaultBranch, using default');
+				this.settings.defaultBranch = DEFAULT_SETTINGS.defaultBranch;
+			}
+		}
 	}
 
 	/**

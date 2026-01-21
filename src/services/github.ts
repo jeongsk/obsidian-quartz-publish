@@ -126,6 +126,39 @@ export class GitHubService {
 	}
 
 	/**
+	 * 리포지토리 URL이 유효한지 검증합니다.
+	 *
+	 * @param url 리포지토리 URL
+	 * @returns 유효 여부
+	 */
+	static validateRepoUrl(url: string): boolean {
+		if (!url || url.trim() === '') return false;
+
+		// HTTPS 형식
+		const httpsMatch = url.match(/github\.com\/([^/]+)\/([^/]+)/);
+		if (httpsMatch) return true;
+
+		// SSH 형식
+		const sshMatch = url.match(/git@github\.com:([^/]+)\/([^/]+)/);
+		if (sshMatch) return true;
+
+		return false;
+	}
+
+	/**
+	 * 콘텐츠 경로가 유효한지 검증합니다.
+	 *
+	 * @param path 콘텐츠 경로
+	 * @returns 유효 여부
+	 */
+	static validateContentPath(path: string): boolean {
+		if (!path || path.trim() === '') return false;
+		// 선행/후행 슬래시 및 공백 제거
+		const normalized = path.trim().replace(/^\/+|\/+$/g, '');
+		return normalized.length > 0;
+	}
+
+	/**
 	 * 경로를 NFC 정규화하고 URL 인코딩합니다.
 	 *
 	 * macOS는 NFD 정규화를 사용하지만 GitHub과 대부분의 웹 시스템은 NFC를 사용합니다.
