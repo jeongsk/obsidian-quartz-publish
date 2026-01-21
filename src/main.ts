@@ -6,6 +6,7 @@ import type {
 	BatchPublishResult,
 	UnpublishResult,
 	QuartzFrontmatter,
+	RemoteSyncCache,
 } from "./types";
 import {
 	DEFAULT_SETTINGS,
@@ -19,6 +20,7 @@ import { StatusService } from "./services/status";
 import { NetworkService } from "./services/network";
 import { ContentTransformer } from "./services/transformer";
 import { PublishRecordStorage } from "./services/publish-record-storage";
+import { RemoteSyncService } from "./services/remote-sync";
 import { DashboardModal } from "./ui/dashboard-modal";
 import { FrontmatterEditorModal } from "./ui/frontmatter-editor-modal";
 import { initI18n, t } from "./i18n";
@@ -41,6 +43,8 @@ export default class QuartzPublishPlugin extends Plugin {
 	private recordStorage!: PublishRecordStorage;
 	private statusService!: StatusService;
 	private networkService!: NetworkService;
+	// JEO-18: 원격 동기화 캐시 인메모리 복사
+	private remoteSyncCacheMemory: RemoteSyncCache | undefined;
 
 	async onload(): Promise<void> {
 		// ========== IMPORTANT: 플러그인 로드 확인 ==========
@@ -62,6 +66,9 @@ export default class QuartzPublishPlugin extends Plugin {
 
 		initI18n();
 		await this.loadSettings();
+
+		// JEO-18: 원격 동기화 캐시 로드
+		await this.loadRemoteSyncCache();
 
 		// 안내 메시지 (한글 파일명 수정 사용자)
 		setTimeout(() => {
@@ -91,6 +98,8 @@ export default class QuartzPublishPlugin extends Plugin {
 				DEFAULT_PUBLISH_FILTER_SETTINGS,
 			contentPath: this.settings.contentPath,
 			staticPath: this.settings.staticPath,
+			getRemoteSyncCache: () => this.getRemoteSyncCache(),
+			setRemoteSyncCache: (cache) => this.setRemoteSyncCache(cache),
 		});
 
 		// 설정 탭 등록
@@ -238,6 +247,39 @@ export default class QuartzPublishPlugin extends Plugin {
 	}
 
 	/**
+	 * 원격 동기화 캐시를 저장소에서 로드합니다.
+	 * (JEO-18)
+	 */
+	private async loadRemoteSyncCache(): Promise<void> {
+		const data = (await this.loadData()) as PluginData | null;
+		this.remoteSyncCacheMemory = data?.remoteSyncCache;
+	}
+
+	/**
+	 * 원격 동기화 캐시를 가져옵니다.
+	 * (JEO-18)
+	 */
+	private getRemoteSyncCache(): RemoteSyncCache | undefined {
+		return this.remoteSyncCacheMemory;
+	}
+
+	/**
+	 * 원격 동기화 캐시를 저장합니다.
+	 * (JEO-18)
+	 */
+	private async setRemoteSyncCache(cache: RemoteSyncCache): Promise<void> {
+		this.remoteSyncCacheMemory = cache;
+		const data = (await this.loadData()) as PluginData | null;
+		if (data) {
+			data.remoteSyncCache = cache;
+			await this.saveData(data);
+		} else {
+			// data가 없는 경우 새로 생성
+			await this.saveData({ remoteSyncCache: cache });
+		}
+	}
+
+	/**
 	 * 발행 기록 업데이트
 	 */
 	async updatePublishRecord(
@@ -370,6 +412,23 @@ export default class QuartzPublishPlugin extends Plugin {
 	 * 대시보드 모달 열기
 	 */
 	openDashboard(): void {
+		// 원격 동기화 서비스 생성 (JEO-18)
+		const { githubToken, repoUrl } = this.settings;
+		let remoteSyncService: RemoteSyncService | undefined;
+		if (githubToken && repoUrl) {
+			const github = new GitHubService(
+				githubToken,
+				repoUrl,
+				this.settings.defaultBranch,
+			);
+			remoteSyncService = new RemoteSyncService({
+				github,
+				contentPath: this.settings.contentPath,
+			});
+			// StatusService에 RemoteSyncService 주입
+			this.statusService.setRemoteSyncService(remoteSyncService);
+		}
+
 		new DashboardModal(this.app, {
 			onPublish: async (files) => this.batchPublish(files),
 			onDelete: async (files) => this.batchUnpublish(files),

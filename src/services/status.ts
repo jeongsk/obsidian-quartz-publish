@@ -75,6 +75,14 @@ export class StatusService {
 	}
 
 	/**
+	 * 원격 동기화 서비스를 설정합니다.
+	 * (JEO-18)
+	 */
+	setRemoteSyncService(service: import('./remote-sync').RemoteSyncService): void {
+		this.remoteSyncService = service;
+	}
+
+	/**
 	 * 전체 발행 상태 개요를 계산합니다.
 	 * 대시보드를 열 때 호출됩니다.
 	 *
