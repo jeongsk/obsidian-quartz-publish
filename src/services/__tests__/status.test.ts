@@ -49,7 +49,7 @@ describe('StatusService - findDeletedNotes with remote sync', () => {
 	it('should filter out files that exist in remote (local deleted, remote exists -> show in deleted tab)', () => {
 		const remoteSyncCache = {
 			files: [
-				{ path: 'content/posts/deleted-post.md', sha: 'sha123', size: 1000, type: 'blob' },
+				{ path: 'content/posts/deleted-post.md', sha: 'sha123', size: 1000, type: 'blob' as const },
 			],
 			fetchedAt: Date.now(),
 			validUntil: Date.now() + 300000,
