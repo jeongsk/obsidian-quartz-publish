@@ -330,6 +330,49 @@
 	font-size: var(--font-small);
 }
 
+/* Quartz Config Loading Card */
+.quartz-publish-config-loading-card {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	margin-top: 0.5rem;
+	border-radius: 6px;
+	font-size: var(--font-small);
+	background-color: rgba(var(--color-blue-rgb), 0.1);
+	border: 1px solid rgba(var(--color-blue-rgb), 0.3);
+}
+
+.quartz-publish-config-loading-card .loading-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: var(--color-blue);
+}
+
+.quartz-publish-config-loading-card .loading-icon svg {
+	width: 20px;
+	height: 20px;
+	animation: spin 0.8s linear infinite;
+}
+
+.quartz-publish-config-loading-card .loading-content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.quartz-publish-config-loading-card .loading-title {
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.quartz-publish-config-loading-card .loading-subtitle {
+	font-size: var(--font-smallest);
+	color: var(--text-muted);
+}
+
 /* Operation Progress */
 .quartz-publish-operation-progress {
 	margin-top: 1rem;

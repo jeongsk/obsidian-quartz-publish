@@ -1093,9 +1093,32 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
 		this.isQuartzSettingsLoading = true;
 		this.quartzSettingsContainerEl.empty();
-		this.quartzSettingsContainerEl.createEl("p", {
-			text: t("settings.quartz.loading"),
-			cls: "text-obs-text-muted text-sm",
+
+		// Create loading card
+		const loadingCard = this.quartzSettingsContainerEl.createDiv({
+			cls: "quartz-publish-config-loading-card",
+		});
+
+		// Icon container with spinner
+		const iconContainer = loadingCard.createSpan({
+			cls: "loading-icon",
+			attr: { "aria-hidden": "true" },
+		});
+		setIcon(iconContainer, "loader-2");
+
+		// Content area
+		const contentEl = loadingCard.createDiv({
+			cls: "loading-content",
+		});
+
+		contentEl.createDiv({
+			text: t("settings.quartz.loadingTitle"),
+			cls: "loading-title",
+		});
+
+		contentEl.createDiv({
+			text: t("settings.quartz.loadingSubtitle"),
+			cls: "loading-subtitle",
 		});
 
 		try {

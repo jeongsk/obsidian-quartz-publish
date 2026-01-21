@@ -72,6 +72,8 @@ export default {
 		"Connect to GitHub first to configure Quartz settings.",
 	"settings.quartz.retry": "Retry",
 	"settings.quartz.loadFailed": "Failed to load settings: {{message}}",
+	"settings.quartz.loadingTitle": "Loading Quartz Configuration",
+	"settings.quartz.loadingSubtitle": "Fetching quartz.config.ts from GitHub...",
 
 	// Settings - Site Info
 	"settings.siteInfo.title": "Site Information",

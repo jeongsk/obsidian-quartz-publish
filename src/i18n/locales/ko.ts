@@ -69,6 +69,8 @@ const ko: { [K in TranslationKeys]?: string } = {
 		"Quartz 설정을 구성하려면 먼저 GitHub에 연결하세요.",
 	"settings.quartz.retry": "다시 시도",
 	"settings.quartz.loadFailed": "설정 불러오기 실패: {{message}}",
+	"settings.quartz.loadingTitle": "Quartz 설정 불러오는 중",
+	"settings.quartz.loadingSubtitle": "GitHub에서 quartz.config.ts를 가져오는 중...",
 
 	// Settings - Site Info
 	"settings.siteInfo.title": "사이트 정보",
