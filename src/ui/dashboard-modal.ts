@@ -60,6 +60,8 @@ export interface DashboardModalOptions {
 	networkService?: NetworkService;
 	/** 원격 콘텐츠 조회 콜백 */
 	onGetRemoteContent?: (file: TFile) => Promise<string | null>;
+	/** 발행 기록 정리 콜백 */
+	onCleanUpStaleRecords?: () => Promise<void>;
 }
 
 /**
@@ -358,6 +360,9 @@ export class DashboardModal extends Modal {
 			// 상태 새로고침
 			this.state.selectedPaths.clear();
 			await this.loadStatus();
+
+			// 발행 기록 정리 (원격에 없는 파일 기록 삭제)
+			await this.options.onCleanUpStaleRecords?.();
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : t("error.unknown");

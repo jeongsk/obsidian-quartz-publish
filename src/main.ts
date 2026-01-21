@@ -514,7 +514,25 @@ export default class QuartzPublishPlugin extends Plugin {
 				);
 				return null;
 			},
+			onCleanUpStaleRecords: async () => this.cleanUpStaleRecords(),
 		}).open();
+	}
+
+	/**
+	 * 원격에 존재하지 않는 파일의 발행 기록을 정리합니다.
+	 */
+	async cleanUpStaleRecords(): Promise<void> {
+		if (!this.recordStorage || !this.remoteSyncCacheMemory) return;
+
+		const records = this.recordStorage.getAllRecords();
+		const { removedCount } = await this.recordStorage.cleanUpDeletedRecords(
+			records,
+			this.remoteSyncCacheMemory.files,
+		);
+
+		if (removedCount > 0) {
+			console.log(`[QuartzPublish] Cleaned up ${removedCount} stale publish records`);
+		}
 	}
 
 	/**
