@@ -80,6 +80,8 @@ export class DashboardModal extends Modal {
 	private isOffline: boolean = false;
 	private fileValidator: FileValidatorService;
 	private refreshBtn: HTMLElement | null = null;
+	// JEO-18: 원격 동기화 로딩 상태
+	private isRemoteSyncing: boolean = false;
 
 	constructor(app: App, options: DashboardModalOptions) {
 		super(app);
@@ -146,6 +148,7 @@ export class DashboardModal extends Modal {
 	 */
 	private async loadStatus(): Promise<void> {
 		this.state.isLoading = true;
+		this.isRemoteSyncing = true; // JEO-18: 원격 동기화 시작
 		this.state.error = null;
 		this.setRefreshButtonLoading(true);
 		this.render();
@@ -168,6 +171,7 @@ export class DashboardModal extends Modal {
 				error instanceof Error ? error.message : "Unknown error";
 		} finally {
 			this.state.isLoading = false;
+			this.isRemoteSyncing = false; // JEO-18: 원격 동기화 완료
 			this.setRefreshButtonLoading(false);
 			this.render();
 		}
