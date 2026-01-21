@@ -15,6 +15,7 @@ import type {
 } from '../types';
 import { DEFAULT_PUBLISH_FILTER_SETTINGS } from '../types';
 import { PublishFilterService } from './publish-filter';
+import { t } from '../i18n';
 
 /**
  * 상태 계산 진행 콜백
@@ -87,17 +88,19 @@ export class StatusService {
 	 * 대시보드를 열 때 호출됩니다.
 	 *
 	 * @param onProgress - 진행 상황 콜백 (선택적)
+	 * @param isOffline - 오프라인 여부 (선택적)
 	 * @returns 상태별로 그룹화된 노트 목록
 	 */
 	async calculateStatusOverview(
-		onProgress?: StatusProgressCallback
+		onProgress?: StatusProgressCallback,
+		isOffline?: boolean,
 	): Promise<StatusOverview> {
 		// JEO-18: 원격 동기화 먼저 수행
 		if (this.remoteSyncService) {
 			const syncSuccess = await this.syncWithRemote((message) => {
 				// 진행 콜백은 무시 (UI는 loadStatus에서 처리)
 				console.log('[StatusService] Remote sync:', message);
-			});
+			}, isOffline);
 
 			if (!syncSuccess) {
 				console.warn('[StatusService] Remote sync failed, continuing with local data');
@@ -269,25 +272,38 @@ export class StatusService {
 	 * (JEO-18)
 	 *
 	 * @param onProgress 진행 상황 콜백
+	 * @param isOffline 오프라인 여부
 	 * @returns 동기화 성공 여부
 	 */
 	async syncWithRemote(
 		onProgress?: (message: string) => void,
+		isOffline?: boolean,
 	): Promise<boolean> {
 		if (!this.remoteSyncService) {
 			return false; // 원격 동기화 비활성화
 		}
 
 		try {
+			// 오프라인이면 캐시만 확인
+			if (isOffline) {
+				const cache = this.getRemoteSyncCache?.();
+				if (cache && this.remoteSyncService.isCacheValid(cache)) {
+					onProgress?.(t('dashboard.remoteSync.cacheUsed'));
+					return true;
+				}
+				onProgress?.(t('dashboard.status.offline'));
+				return false;
+			}
+
 			// 1. 캐시 확인
 			const cache = this.getRemoteSyncCache?.();
 
 			if (this.remoteSyncService.isCacheValid(cache)) {
-				onProgress?.('Using cached remote data...');
+				onProgress?.(t('dashboard.remoteSync.cacheUsed'));
 				return true;
 			}
 
-			onProgress?.('Fetching remote files from GitHub...');
+			onProgress?.(t('dashboard.remoteSync.fetching'));
 
 			// 2. 원격 파일 가져오기
 			const result = await this.remoteSyncService.fetchRemoteFiles(
@@ -296,6 +312,7 @@ export class StatusService {
 
 			if (!result.success) {
 				console.error('[StatusService] Remote sync failed:', result.error);
+				onProgress?.(t('dashboard.remoteSync.failed'));
 				return false;
 			}
 
@@ -308,11 +325,12 @@ export class StatusService {
 				});
 			}
 
-			onProgress?.(`Synced with ${result.files.length} remote files`);
+			onProgress?.(t('dashboard.remoteSync.progress', { count: result.files.length }));
 
 			return true;
 		} catch (error) {
 			console.error('[StatusService] Remote sync error:', error);
+			onProgress?.(t('dashboard.remoteSync.failed'));
 			return false;
 		}
 	}
