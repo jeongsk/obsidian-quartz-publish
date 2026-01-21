@@ -1039,13 +1039,13 @@ textarea.is-invalid:focus {
 }
 
 .diff-line-added {
-	background-color: var(--background-modifier-success);
-	color: var(--text-success);
+	background-color: rgba(34, 197, 94, 0.2); /* 연한 녹색 배경 */
+	color: rgb(22, 163, 74); /* 진한 녹색 텍스트 */
 }
 
 .diff-line-removed {
-	background-color: var(--background-modifier-error);
-	color: var(--text-error);
+	background-color: rgba(239, 68, 68, 0.2); /* 연한 빨간색 배경 */
+	color: rgb(220, 38, 38); /* 진한 빨간색 텍스트 */
 }
 
 .diff-line-common {
