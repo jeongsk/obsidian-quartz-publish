@@ -127,6 +127,43 @@ export class PublishRecordStorage {
 	}
 
 	/**
+	 * 원격에 존재하지 않는 파일의 발행 기록을 정리합니다.
+	 *
+	 * @param records 발행 기록
+	 * @param remoteFiles 원격 파일 목록
+	 * @returns 정리 결과
+	 */
+	async cleanUpDeletedRecords(
+		records: Record<string, PublishRecord>,
+		remoteFiles: Array<{ path: string; sha: string }>
+	): Promise<{
+		cleanedRecords: Record<string, PublishRecord>;
+		removedCount: number;
+	}> {
+		const cleanedRecords: Record<string, PublishRecord> = {};
+		let removedCount = 0;
+
+		for (const [localPath, record] of Object.entries(records)) {
+			const existsInRemote = remoteFiles.some(f => f.path === record.remotePath);
+
+			if (existsInRemote) {
+				cleanedRecords[localPath] = record;
+			} else {
+				console.log(`[PublishRecordStorage] Removing stale record: ${record.remotePath}`);
+				removedCount++;
+			}
+		}
+
+		if (removedCount > 0) {
+			// 내부 데이터 업데이트
+			this.data.records = cleanedRecords;
+			await this.save();
+		}
+
+		return { cleanedRecords, removedCount };
+	}
+
+	/**
 	 * 볼트에서 존재하지 않는 파일의 레코드 정리
 	 * @param cleanupAll true인 경우 모든 레코드 삭제 (테스트용)
 	 * @returns 정리된 레코드 수
