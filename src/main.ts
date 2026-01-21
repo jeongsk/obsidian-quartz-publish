@@ -290,6 +290,19 @@ export default class QuartzPublishPlugin extends Plugin {
 	}
 
 	/**
+	 * 원격 동기화 캐시를 무효화합니다.
+	 * 발행 후 최신 상태 반영을 위해 사용합니다.
+	 */
+	private async invalidateRemoteSyncCache(): Promise<void> {
+		this.remoteSyncCacheMemory = undefined;
+		const data = (await this.loadData()) as PluginData | null;
+		if (data) {
+			data.remoteSyncCache = undefined;
+			await this.saveData(data);
+		}
+	}
+
+	/**
 	 * 발행 기록 업데이트
 	 */
 	async updatePublishRecord(
@@ -383,6 +396,8 @@ export default class QuartzPublishPlugin extends Plugin {
 						path: result.remotePath ?? "",
 					}),
 				);
+				// 발행 성공 후 캐시 무효화
+				await this.invalidateRemoteSyncCache();
 			} else {
 				new Notice(
 					t("notice.publish.failed", {
@@ -560,7 +575,14 @@ export default class QuartzPublishPlugin extends Plugin {
 			this.removePublishRecord.bind(this),
 		);
 
-		return publishService.publishNotes(files);
+		const result = await publishService.publishNotes(files);
+
+		// 일괄 발행 성공 후 캐시 무효화
+		if (result.succeeded > 0) {
+			await this.invalidateRemoteSyncCache();
+		}
+
+		return result;
 	}
 
 	/**
