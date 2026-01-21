@@ -94,13 +94,14 @@ export class StatusService {
 	async calculateStatusOverview(
 		onProgress?: StatusProgressCallback,
 		isOffline?: boolean,
+		forceRemoteRefresh: boolean = true,
 	): Promise<StatusOverview> {
-		// JEO-18: 원격 동기화 먼저 수행
+		// JEO-18: 원격 동기화 먼저 수행 (대시보드에서는 항상 최신 데이터 가져오기)
 		if (this.remoteSyncService) {
 			const syncSuccess = await this.syncWithRemote((message) => {
 				// 진행 콜백은 무시 (UI는 loadStatus에서 처리)
 				console.log('[StatusService] Remote sync:', message);
-			}, isOffline);
+			}, isOffline, forceRemoteRefresh);
 
 			if (!syncSuccess) {
 				console.warn('[StatusService] Remote sync failed, continuing with local data');
@@ -297,6 +298,7 @@ export class StatusService {
 	async syncWithRemote(
 		onProgress?: (message: string) => void,
 		isOffline?: boolean,
+		forceRefresh: boolean = false,
 	): Promise<boolean> {
 		if (!this.remoteSyncService) {
 			return false; // 원격 동기화 비활성화
@@ -314,10 +316,10 @@ export class StatusService {
 				return false;
 			}
 
-			// 1. 캐시 확인
+			// 1. 캐시 확인 (forceRefresh가 true면 건너뜀)
 			const cache = this.getRemoteSyncCache?.();
 
-			if (this.remoteSyncService.isCacheValid(cache)) {
+			if (!forceRefresh && this.remoteSyncService.isCacheValid(cache)) {
 				onProgress?.(t('dashboard.remoteSync.cacheUsed'));
 				return true;
 			}
