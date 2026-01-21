@@ -1,6 +1,5 @@
 <img width="2816" height="1536" alt="Gemini_Generated_Image_bbpsx0bbpsx0bbps" src="https://github.com/user-attachments/assets/7bb95f7c-6b3e-4dd3-a993-d345d2bc63cf" />
 
-
 # Quartz Publish
 
 [![GitHub License](https://img.shields.io/github/license/jeongsk/obsidian-quartz-publish)](LICENSE)
@@ -32,11 +31,6 @@ Obsidian 노트를 [Quartz](https://quartz.jzhao.xyz/) 블로그에 직접 발�
 - Quartz 설정 관리 (사이트 정보, 분석, 로케일 등)
 - Quartz 버전 업그레이드 지원
 - 원격 파일 관리 (Quartz 저장소의 파일 직접 관리)
-
-### 초보자 지원
-
-- GitHub 리포지토리 자동 생성
-- 배포 가이드 제공
 
 ### 기타
 
@@ -112,73 +106,6 @@ npm run test:coverage  # 커버리지 보고서
 npm run lint           # 린트 검사
 npm run lint:fix       # 린트 자동 수정
 npm run version        # 버전 업그레이드
-```
-
-### 프로젝트 구조
-
-```
-src/
-├── main.ts                           # 플러그인 메인 클래스
-├── types.ts                          # 타입 정의
-├── constants/                        # 상수 정의
-│   ├── analytics.ts                  # 분석 관련 상수
-│   ├── locales.ts                    # 로케일 상수
-│   ├── guide-steps.ts                # 가이드 단계 상수
-│   └── icons.ts                      # 아이콘 상수
-├── i18n/                             # 다국어 지원
-│   ├── index.ts                      # i18n 초기화
-│   └── locales/
-│       ├── en.ts                     # 영어 번역
-│       └── ko.ts                     # 한국어 번역
-├── services/
-│   ├── github.ts                     # GitHub API 서비스
-│   ├── publish.ts                    # 발행 서비스
-│   ├── quartz-config.ts              # Quartz 설정 관리
-│   ├── quartz-upgrade.ts             # Quartz 업그레이드
-│   ├── status.ts                     # 상태 관리
-│   ├── transformer.ts                # 콘텐츠 변환
-│   ├── network.ts                    # 네트워크 감지
-│   ├── file-validator.ts             # 파일 검증
-│   ├── publish-filter.ts             # 발행 필터링
-│   ├── pending-changes.ts            # 변경사항 추적
-│   ├── publish-record-storage.ts     # 발행 기록 저장소
-│   ├── repository-creator.ts         # 리포지토리 생성
-│   ├── remote-file.ts                # 원격 파일 관리
-│   ├── google-fonts.ts               # Google Fonts 서비스
-│   └── setup-status.ts               # 설정 상태 관리
-├── ui/
-│   ├── settings-tab.ts               # 설정 탭
-│   ├── dashboard-modal.ts            # 대시보드 모달
-│   ├── deploy-guide-modal.ts         # 배포 가이드 모달
-│   ├── github-guide-modal.ts         # GitHub 가이드 모달
-│   ├── create-repo-modal.ts          # 리포지토리 생성 모달
-│   ├── remote-file-manager-modal.ts  # 원격 파일 관리 모달
-│   ├── frontmatter-editor-modal.ts   # 프론트매터 편집기 모달
-│   ├── large-file-warning-modal.ts   # 대용량 파일 경고
-│   ├── components/                   # 공통 UI 컴포넌트
-│   │   ├── confirm-modal.ts          # 확인 모달
-│   │   ├── unsaved-warning.ts        # 미저장 경고
-│   │   ├── note-suggest-modal.ts     # 노트 제안 모달
-│   │   ├── folder-suggest-modal.ts   # 폴더 제안 모달
-│   │   ├── conflict-modal.ts         # 충돌 모달
-│   │   ├── font-picker-modal.ts      # 폰트 선택 모달
-│   │   └── apply-button.ts           # 적용 버튼
-│   └── sections/                     # 설정 탭 섹션
-│       ├── publish-filter-section.ts # 발행 필터 섹션
-│       ├── site-info-section.ts      # 사이트 정보 섹션
-│       ├── typography-section.ts     # 타이포그래피 섹션
-│       ├── analytics-section.ts      # 분석 섹션
-│       ├── comments-section.ts       # 댓글 섹션
-│       ├── behavior-section.ts       # 동작 섹션
-│       └── publishing-section.ts     # 발행 섹션
-├── utils/
-│   ├── glob-validator.ts             # Glob 패턴 검증
-│   ├── path-matcher.ts               # 경로 매칭
-│   ├── validators.ts                 # 유효성 검사
-│   ├── cn.ts                         # 클래스네임 유틸리티
-│   └── url.ts                        # URL 유틸리티
-└── styles/
-    └── main.css                      # TailwindCSS 스타일
 ```
 
 ### 기술 스택

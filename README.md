@@ -1,6 +1,5 @@
 <img width="2816" height="1536" alt="Gemini_Generated_Image_bbpsx0bbpsx0bbps" src="https://github.com/user-attachments/assets/7bb95f7c-6b3e-4dd3-a993-d345d2bc63cf" />
 
-
 # Quartz Publish
 
 [![GitHub License](https://img.shields.io/github/license/jeongsk/obsidian-quartz-publish)](LICENSE)
@@ -32,11 +31,6 @@ An Obsidian plugin for publishing notes directly to your [Quartz](https://quartz
 - Quartz configuration management (site info, analytics, locale, etc.)
 - Quartz version upgrade support
 - Remote file management (direct management of files in Quartz repository)
-
-### Beginner Support
-
-- Automatic GitHub repository creation
-- Deployment guide provided
 
 ### Other
 
@@ -112,73 +106,6 @@ npm run test:coverage  # Coverage report
 npm run lint           # Lint check
 npm run lint:fix       # Auto-fix linting
 npm run version        # Version upgrade
-```
-
-### Project Structure
-
-```
-src/
-├── main.ts                           # Plugin main class
-├── types.ts                          # Type definitions
-├── constants/                        # Constants
-│   ├── analytics.ts                  # Analytics constants
-│   ├── locales.ts                    # Locale constants
-│   ├── guide-steps.ts                # Guide steps constants
-│   └── icons.ts                      # Icon constants
-├── i18n/                             # Internationalization
-│   ├── index.ts                      # i18n initialization
-│   └── locales/
-│       ├── en.ts                     # English translations
-│       └── ko.ts                     # Korean translations
-├── services/
-│   ├── github.ts                     # GitHub API service
-│   ├── publish.ts                    # Publishing service
-│   ├── quartz-config.ts              # Quartz configuration management
-│   ├── quartz-upgrade.ts             # Quartz upgrade
-│   ├── status.ts                     # Status management
-│   ├── transformer.ts                # Content transformation
-│   ├── network.ts                    # Network detection
-│   ├── file-validator.ts             # File validation
-│   ├── publish-filter.ts             # Publish filtering
-│   ├── pending-changes.ts            # Change tracking
-│   ├── publish-record-storage.ts     # Publish record storage
-│   ├── repository-creator.ts         # Repository creation
-│   ├── remote-file.ts                # Remote file management
-│   ├── google-fonts.ts               # Google Fonts service
-│   └── setup-status.ts               # Setup status management
-├── ui/
-│   ├── settings-tab.ts               # Settings tab
-│   ├── dashboard-modal.ts            # Dashboard modal
-│   ├── deploy-guide-modal.ts         # Deployment guide modal
-│   ├── github-guide-modal.ts         # GitHub guide modal
-│   ├── create-repo-modal.ts          # Repository creation modal
-│   ├── remote-file-manager-modal.ts  # Remote file manager modal
-│   ├── frontmatter-editor-modal.ts   # Frontmatter editor modal
-│   ├── large-file-warning-modal.ts   # Large file warning
-│   ├── components/                   # Common UI components
-│   │   ├── confirm-modal.ts          # Confirmation modal
-│   │   ├── unsaved-warning.ts        # Unsaved warning
-│   │   ├── note-suggest-modal.ts     # Note suggest modal
-│   │   ├── folder-suggest-modal.ts   # Folder suggest modal
-│   │   ├── conflict-modal.ts         # Conflict modal
-│   │   ├── font-picker-modal.ts      # Font picker modal
-│   │   └── apply-button.ts           # Apply button
-│   └── sections/                     # Settings tab sections
-│       ├── publish-filter-section.ts # Publish filter section
-│       ├── site-info-section.ts      # Site info section
-│       ├── typography-section.ts     # Typography section
-│       ├── analytics-section.ts      # Analytics section
-│       ├── comments-section.ts       # Comments section
-│       ├── behavior-section.ts       # Behavior section
-│       └── publishing-section.ts     # Publishing section
-├── utils/
-│   ├── glob-validator.ts             # Glob pattern validation
-│   ├── path-matcher.ts               # Path matching
-│   ├── validators.ts                 # Validation utilities
-│   ├── cn.ts                         # Classname utility
-│   └── url.ts                        # URL utility
-└── styles/
-    └── main.css                      # TailwindCSS styles
 ```
 
 ### Tech Stack
