@@ -416,16 +416,17 @@ export class GitHubService {
 			return null;
 		}
 
-		// Base64 디코딩
-		const content = decodeURIComponent(
-			atob(response.content.replace(/\n/g, ""))
-				.split("")
-				.map(
-					(c) =>
-						"%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2),
-				)
-				.join(""),
-		);
+		// Base64 디코딩 (UTF-8 안전 처리)
+		// GitHub API는 Base64로 인코딩된 UTF-8 콘텐츠를 반환합니다.
+		// TextDecoder를 사용하여 UTF-8 바이트를 안전하게 디코딩합니다.
+		const base64Content = response.content.replace(/\n/g, "");
+		const binaryString = atob(base64Content);
+		const bytes = new Uint8Array(binaryString.length);
+		for (let i = 0; i < binaryString.length; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+		const decoder = new TextDecoder("utf-8");
+		const content = decoder.decode(bytes);
 
 		return {
 			path: response.path,
@@ -851,17 +852,15 @@ export class GitHubService {
 				return null;
 			}
 
-			// Base64 디코딩
-			const content = decodeURIComponent(
-				atob(response.content.replace(/\n/g, ""))
-					.split("")
-					.map(
-						(c) =>
-							"%" +
-							("00" + c.charCodeAt(0).toString(16)).slice(-2),
-					)
-					.join(""),
-			);
+			// Base64 디코딩 (UTF-8 안전 처리)
+			const base64Content = response.content.replace(/\n/g, "");
+			const binaryString = atob(base64Content);
+			const bytes = new Uint8Array(binaryString.length);
+			for (let i = 0; i < binaryString.length; i++) {
+				bytes[i] = binaryString.charCodeAt(i);
+			}
+			const decoder = new TextDecoder("utf-8");
+			const content = decoder.decode(bytes);
 
 			return content;
 		} catch (error) {
