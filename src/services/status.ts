@@ -92,6 +92,18 @@ export class StatusService {
 	async calculateStatusOverview(
 		onProgress?: StatusProgressCallback
 	): Promise<StatusOverview> {
+		// JEO-18: 원격 동기화 먼저 수행
+		if (this.remoteSyncService) {
+			const syncSuccess = await this.syncWithRemote((message) => {
+				// 진행 콜백은 무시 (UI는 loadStatus에서 처리)
+				console.log('[StatusService] Remote sync:', message);
+			});
+
+			if (!syncSuccess) {
+				console.warn('[StatusService] Remote sync failed, continuing with local data');
+			}
+		}
+
 		const overview: StatusOverview = {
 			new: [],
 			modified: [],
