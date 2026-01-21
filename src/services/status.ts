@@ -231,37 +231,56 @@ export class StatusService {
 	 * 삭제가 필요한 노트 목록을 반환합니다.
 	 * (로컬에서 삭제되었거나 publish: false로 변경된 노트)
 	 *
+	 * 원격 동기화 캐시가 있는 경우, GitHub에 실제로 존재하는 파일은 제외합니다.
+	 *
 	 * @returns 삭제 필요 노트 목록
 	 */
 	findDeletedNotes(): NoteStatus[] {
 		const records = this.getPublishRecords();
 		const deletedNotes: NoteStatus[] = [];
 
+		// 원격 파일 캐시 가져오기
+		const remoteCache = this.getRemoteSyncCache?.();
+		const isCacheValid = remoteCache && this.remoteSyncService?.isCacheValid(remoteCache);
+
 		for (const [path, record] of Object.entries(records)) {
 			const abstractFile = this.vault.getAbstractFileByPath(path);
 
-			// 파일이 존재하지 않는 경우
-			if (!abstractFile || !(abstractFile instanceof TFile)) {
-				// 삭제된 파일을 위한 더미 객체 생성
-				const dummyFile = this.createDeletedFilePlaceholder(path);
-
-				deletedNotes.push({
-					file: dummyFile,
-					status: 'deleted',
-					record,
-				});
+			// 로컬에 파일이 존재하는 경우
+			if (abstractFile && abstractFile instanceof TFile) {
+				// publish: false로 변경된 경우만 deleted로 처리
+				const cache = this.metadataCache.getFileCache(abstractFile);
+				if (cache?.frontmatter?.publish !== true) {
+					deletedNotes.push({
+						file: abstractFile,
+						status: 'deleted',
+						record,
+					});
+				}
 				continue;
 			}
 
-			// publish: false로 변경된 경우
-			const cache = this.metadataCache.getFileCache(abstractFile);
-			if (cache?.frontmatter?.publish !== true) {
-				deletedNotes.push({
-					file: abstractFile,
-					status: 'deleted',
-					record,
-				});
+			// 로컬에 파일이 없는 경우
+			// 원격 캐시가 유효하면, 원격에도 없는 경우만 삭제 필요로 처리
+			if (isCacheValid && remoteCache) {
+				const existsInRemote = remoteCache.files.some(
+					f => f.path === record.remotePath
+				);
+
+				// 원격에도 없으면 이미 삭제된 것으로 간주, 제외
+				if (!existsInRemote) {
+					console.log(`[StatusService] Skipping ${record.remotePath} - already deleted from remote`);
+					continue;
+				}
 			}
+
+			// 로컬에 없고 원격에 있는 (또는 캐시가 없는) 경우 -> 삭제 필요
+			const dummyFile = this.createDeletedFilePlaceholder(path);
+			deletedNotes.push({
+				file: dummyFile,
+				status: 'deleted',
+				record,
+			});
 		}
 
 		return deletedNotes;
