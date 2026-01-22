@@ -8,7 +8,7 @@
  * 경로 정규화 - 선행/후행 슬래시 제거
  */
 export function normalizePath(path: string): string {
-	return path.trim().replace(/^\/+|\/+$/g, '');
+  return path.trim().replace(/^\/+|\/+$/g, "");
 }
 
 /**
@@ -26,18 +26,18 @@ export function normalizePath(path: string): string {
  * isPathInFolder("BlogExtra/hello.md", "Blog") // false (부분 매칭 방지)
  */
 export function isPathInFolder(filePath: string, folderPath: string): boolean {
-	const normalizedFile = normalizePath(filePath);
-	const normalizedFolder = normalizePath(folderPath);
+  const normalizedFile = normalizePath(filePath);
+  const normalizedFolder = normalizePath(folderPath);
 
-	if (!normalizedFolder) {
-		return true;
-	}
+  if (!normalizedFolder) {
+    return true;
+  }
 
-	if (!normalizedFile) {
-		return false;
-	}
+  if (!normalizedFile) {
+    return false;
+  }
 
-	return normalizedFile.startsWith(normalizedFolder + '/');
+  return normalizedFile.startsWith(normalizedFolder + "/");
 }
 
 /**
@@ -52,15 +52,12 @@ export function isPathInFolder(filePath: string, folderPath: string): boolean {
  * isPathInAnyFolder("Private/secret.md", ["Blog", "Notes"]) // false
  * isPathInAnyFolder("hello.md", []) // false (빈 목록)
  */
-export function isPathInAnyFolder(
-	filePath: string,
-	folders: string[]
-): boolean {
-	if (folders.length === 0) {
-		return false;
-	}
+export function isPathInAnyFolder(filePath: string, folders: string[]): boolean {
+  if (folders.length === 0) {
+    return false;
+  }
 
-	return folders.some((folder) => isPathInFolder(filePath, folder));
+  return folders.some((folder) => isPathInFolder(filePath, folder));
 }
 
 /**
@@ -77,18 +74,18 @@ export function isPathInAnyFolder(
  * stripRootFolder("hello.md", "") // "hello.md" (루트 폴더 없음)
  */
 export function stripRootFolder(filePath: string, rootFolder: string): string {
-	const normalizedFile = normalizePath(filePath);
-	const normalizedRoot = normalizePath(rootFolder);
+  const normalizedFile = normalizePath(filePath);
+  const normalizedRoot = normalizePath(rootFolder);
 
-	if (!normalizedRoot) {
-		return normalizedFile;
-	}
+  if (!normalizedRoot) {
+    return normalizedFile;
+  }
 
-	if (!isPathInFolder(normalizedFile, normalizedRoot)) {
-		return normalizedFile;
-	}
+  if (!isPathInFolder(normalizedFile, normalizedRoot)) {
+    return normalizedFile;
+  }
 
-	return normalizedFile.slice(normalizedRoot.length + 1);
+  return normalizedFile.slice(normalizedRoot.length + 1);
 }
 
 /**
@@ -103,12 +100,12 @@ export function stripRootFolder(filePath: string, rootFolder: string): string {
  * getParentFolder("Blog/hello.md") // "Blog"
  */
 export function getParentFolder(filePath: string): string {
-	const normalized = normalizePath(filePath);
-	const lastSlash = normalized.lastIndexOf('/');
+  const normalized = normalizePath(filePath);
+  const lastSlash = normalized.lastIndexOf("/");
 
-	if (lastSlash === -1) {
-		return '';
-	}
+  if (lastSlash === -1) {
+    return "";
+  }
 
-	return normalized.slice(0, lastSlash);
+  return normalized.slice(0, lastSlash);
 }

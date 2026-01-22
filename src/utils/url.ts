@@ -17,8 +17,8 @@
  * isValidGitHubUrl('') // false
  */
 export function isValidGitHubUrl(url: string): boolean {
-	if (!url) return false;
-	return /^https:\/\/github\.com\/[\w-]+\/[\w.-]+\/?$/.test(url);
+  if (!url) return false;
+  return /^https:\/\/github\.com\/[\w-]+\/[\w.-]+\/?$/.test(url);
 }
 
 /**
@@ -34,9 +34,9 @@ export function isValidGitHubUrl(url: string): boolean {
  * normalizeBaseUrl('') // ''
  */
 export function normalizeBaseUrl(baseUrl: string): string {
-	if (!baseUrl) return '';
-	if (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) {
-		return baseUrl;
-	}
-	return `https://${baseUrl}`;
+  if (!baseUrl) return "";
+  if (baseUrl.startsWith("http://") || baseUrl.startsWith("https://")) {
+    return baseUrl;
+  }
+  return `https://${baseUrl}`;
 }
