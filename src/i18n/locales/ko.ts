@@ -3,676 +3,624 @@ import type en from "./en";
 type TranslationKeys = keyof typeof en;
 
 const ko: { [K in TranslationKeys]?: string } = {
-	// Settings - GitHub
-	"settings.github.title": "GitHub 연결",
-	"settings.github.token": "GitHub 토큰",
-	"settings.github.tokenDesc": "repo 권한이 있는 Personal Access Token",
-	"settings.github.tokenLink": "토큰 생성",
-	"settings.github.repoUrl": "저장소 URL",
-	"settings.github.repoUrlDesc":
-		"Quartz 저장소 URL (예: https://github.com/user/quartz)",
-	"settings.github.branch": "브랜치",
-	"settings.github.branchDesc": "발행할 브랜치 (연결 테스트 시 자동 감지)",
-	"settings.github.testConnection": "연결 테스트",
-	"settings.github.testConnectionDesc": "GitHub 연결 및 Quartz 저장소 확인",
-	"settings.github.createRepo": "Quartz 저장소 생성",
-	"settings.github.newToQuartz": "Quartz가 처음이신가요?",
-	"settings.github.newToQuartzDesc": "템플릿으로 새 Quartz 저장소 생성",
+  // Settings - GitHub
+  "settings.github.title": "GitHub 연결",
+  "settings.github.token": "GitHub 토큰",
+  "settings.github.tokenDesc": "repo 권한이 있는 Personal Access Token",
+  "settings.github.tokenLink": "토큰 생성",
+  "settings.github.repoUrl": "저장소 URL",
+  "settings.github.repoUrlDesc": "Quartz 저장소 URL (예: https://github.com/user/quartz)",
+  "settings.github.branch": "브랜치",
+  "settings.github.branchDesc": "발행할 브랜치 (연결 테스트 시 자동 감지)",
+  "settings.github.testConnection": "연결 테스트",
+  "settings.github.testConnectionDesc": "GitHub 연결 및 Quartz 저장소 확인",
+  "settings.github.createRepo": "Quartz 저장소 생성",
+  "settings.github.newToQuartz": "Quartz가 처음이신가요?",
+  "settings.github.newToQuartzDesc": "템플릿으로 새 Quartz 저장소 생성",
 
-	// Settings - Quick Links
-	"settings.quickLinks.title": "바로가기",
-	"settings.quickLinks.github": "GitHub 저장소 열기",
-	"settings.quickLinks.githubDisabled":
-		"GitHub 저장소 (먼저 저장소 URL을 설정하세요)",
-	"settings.quickLinks.site": "배포 사이트 열기",
-	"settings.quickLinks.siteDisabled":
-		"배포 사이트 (먼저 사이트 URL을 설정하세요)",
+  // Settings - Quick Links
+  "settings.quickLinks.title": "바로가기",
+  "settings.quickLinks.github": "GitHub 저장소 열기",
+  "settings.quickLinks.githubDisabled": "GitHub 저장소 (먼저 저장소 URL을 설정하세요)",
+  "settings.quickLinks.site": "배포 사이트 열기",
+  "settings.quickLinks.siteDisabled": "배포 사이트 (먼저 사이트 URL을 설정하세요)",
 
-	// Settings - Auto Date
-	"settings.autoDate.title": "자동 날짜 필드",
-	"settings.autoDate.desc":
-		"발행 시 프론트매터에 날짜 필드를 자동으로 추가합니다. 기존 필드는 유지됩니다.",
-	"settings.autoDate.created": "생성일 추가",
-	"settings.autoDate.createdDesc": "파일 생성일 추가 (형식: YYYY-MM-DD)",
-	"settings.autoDate.modified": "수정일 추가",
-	"settings.autoDate.modifiedDesc": "파일 수정일 추가 (형식: YYYY-MM-DD)",
-	"settings.autoDate.published": "발행일 추가",
-	"settings.autoDate.publishedDesc":
-		"현재 날짜를 발행일로 추가 (형식: YYYY-MM-DD)",
-	"settings.autoDate.title_field": "Title 자동 추가",
-	"settings.autoDate.title_fieldDesc": "파일명에서 title 필드 자동 생성",
-	"settings.autoDate.description_field": "Description 자동 추가",
-	"settings.autoDate.description_fieldDesc":
-		"첫 문단에서 description 필드 자동 생성",
+  // Settings - Auto Date
+  "settings.autoDate.title": "자동 날짜 필드",
+  "settings.autoDate.desc":
+    "발행 시 프론트매터에 날짜 필드를 자동으로 추가합니다. 기존 필드는 유지됩니다.",
+  "settings.autoDate.created": "생성일 추가",
+  "settings.autoDate.createdDesc": "파일 생성일 추가 (형식: YYYY-MM-DD)",
+  "settings.autoDate.modified": "수정일 추가",
+  "settings.autoDate.modifiedDesc": "파일 수정일 추가 (형식: YYYY-MM-DD)",
+  "settings.autoDate.published": "발행일 추가",
+  "settings.autoDate.publishedDesc": "현재 날짜를 발행일로 추가 (형식: YYYY-MM-DD)",
+  "settings.autoDate.title_field": "Title 자동 추가",
+  "settings.autoDate.title_fieldDesc": "파일명에서 title 필드 자동 생성",
+  "settings.autoDate.description_field": "Description 자동 추가",
+  "settings.autoDate.description_fieldDesc": "첫 문단에서 description 필드 자동 생성",
 
-	// Settings - Frontmatter
-	"settings.frontmatter.title": "Frontmatter 설정",
-	"settings.frontmatter.editor": "발행 전 편집기 표시",
-	"settings.frontmatter.editorDesc":
-		"발행 전 frontmatter를 편집할 수 있는 모달 표시",
-	"settings.frontmatter.validation": "검증 활성화",
-	"settings.frontmatter.validationDesc": "Frontmatter 필수 필드 검증",
-	"settings.frontmatter.requireTitle": "Title 필수",
-	"settings.frontmatter.requireTitleDesc": "title 필드가 없으면 경고",
-	"settings.frontmatter.requireDescription": "Description 필수",
-	"settings.frontmatter.requireDescriptionDesc":
-		"description 필드가 없으면 경고",
-	"settings.frontmatter.requireTags": "Tags 필수",
-	"settings.frontmatter.requireTagsDesc": "tags 필드가 없으면 경고",
+  // Settings - Frontmatter
+  "settings.frontmatter.title": "Frontmatter 설정",
+  "settings.frontmatter.editor": "발행 전 편집기 표시",
+  "settings.frontmatter.editorDesc": "발행 전 frontmatter를 편집할 수 있는 모달 표시",
+  "settings.frontmatter.validation": "검증 활성화",
+  "settings.frontmatter.validationDesc": "Frontmatter 필수 필드 검증",
+  "settings.frontmatter.requireTitle": "Title 필수",
+  "settings.frontmatter.requireTitleDesc": "title 필드가 없으면 경고",
+  "settings.frontmatter.requireDescription": "Description 필수",
+  "settings.frontmatter.requireDescriptionDesc": "description 필드가 없으면 경고",
+  "settings.frontmatter.requireTags": "Tags 필수",
+  "settings.frontmatter.requireTagsDesc": "tags 필드가 없으면 경고",
 
-	// Settings - Quartz
-	"settings.quartz.title": "Quartz 고급 설정",
-	"settings.quartz.load": "Quartz 설정 불러오기",
-	"settings.quartz.loadDesc": "quartz.config.ts에서 설정 가져오기",
-	"settings.quartz.loading": "Quartz 설정 불러오는 중...",
-	"settings.quartz.connectFirst":
-		"Quartz 설정을 구성하려면 먼저 GitHub에 연결하세요.",
-	"settings.quartz.retry": "다시 시도",
-	"settings.quartz.loadFailed": "설정 불러오기 실패: {{message}}",
-	"settings.quartz.loadingTitle": "Quartz 설정 불러오는 중",
-	"settings.quartz.loadingSubtitle": "GitHub에서 quartz.config.ts를 가져오는 중...",
+  // Settings - Quartz
+  "settings.quartz.title": "Quartz 고급 설정",
+  "settings.quartz.load": "Quartz 설정 불러오기",
+  "settings.quartz.loadDesc": "quartz.config.ts에서 설정 가져오기",
+  "settings.quartz.loading": "Quartz 설정 불러오는 중...",
+  "settings.quartz.connectFirst": "Quartz 설정을 구성하려면 먼저 GitHub에 연결하세요.",
+  "settings.quartz.retry": "다시 시도",
+  "settings.quartz.loadFailed": "설정 불러오기 실패: {{message}}",
+  "settings.quartz.loadingTitle": "Quartz 설정 불러오는 중",
+  "settings.quartz.loadingSubtitle": "GitHub에서 quartz.config.ts를 가져오는 중...",
 
-	// Settings - Site Info
-	"settings.siteInfo.title": "사이트 정보",
-	"settings.siteInfo.pageTitle": "페이지 제목",
-	"settings.siteInfo.pageTitleDesc":
-		"사이트 제목 (브라우저 탭, 헤더 등에 표시)",
-	"settings.siteInfo.pageTitlePlaceholder": "나의 디지털 정원",
-	"settings.siteInfo.baseUrl": "기본 URL",
-	"settings.siteInfo.baseUrlDesc":
-		"사이트 도메인 (프로토콜 제외, 예: example.com 또는 username.github.io)",
-	"settings.siteInfo.baseUrlPlaceholder": "quartz.jzhao.xyz",
-	"settings.siteInfo.locale": "로케일",
-	"settings.siteInfo.localeDesc": "사이트의 기본 언어 및 지역 설정",
+  // Settings - Site Info
+  "settings.siteInfo.title": "사이트 정보",
+  "settings.siteInfo.pageTitle": "페이지 제목",
+  "settings.siteInfo.pageTitleDesc": "사이트 제목 (브라우저 탭, 헤더 등에 표시)",
+  "settings.siteInfo.pageTitlePlaceholder": "나의 디지털 정원",
+  "settings.siteInfo.baseUrl": "기본 URL",
+  "settings.siteInfo.baseUrlDesc":
+    "사이트 도메인 (프로토콜 제외, 예: example.com 또는 username.github.io)",
+  "settings.siteInfo.baseUrlPlaceholder": "quartz.jzhao.xyz",
+  "settings.siteInfo.locale": "로케일",
+  "settings.siteInfo.localeDesc": "사이트의 기본 언어 및 지역 설정",
 
-	// Settings - Behavior
-	"settings.behavior.title": "동작",
-	"settings.behavior.enableSPA": "SPA 활성화",
-	"settings.behavior.enableSPADesc": "단일 페이지 애플리케이션 모드 활성화",
-	"settings.behavior.enablePopovers": "팝오버 활성화",
-	"settings.behavior.enablePopoversDesc": "링크 미리보기 팝오버 활성화",
-	"settings.behavior.defaultDateType": "기본 날짜 유형",
-	"settings.behavior.defaultDateTypeDesc": "표시할 기본 날짜 유형",
+  // Settings - Behavior
+  "settings.behavior.title": "동작",
+  "settings.behavior.enableSPA": "SPA 활성화",
+  "settings.behavior.enableSPADesc": "단일 페이지 애플리케이션 모드 활성화",
+  "settings.behavior.enablePopovers": "팝오버 활성화",
+  "settings.behavior.enablePopoversDesc": "링크 미리보기 팝오버 활성화",
+  "settings.behavior.defaultDateType": "기본 날짜 유형",
+  "settings.behavior.defaultDateTypeDesc": "표시할 기본 날짜 유형",
 
-	// Settings - Analytics
-	"settings.analytics.title": "분석",
-	"settings.analytics.provider": "제공자",
-	"settings.analytics.providerDesc": "분석 서비스 제공자",
-	"settings.analytics.none": "없음",
+  // Settings - Analytics
+  "settings.analytics.title": "분석",
+  "settings.analytics.provider": "제공자",
+  "settings.analytics.providerDesc": "분석 서비스 제공자",
+  "settings.analytics.none": "없음",
 
-	// Settings - Comments
-	"settings.comments.title": "댓글",
-	"settings.comments.provider": "댓글 제공자",
-	"settings.comments.providerDesc":
-		"사이트에 사용할 댓글 시스템을 선택하세요",
-	"settings.comments.giscusHelpPrefix": "",
-	"settings.comments.giscusHelpLinkText": "giscus.app",
-	"settings.comments.giscusHelpSuffix": "에서 저장소 설정을 확인하세요",
-	"settings.comments.repo": "저장소",
-	"settings.comments.repoDesc": "GitHub 토론을 위한 저장소 (owner/repo 형식)",
-	"settings.comments.repoId": "저장소 ID",
-	"settings.comments.repoIdDesc":
-		"Giscus 설정에서 가져온 저장소 ID (data-repo-id)",
-	"settings.comments.category": "토론 카테고리",
-	"settings.comments.categoryDesc": "토론 카테고리 이름 (예: Announcements)",
-	"settings.comments.categoryId": "카테고리 ID",
-	"settings.comments.categoryIdDesc":
-		"Giscus 설정에서 가져온 카테고리 ID (data-category-id)",
-	"settings.comments.optionalTitle": "선택 설정",
-	"settings.comments.mapping": "매핑",
-	"settings.comments.mappingDesc": "페이지를 토론에 연결하는 방법",
-	"settings.comments.lang": "언어",
-	"settings.comments.langDesc": "댓글 인터페이스 언어 (예: en, ko)",
-	"settings.comments.reactionsEnabled": "리액션 활성화",
-	"settings.comments.reactionsEnabledDesc": "메인 포스트에 리액션 허용",
-	"settings.comments.inputPosition": "입력창 위치",
-	"settings.comments.inputPositionDesc": "댓글 입력창의 위치",
-	"settings.comments.strict": "엄격한 매칭",
-	"settings.comments.strictDesc": "토론에 엄격한 제목 매칭 사용",
-	"settings.comments.errors.invalidRepo":
-		"저장소는 owner/repo 형식이어야 합니다",
-	"settings.comments.errors.repoIdRequired": "저장소 ID가 필요합니다",
-	"settings.comments.errors.categoryRequired": "카테고리 이름이 필요합니다",
-	"settings.comments.errors.categoryIdRequired": "카테고리 ID가 필요합니다",
-	// Comments - Options
-	"settings.comments.provider.none": "없음",
-	"settings.comments.provider.giscus": "Giscus (GitHub Discussions)",
-	"settings.comments.mapping.url": "URL",
-	"settings.comments.mapping.title": "제목",
-	"settings.comments.mapping.ogTitle": "og:title",
-	"settings.comments.mapping.pathname": "경로명",
-	"settings.comments.mapping.specific": "특정 용어",
-	"settings.comments.mapping.number": "이슈 번호",
-	"settings.comments.inputPosition.bottom": "하단",
-	"settings.comments.inputPosition.top": "상단",
+  // Settings - Comments
+  "settings.comments.title": "댓글",
+  "settings.comments.provider": "댓글 제공자",
+  "settings.comments.providerDesc": "사이트에 사용할 댓글 시스템을 선택하세요",
+  "settings.comments.giscusHelpPrefix": "",
+  "settings.comments.giscusHelpLinkText": "giscus.app",
+  "settings.comments.giscusHelpSuffix": "에서 저장소 설정을 확인하세요",
+  "settings.comments.repo": "저장소",
+  "settings.comments.repoDesc": "GitHub 토론을 위한 저장소 (owner/repo 형식)",
+  "settings.comments.repoId": "저장소 ID",
+  "settings.comments.repoIdDesc": "Giscus 설정에서 가져온 저장소 ID (data-repo-id)",
+  "settings.comments.category": "토론 카테고리",
+  "settings.comments.categoryDesc": "토론 카테고리 이름 (예: Announcements)",
+  "settings.comments.categoryId": "카테고리 ID",
+  "settings.comments.categoryIdDesc": "Giscus 설정에서 가져온 카테고리 ID (data-category-id)",
+  "settings.comments.optionalTitle": "선택 설정",
+  "settings.comments.mapping": "매핑",
+  "settings.comments.mappingDesc": "페이지를 토론에 연결하는 방법",
+  "settings.comments.lang": "언어",
+  "settings.comments.langDesc": "댓글 인터페이스 언어 (예: en, ko)",
+  "settings.comments.reactionsEnabled": "리액션 활성화",
+  "settings.comments.reactionsEnabledDesc": "메인 포스트에 리액션 허용",
+  "settings.comments.inputPosition": "입력창 위치",
+  "settings.comments.inputPositionDesc": "댓글 입력창의 위치",
+  "settings.comments.strict": "엄격한 매칭",
+  "settings.comments.strictDesc": "토론에 엄격한 제목 매칭 사용",
+  "settings.comments.errors.invalidRepo": "저장소는 owner/repo 형식이어야 합니다",
+  "settings.comments.errors.repoIdRequired": "저장소 ID가 필요합니다",
+  "settings.comments.errors.categoryRequired": "카테고리 이름이 필요합니다",
+  "settings.comments.errors.categoryIdRequired": "카테고리 ID가 필요합니다",
+  // Comments - Options
+  "settings.comments.provider.none": "없음",
+  "settings.comments.provider.giscus": "Giscus (GitHub Discussions)",
+  "settings.comments.mapping.url": "URL",
+  "settings.comments.mapping.title": "제목",
+  "settings.comments.mapping.ogTitle": "og:title",
+  "settings.comments.mapping.pathname": "경로명",
+  "settings.comments.mapping.specific": "특정 용어",
+  "settings.comments.mapping.number": "이슈 번호",
+  "settings.comments.inputPosition.bottom": "하단",
+  "settings.comments.inputPosition.top": "상단",
 
-	// Settings - Typography
-	"settings.typography.title": "타이포그래피",
-	"settings.typography.header": "헤더 폰트",
-	"settings.typography.headerDesc": "문서 제목 및 헤더에 사용되는 폰트",
-	"settings.typography.body": "본문 폰트",
-	"settings.typography.bodyDesc": "본문 텍스트에 사용되는 폰트",
-	"settings.typography.code": "코드 폰트",
-	"settings.typography.codeDesc": "코드 블록에 사용되는 폰트",
-	"settings.typography.change": "변경",
+  // Settings - Typography
+  "settings.typography.title": "타이포그래피",
+  "settings.typography.header": "헤더 폰트",
+  "settings.typography.headerDesc": "문서 제목 및 헤더에 사용되는 폰트",
+  "settings.typography.body": "본문 폰트",
+  "settings.typography.bodyDesc": "본문 텍스트에 사용되는 폰트",
+  "settings.typography.code": "코드 폰트",
+  "settings.typography.codeDesc": "코드 블록에 사용되는 폰트",
+  "settings.typography.change": "변경",
 
-	// Settings - Publishing
-	"settings.publishing.title": "발행",
-	"settings.publishing.explicitPublish": "명시적 발행",
-	"settings.publishing.explicitPublishDesc":
-		"명시적 발행 플래그가 있는 노트만 발행",
-	"settings.publishing.ignorePatterns": "무시 패턴",
-	"settings.publishing.ignorePatternsDesc": "발행 시 무시할 Glob 패턴",
+  // Settings - Publishing
+  "settings.publishing.title": "발행",
+  "settings.publishing.explicitPublish": "명시적 발행",
+  "settings.publishing.explicitPublishDesc": "명시적 발행 플래그가 있는 노트만 발행",
+  "settings.publishing.ignorePatterns": "무시 패턴",
+  "settings.publishing.ignorePatternsDesc": "발행 시 무시할 Glob 패턴",
 
-	// Settings - Custom CSS
-	"settings.customCss.title": "커스텀 CSS",
-	"settings.customCss.content": "CSS 내용",
-	"settings.customCss.contentDesc":
-		"Quartz 사이트 스타일을 위한 커스텀 CSS/SCSS 코드를 입력하세요.",
-	"settings.customCss.upload": "커스텀 CSS 적용",
-	"settings.customCss.loading": "GitHub에서 커스텀 CSS 로딩 중...",
-	"settings.customCss.loaded": "GitHub에서 로드됨",
-	"settings.customCss.notFound": "리포지토리에 custom.scss 파일이 없습니다",
-	"settings.customCss.loadError": "로드 실패: {{message}}",
+  // Settings - Custom CSS
+  "settings.customCss.title": "커스텀 CSS",
+  "settings.customCss.content": "CSS 내용",
+  "settings.customCss.contentDesc":
+    "Quartz 사이트 스타일을 위한 커스텀 CSS/SCSS 코드를 입력하세요.",
+  "settings.customCss.upload": "커스텀 CSS 적용",
+  "settings.customCss.loading": "GitHub에서 커스텀 CSS 로딩 중...",
+  "settings.customCss.loaded": "GitHub에서 로드됨",
+  "settings.customCss.notFound": "리포지토리에 custom.scss 파일이 없습니다",
+  "settings.customCss.loadError": "로드 실패: {{message}}",
 
-	// Settings - Publish Filter
-	"settings.filter.title": "발행 설정",
-	"settings.filter.includeFolders": "포함 폴더",
-	"settings.filter.includeFoldersDesc":
-		"이 폴더의 노트만 발행합니다 (줄당 하나). 비워두면 전체 포함.",
-	"settings.filter.includeFoldersPlaceholder": "Blog\nNotes/Public",
-	"settings.filter.excludeFolders": "제외 폴더",
-	"settings.filter.excludeFoldersDesc": "발행에서 제외할 폴더 (줄당 하나)",
-	"settings.filter.excludeFoldersPlaceholder": "Private\nTemplates\nArchive",
-	"settings.filter.excludeTags": "제외 태그",
-	"settings.filter.excludeTagsDesc":
-		"이 태그가 있는 노트를 제외합니다 (줄당 하나, # 제외)",
-	"settings.filter.excludeTagsPlaceholder": "private\nwip\ndraft",
-	"settings.filter.rootFolder": "루트 폴더",
-	"settings.filter.rootFolderDesc":
-		"이 폴더를 Quartz 루트로 설정합니다 (경로는 이 폴더 기준으로 계산)",
-	"settings.filter.rootFolderPlaceholder": "Blog",
-	"settings.filter.homePage": "홈 페이지",
-	"settings.filter.homePageDesc":
-		"Quartz 홈 페이지로 사용할 노트 (index.md로 발행)",
-	"settings.filter.homePagePlaceholder": "Welcome.md",
-	"settings.filter.folderNotFound": "폴더를 찾을 수 없습니다: {{folders}}",
-	"settings.filter.noteNotFound": "노트를 찾을 수 없습니다: {{path}}",
-	"settings.filter.fileNotFound": "파일을 찾을 수 없습니다: {{path}}",
-	"settings.filter.homePageMustBeMd": "홈 페이지는 .md 파일이어야 합니다",
+  // Settings - Publish Filter
+  "settings.filter.title": "발행 설정",
+  "settings.filter.includeFolders": "포함 폴더",
+  "settings.filter.includeFoldersDesc":
+    "이 폴더의 노트만 발행합니다 (줄당 하나). 비워두면 전체 포함.",
+  "settings.filter.includeFoldersPlaceholder": "Blog\nNotes/Public",
+  "settings.filter.excludeFolders": "제외 폴더",
+  "settings.filter.excludeFoldersDesc": "발행에서 제외할 폴더 (줄당 하나)",
+  "settings.filter.excludeFoldersPlaceholder": "Private\nTemplates\nArchive",
+  "settings.filter.excludeTags": "제외 태그",
+  "settings.filter.excludeTagsDesc": "이 태그가 있는 노트를 제외합니다 (줄당 하나, # 제외)",
+  "settings.filter.excludeTagsPlaceholder": "private\nwip\ndraft",
+  "settings.filter.rootFolder": "루트 폴더",
+  "settings.filter.rootFolderDesc":
+    "이 폴더를 Quartz 루트로 설정합니다 (경로는 이 폴더 기준으로 계산)",
+  "settings.filter.rootFolderPlaceholder": "Blog",
+  "settings.filter.homePage": "홈 페이지",
+  "settings.filter.homePageDesc": "Quartz 홈 페이지로 사용할 노트 (index.md로 발행)",
+  "settings.filter.homePagePlaceholder": "Welcome.md",
+  "settings.filter.folderNotFound": "폴더를 찾을 수 없습니다: {{folders}}",
+  "settings.filter.noteNotFound": "노트를 찾을 수 없습니다: {{path}}",
+  "settings.filter.fileNotFound": "파일을 찾을 수 없습니다: {{path}}",
+  "settings.filter.homePageMustBeMd": "홈 페이지는 .md 파일이어야 합니다",
 
-	// Settings - Apply
-	"settings.apply.button": "변경 사항 적용",
-	"settings.apply.refresh": "새로고침",
-	"settings.apply.unsavedWarning": "저장되지 않은 변경 사항이 있습니다",
-	"settings.apply.discard": "취소",
+  // Settings - Apply
+  "settings.apply.button": "변경 사항 적용",
+  "settings.apply.refresh": "새로고침",
+  "settings.apply.unsavedWarning": "저장되지 않은 변경 사항이 있습니다",
+  "settings.apply.discard": "취소",
 
-	// Dashboard
-	"dashboard.title": "발행 대시보드",
-	"dashboard.tab.new": "새 노트",
-	"dashboard.tab.modified": "수정됨",
-	"dashboard.tab.deleted": "삭제됨",
-	"dashboard.tab.synced": "동기화됨",
-	"dashboard.action.publish": "발행",
-	"dashboard.action.delete": "삭제",
-	"dashboard.action.syncAll": "모두 동기화",
-	"dashboard.action.close": "닫기",
-	"dashboard.action.refresh": "새로고침",
-	"dashboard.selectAll": "전체 선택 ({{count}})",
-	"dashboard.selected": "{{count}}개 선택됨",
-	"dashboard.status.loading": "상태 불러오는 중...",
-	"dashboard.status.offline": "오프라인",
-	"dashboard.empty.new": "발행할 새 노트가 없습니다.",
-	"dashboard.empty.modified": "수정된 노트가 없습니다.",
-	"dashboard.empty.deleted": "삭제할 노트가 없습니다.",
-	"dashboard.empty.synced": "동기화된 노트가 없습니다.",
-	"dashboard.tabDescription.new": "아직 발행되지 않은 새 노트입니다",
-	"dashboard.tabDescription.modified": "발행 후 내용이 변경된 노트입니다",
-	"dashboard.tabDescription.deleted":
-		"로컬에서 삭제되었거나 발행 해제된 노트입니다",
-	"dashboard.tabDescription.synced": "원격과 동기화된 최신 상태의 노트입니다",
-	// Dashboard - Accessibility
-	"dashboard.aria.tabs": "발행 상태 탭",
-	"dashboard.aria.itemCount": "{{count}}개",
-	"dashboard.aria.selectNote": "{{name}} 선택",
-	"dashboard.aria.toolbar": "대시보드 작업",
-	// Dashboard - Remote Sync (JEO-18)
-	"dashboard.remoteSync.fetching": "원격 저장소와 동기화 중...",
-	"dashboard.remoteSync.success": "원격 저장소와 동기화 완료",
-	"dashboard.remoteSync.failed": "원격 동기화 실패. 로컬 데이터를 사용합니다.",
-	"dashboard.remoteSync.cacheUsed": "캐시된 원격 데이터 사용",
-	"dashboard.remoteSync.progress": "원격에서 {{count}}개 파일 동기화됨",
+  // Dashboard
+  "dashboard.title": "발행 대시보드",
+  "dashboard.tab.new": "새 노트",
+  "dashboard.tab.modified": "수정됨",
+  "dashboard.tab.deleted": "삭제됨",
+  "dashboard.tab.synced": "동기화됨",
+  "dashboard.action.publish": "발행",
+  "dashboard.action.delete": "삭제",
+  "dashboard.action.syncAll": "모두 동기화",
+  "dashboard.action.close": "닫기",
+  "dashboard.action.refresh": "새로고침",
+  "dashboard.selectAll": "전체 선택 ({{count}})",
+  "dashboard.selected": "{{count}}개 선택됨",
+  "dashboard.status.loading": "상태 불러오는 중...",
+  "dashboard.status.offline": "오프라인",
+  "dashboard.empty.new": "발행할 새 노트가 없습니다.",
+  "dashboard.empty.modified": "수정된 노트가 없습니다.",
+  "dashboard.empty.deleted": "삭제할 노트가 없습니다.",
+  "dashboard.empty.synced": "동기화된 노트가 없습니다.",
+  "dashboard.tabDescription.new": "아직 발행되지 않은 새 노트입니다",
+  "dashboard.tabDescription.modified": "발행 후 내용이 변경된 노트입니다",
+  "dashboard.tabDescription.deleted": "로컬에서 삭제되었거나 발행 해제된 노트입니다",
+  "dashboard.tabDescription.synced": "원격과 동기화된 최신 상태의 노트입니다",
+  // Dashboard - Accessibility
+  "dashboard.aria.tabs": "발행 상태 탭",
+  "dashboard.aria.itemCount": "{{count}}개",
+  "dashboard.aria.selectNote": "{{name}} 선택",
+  "dashboard.aria.toolbar": "대시보드 작업",
+  // Dashboard - Remote Sync (JEO-18)
+  "dashboard.remoteSync.fetching": "원격 저장소와 동기화 중...",
+  "dashboard.remoteSync.success": "원격 저장소와 동기화 완료",
+  "dashboard.remoteSync.failed": "원격 동기화 실패. 로컬 데이터를 사용합니다.",
+  "dashboard.remoteSync.cacheUsed": "캐시된 원격 데이터 사용",
+  "dashboard.remoteSync.progress": "원격에서 {{count}}개 파일 동기화됨",
 
-	// Notices
-	"notice.publish.start": "{{filename}} 발행 중...",
-	"notice.publish.success": "발행 완료: {{filename}} → {{path}}",
-	"notice.publish.failed": "발행 실패: {{filename}} ({{error}})",
-	"notice.publish.error": "발행 오류: {{message}}",
-	"notice.publish.cancelled": "발행이 취소되었습니다.",
-	"notice.batch.success": "{{count}}개 노트가 발행되었습니다.",
-	"notice.batch.partial": "발행: {{succeeded}}개 성공, {{failed}}개 실패",
-	"notice.delete.success": "{{count}}개 노트가 삭제되었습니다.",
-	"notice.delete.partial": "삭제: {{succeeded}}개 성공, {{failed}}개 실패",
-	"notice.sync.success": "{{count}}개 항목이 동기화되었습니다.",
-	"notice.sync.noChanges": "동기화할 변경 사항이 없습니다.",
-	"notice.connection.success": "연결 성공!",
-	"notice.connection.failed": "연결 실패: {{message}}",
-	"notice.network.offline":
-		"인터넷 연결을 확인해 주세요. 발행하려면 네트워크 연결이 필요합니다.",
-	"notice.settings.saved": "설정이 저장되었습니다",
-	"notice.settings.discarded": "변경 사항이 취소되었습니다",
-	"notice.settings.validationFailed": "유효성 검사 실패: {{error}}",
-	"notice.settings.reloaded":
-		"설정이 다시 로드되었습니다. 변경 사항을 다시 적용해 주세요.",
-	"notice.noActiveFile": "활성화된 마크다운 파일이 없습니다",
-	"notice.configureFirst": "먼저 GitHub 설정을 구성해 주세요",
-	"notice.noGitHubRepo": "GitHub 저장소가 설정되지 않았습니다",
-	"notice.noBaseUrl": "배포 사이트 URL이 설정되지 않았습니다",
-	"notice.customCss.noPath": "커스텀 CSS 파일 경로를 지정해 주세요",
-	"notice.customCss.notFound":
-		"볼트에서 커스텀 CSS 파일을 찾을 수 없습니다: {{path}}",
-	"notice.customCss.success": "커스텀 CSS가 성공적으로 업로드되었습니다",
-	"notice.customCss.failed": "커스텀 CSS 업로드 실패: {{error}}",
-	"notice.customCss.error": "커스텀 CSS 업로드 오류: {{message}}",
+  // Notices
+  "notice.publish.start": "{{filename}} 발행 중...",
+  "notice.publish.success": "발행 완료: {{filename}} → {{path}}",
+  "notice.publish.failed": "발행 실패: {{filename}} ({{error}})",
+  "notice.publish.error": "발행 오류: {{message}}",
+  "notice.publish.cancelled": "발행이 취소되었습니다.",
+  "notice.batch.success": "{{count}}개 노트가 발행되었습니다.",
+  "notice.batch.partial": "발행: {{succeeded}}개 성공, {{failed}}개 실패",
+  "notice.delete.success": "{{count}}개 노트가 삭제되었습니다.",
+  "notice.delete.partial": "삭제: {{succeeded}}개 성공, {{failed}}개 실패",
+  "notice.sync.success": "{{count}}개 항목이 동기화되었습니다.",
+  "notice.sync.noChanges": "동기화할 변경 사항이 없습니다.",
+  "notice.connection.success": "연결 성공!",
+  "notice.connection.failed": "연결 실패: {{message}}",
+  "notice.network.offline": "인터넷 연결을 확인해 주세요. 발행하려면 네트워크 연결이 필요합니다.",
+  "notice.settings.saved": "설정이 저장되었습니다",
+  "notice.settings.discarded": "변경 사항이 취소되었습니다",
+  "notice.settings.validationFailed": "유효성 검사 실패: {{error}}",
+  "notice.settings.reloaded": "설정이 다시 로드되었습니다. 변경 사항을 다시 적용해 주세요.",
+  "notice.noActiveFile": "활성화된 마크다운 파일이 없습니다",
+  "notice.configureFirst": "먼저 GitHub 설정을 구성해 주세요",
+  "notice.noGitHubRepo": "GitHub 저장소가 설정되지 않았습니다",
+  "notice.noBaseUrl": "배포 사이트 URL이 설정되지 않았습니다",
+  "notice.customCss.noPath": "커스텀 CSS 파일 경로를 지정해 주세요",
+  "notice.customCss.notFound": "볼트에서 커스텀 CSS 파일을 찾을 수 없습니다: {{path}}",
+  "notice.customCss.success": "커스텀 CSS가 성공적으로 업로드되었습니다",
+  "notice.customCss.failed": "커스텀 CSS 업로드 실패: {{error}}",
+  "notice.customCss.error": "커스텀 CSS 업로드 오류: {{message}}",
 
-	// Commands
-	"command.publishNote": "현재 노트를 Quartz에 발행",
-	"command.openDashboard": "발행 대시보드 열기",
-	"command.openGitHubRepo": "GitHub 저장소 열기",
-	"command.openDeployedSite": "배포 사이트 열기",
+  // Commands
+  "command.publishNote": "현재 노트를 Quartz에 발행",
+  "command.openDashboard": "발행 대시보드 열기",
+  "command.openGitHubRepo": "GitHub 저장소 열기",
+  "command.openDeployedSite": "배포 사이트 열기",
 
-	// Menus
-	"menu.publishToQuartz": "Quartz에 발행",
+  // Menus
+  "menu.publishToQuartz": "Quartz에 발행",
 
-	// Modals - Confirm
-	"modal.confirm.title": "확인",
-	"modal.confirm.ok": "확인",
-	"modal.confirm.cancel": "취소",
-	"modal.fileNotFound.title": "파일을 찾을 수 없음",
-	"modal.fileNotFound.message": "원격 저장소에서 '{{fileName}}' 파일을 찾을 수 없습니다. 다시 발행하시겠습니까?",
-	"dashboard.modified.koreanFilenameWarning": "한글 파일명이 포함된 항목을 클릭하면 파일을 찾지 못할 수 있습니다. 이 경우 다시 발행해 주세요.",
-	"modal.delete.title": "삭제 확인",
-	"modal.delete.message": "GitHub에서 {{count}}개 노트를 삭제하시겠습니까?",
-	"modal.sync.title": "동기화 확인",
-	"modal.sync.message":
-		"새 노트 {{newCount}}개, 수정된 노트 {{modifiedCount}}개를 발행하고 {{deleteCount}}개를 삭제합니다. 계속하시겠습니까?",
-	"modal.apply.title": "설정 적용",
-	"modal.apply.message":
-		"다음 설정이 변경됩니다:\n{{summary}}\n\nGitHub에 변경 사항을 저장하시겠습니까?",
-	"modal.apply.confirm": "적용",
+  // Modals - Confirm
+  "modal.confirm.title": "확인",
+  "modal.confirm.ok": "확인",
+  "modal.confirm.cancel": "취소",
+  "modal.fileNotFound.title": "파일을 찾을 수 없음",
+  "modal.fileNotFound.message":
+    "원격 저장소에서 '{{fileName}}' 파일을 찾을 수 없습니다. 다시 발행하시겠습니까?",
+  "dashboard.modified.koreanFilenameWarning":
+    "한글 파일명이 포함된 항목을 클릭하면 파일을 찾지 못할 수 있습니다. 이 경우 다시 발행해 주세요.",
+  "modal.delete.title": "삭제 확인",
+  "modal.delete.message": "GitHub에서 {{count}}개 노트를 삭제하시겠습니까?",
+  "modal.sync.title": "동기화 확인",
+  "modal.sync.message":
+    "새 노트 {{newCount}}개, 수정된 노트 {{modifiedCount}}개를 발행하고 {{deleteCount}}개를 삭제합니다. 계속하시겠습니까?",
+  "modal.apply.title": "설정 적용",
+  "modal.apply.message":
+    "다음 설정이 변경됩니다:\n{{summary}}\n\nGitHub에 변경 사항을 저장하시겠습니까?",
+  "modal.apply.confirm": "적용",
 
-	// Modals - Conflict
-	"modal.conflict.title": "설정 충돌 감지",
-	"modal.conflict.message":
-		"GitHub의 설정이 수정되었습니다. 어떻게 하시겠습니까?",
-	"modal.conflict.reload": "다시 불러오기",
-	"modal.conflict.overwrite": "강제 덮어쓰기",
+  // Modals - Conflict
+  "modal.conflict.title": "설정 충돌 감지",
+  "modal.conflict.message": "GitHub의 설정이 수정되었습니다. 어떻게 하시겠습니까?",
+  "modal.conflict.reload": "다시 불러오기",
+  "modal.conflict.overwrite": "강제 덮어쓰기",
 
-	// Modals - Large File
-	"modal.largeFile.title": "대용량 파일 경고",
-	"modal.largeFile.message":
-		"{{count}}개 파일이 {{size}}를 초과합니다. 대용량 파일은 발행에 문제가 발생할 수 있습니다.",
-	"modal.largeFile.continue": "계속 진행",
-	"modal.largeFile.listLabel": "대용량 파일 목록",
-	"modal.largeFile.fileSize": "파일 크기: {{size}}",
-	"modal.largeFile.maxSize": "권장 최대 파일 크기: {{size}}",
-	"modal.largeFile.tip.uploadTime":
-		"대용량 파일은 업로드 시간이 오래 걸릴 수 있습니다.",
-	"modal.largeFile.tip.githubLimit":
-		"GitHub에는 파일당 100MB 제한이 있습니다.",
-	"modal.largeFile.tip.imageCompression":
-		"이미지는 압축하거나 외부 호스팅을 고려해보세요.",
+  // Modals - Large File
+  "modal.largeFile.title": "대용량 파일 경고",
+  "modal.largeFile.message":
+    "{{count}}개 파일이 {{size}}를 초과합니다. 대용량 파일은 발행에 문제가 발생할 수 있습니다.",
+  "modal.largeFile.continue": "계속 진행",
+  "modal.largeFile.listLabel": "대용량 파일 목록",
+  "modal.largeFile.fileSize": "파일 크기: {{size}}",
+  "modal.largeFile.maxSize": "권장 최대 파일 크기: {{size}}",
+  "modal.largeFile.tip.uploadTime": "대용량 파일은 업로드 시간이 오래 걸릴 수 있습니다.",
+  "modal.largeFile.tip.githubLimit": "GitHub에는 파일당 100MB 제한이 있습니다.",
+  "modal.largeFile.tip.imageCompression": "이미지는 압축하거나 외부 호스팅을 고려해보세요.",
 
-	// Modals - Frontmatter Editor
-	"modal.frontmatter.title": "Frontmatter 편집",
-	"modal.frontmatter.titleName": "제목",
-	"modal.frontmatter.titleDesc": "페이지 제목 (없으면 파일명 사용)",
-	"modal.frontmatter.descriptionName": "설명",
-	"modal.frontmatter.descriptionDesc": "페이지 설명 (링크 미리보기에 표시)",
-	"modal.frontmatter.descriptionPlaceholder":
-		"이 페이지에 대한 설명을 입력하세요...",
-	"modal.frontmatter.tagsName": "태그",
-	"modal.frontmatter.tagsDesc": "태그를 쉼표로 구분하여 입력",
-	"modal.frontmatter.draftName": "초안",
-	"modal.frontmatter.draftDesc": "활성화하면 페이지가 비공개됩니다",
-	"modal.frontmatter.permalinkName": "고유주소",
-	"modal.frontmatter.permalinkDesc": "커스텀 URL 경로 (파일 이동해도 유지)",
-	"modal.frontmatter.tocName": "목차 활성화",
-	"modal.frontmatter.tocDesc": "목차(Table of Contents) 표시 여부",
-	"modal.frontmatter.cssName": "CSS 클래스",
-	"modal.frontmatter.cssDesc": "페이지에 적용할 CSS 클래스",
-	"modal.frontmatter.save": "저장 후 발행",
-	"modal.frontmatter.validationSuccess": "모든 검증을 통과했습니다",
-	"modal.frontmatter.validationStatus": "검증 상태",
+  // Modals - Frontmatter Editor
+  "modal.frontmatter.title": "Frontmatter 편집",
+  "modal.frontmatter.titleName": "제목",
+  "modal.frontmatter.titleDesc": "페이지 제목 (없으면 파일명 사용)",
+  "modal.frontmatter.descriptionName": "설명",
+  "modal.frontmatter.descriptionDesc": "페이지 설명 (링크 미리보기에 표시)",
+  "modal.frontmatter.descriptionPlaceholder": "이 페이지에 대한 설명을 입력하세요...",
+  "modal.frontmatter.tagsName": "태그",
+  "modal.frontmatter.tagsDesc": "태그를 쉼표로 구분하여 입력",
+  "modal.frontmatter.draftName": "초안",
+  "modal.frontmatter.draftDesc": "활성화하면 페이지가 비공개됩니다",
+  "modal.frontmatter.permalinkName": "고유주소",
+  "modal.frontmatter.permalinkDesc": "커스텀 URL 경로 (파일 이동해도 유지)",
+  "modal.frontmatter.tocName": "목차 활성화",
+  "modal.frontmatter.tocDesc": "목차(Table of Contents) 표시 여부",
+  "modal.frontmatter.cssName": "CSS 클래스",
+  "modal.frontmatter.cssDesc": "페이지에 적용할 CSS 클래스",
+  "modal.frontmatter.save": "저장 후 발행",
+  "modal.frontmatter.validationSuccess": "모든 검증을 통과했습니다",
+  "modal.frontmatter.validationStatus": "검증 상태",
 
-	// Modals - Font Picker
-	"modal.fontPicker.placeholder": "폰트 검색... (예: Roboto, Noto Sans)",
-	"modal.fontPicker.currentFont": "현재 폰트 (선택됨)",
-	"modal.fontPicker.category": "카테고리: {{category}}",
+  // Modals - Font Picker
+  "modal.fontPicker.placeholder": "폰트 검색... (예: Roboto, Noto Sans)",
+  "modal.fontPicker.currentFont": "현재 폰트 (선택됨)",
+  "modal.fontPicker.category": "카테고리: {{category}}",
 
-	// Modals - Note Picker
-	"modal.notePicker.placeholder": "예시: 폴더/노트",
+  // Modals - Note Picker
+  "modal.notePicker.placeholder": "예시: 폴더/노트",
 
-	// Modals - Folder Picker
-	"modal.folderPicker.placeholder": "폴더 검색...",
+  // Modals - Folder Picker
+  "modal.folderPicker.placeholder": "폴더 검색...",
 
-	// Modals - Create Repo
-	"modal.createRepo.title": "Quartz 저장소 생성",
-	"modal.createRepo.name": "저장소 이름",
-	"modal.createRepo.nameDesc":
-		'Quartz 저장소 이름을 입력하세요 (기본값: "quartz")',
-	"modal.createRepo.visibility": "공개 설정",
-	"modal.createRepo.visibilityDesc":
-		"공개 저장소는 GitHub Pages에서 무료로 호스팅할 수 있습니다",
-	"modal.createRepo.public": "공개",
-	"modal.createRepo.private": "비공개",
-	"modal.createRepo.privateWarning":
-		"비공개 저장소는 GitHub Pages 호스팅에 GitHub Pro가 필요합니다.",
-	"modal.createRepo.create": "생성",
-	"modal.createRepo.creating": "생성 중...",
-	"modal.createRepo.creatingProgress": "템플릿에서 저장소 생성 중...",
-	"modal.createRepo.success": "저장소가 생성되었습니다!",
-	"modal.createRepo.viewGuide": "배포 가이드 보기",
+  // Modals - Create Repo
+  "modal.createRepo.title": "Quartz 저장소 생성",
+  "modal.createRepo.name": "저장소 이름",
+  "modal.createRepo.nameDesc": 'Quartz 저장소 이름을 입력하세요 (기본값: "quartz")',
+  "modal.createRepo.visibility": "공개 설정",
+  "modal.createRepo.visibilityDesc": "공개 저장소는 GitHub Pages에서 무료로 호스팅할 수 있습니다",
+  "modal.createRepo.public": "공개",
+  "modal.createRepo.private": "비공개",
+  "modal.createRepo.privateWarning":
+    "비공개 저장소는 GitHub Pages 호스팅에 GitHub Pro가 필요합니다.",
+  "modal.createRepo.create": "생성",
+  "modal.createRepo.creating": "생성 중...",
+  "modal.createRepo.creatingProgress": "템플릿에서 저장소 생성 중...",
+  "modal.createRepo.success": "저장소가 생성되었습니다!",
+  "modal.createRepo.viewGuide": "배포 가이드 보기",
 
-	// Errors
-	"error.github.invalidToken": "유효하지 않거나 만료된 GitHub 토큰입니다",
-	"error.github.invalidToken.hint":
-		"새 토큰을 생성하거나 토큰 권한(repo)을 확인하세요",
-	"error.github.notFound": "저장소를 찾을 수 없거나 접근 권한이 없습니다",
-	"error.github.notFound.hint":
-		"저장소 URL이 올바른지, 토큰에 접근 권한이 있는지 확인하세요",
-	"error.github.notQuartz": "이 저장소는 Quartz 사이트가 아닙니다",
-	"error.github.notQuartz.hint":
-		"quartz.config.ts 파일이 있는 Quartz 저장소인지 확인하세요",
-	"error.github.rateLimit": "GitHub API 요청 한도를 초과했습니다",
-	"error.github.rateLimit.hint":
-		"잠시 후 다시 시도하거나, 인증된 토큰을 사용하세요",
-	"error.github.network": "네트워크 오류가 발생했습니다",
-	"error.github.network.hint": "인터넷 연결을 확인하고 다시 시도하세요",
-	"error.unknown": "알 수 없는 오류가 발생했습니다",
-	"error.validation.pageTitle": "페이지 제목은 필수입니다",
-	"error.validation.baseUrl": "잘못된 URL 형식입니다",
-	"error.loadFailed": "불러오기 실패: {{message}}",
-	"error.parseFailed": "quartz.config.ts 파싱에 실패했습니다",
-	"error.saveFailed": "저장 실패: {{message}}",
-	"error.configNotFound":
-		'"{{branch}}" 브랜치에서 quartz.config.ts를 찾을 수 없습니다',
-	"error.tokenRequired": "GitHub 토큰을 입력해 주세요",
-	"error.repoUrlRequired": "저장소 URL을 입력해 주세요",
+  // Errors
+  "error.github.invalidToken": "유효하지 않거나 만료된 GitHub 토큰입니다",
+  "error.github.invalidToken.hint": "새 토큰을 생성하거나 토큰 권한(repo)을 확인하세요",
+  "error.github.notFound": "저장소를 찾을 수 없거나 접근 권한이 없습니다",
+  "error.github.notFound.hint": "저장소 URL이 올바른지, 토큰에 접근 권한이 있는지 확인하세요",
+  "error.github.notQuartz": "이 저장소는 Quartz 사이트가 아닙니다",
+  "error.github.notQuartz.hint": "quartz.config.ts 파일이 있는 Quartz 저장소인지 확인하세요",
+  "error.github.rateLimit": "GitHub API 요청 한도를 초과했습니다",
+  "error.github.rateLimit.hint": "잠시 후 다시 시도하거나, 인증된 토큰을 사용하세요",
+  "error.github.network": "네트워크 오류가 발생했습니다",
+  "error.github.network.hint": "인터넷 연결을 확인하고 다시 시도하세요",
+  "error.unknown": "알 수 없는 오류가 발생했습니다",
+  "error.validation.pageTitle": "페이지 제목은 필수입니다",
+  "error.validation.baseUrl": "잘못된 URL 형식입니다",
+  "error.loadFailed": "불러오기 실패: {{message}}",
+  "error.parseFailed": "quartz.config.ts 파싱에 실패했습니다",
+  "error.saveFailed": "저장 실패: {{message}}",
+  "error.configNotFound": '"{{branch}}" 브랜치에서 quartz.config.ts를 찾을 수 없습니다',
+  "error.tokenRequired": "GitHub 토큰을 입력해 주세요",
+  "error.repoUrlRequired": "저장소 URL을 입력해 주세요",
 
-	// Error messages - Formatted
-	"error.formatted.network": "네트워크 연결 오류",
-	"error.formatted.networkMessage": "서버에 연결할 수 없습니다.",
-	"error.formatted.networkSuggestion":
-		"인터넷 연결을 확인하고 다시 시도해 주세요.",
-	"error.formatted.rateLimit": "GitHub API 제한",
-	"error.formatted.rateLimitMessage": "GitHub API 요청 한도에 도달했습니다.",
-	"error.formatted.rateLimitSuggestion":
-		"나중에 다시 시도해 주세요. (보통 1시간 후 초기화됩니다)",
-	"error.formatted.auth": "인증 오류",
-	"error.formatted.authMessage": "GitHub 인증에 실패했습니다.",
-	"error.formatted.authSuggestion": "설정에서 GitHub 토큰을 확인해 주세요.",
-	"error.formatted.notFound": "저장소를 찾을 수 없음",
-	"error.formatted.notFoundMessage":
-		"지정된 GitHub 저장소를 찾을 수 없습니다.",
-	"error.formatted.notFoundSuggestion": "저장소 설정을 확인해 주세요.",
-	"error.formatted.default": "오류가 발생했습니다",
-	"error.formatted.defaultSuggestion":
-		"문제가 계속되면 플러그인을 다시 로드해 주세요.",
-	"error.formatted.retry": "다시 시도",
+  // Error messages - Formatted
+  "error.formatted.network": "네트워크 연결 오류",
+  "error.formatted.networkMessage": "서버에 연결할 수 없습니다.",
+  "error.formatted.networkSuggestion": "인터넷 연결을 확인하고 다시 시도해 주세요.",
+  "error.formatted.rateLimit": "GitHub API 제한",
+  "error.formatted.rateLimitMessage": "GitHub API 요청 한도에 도달했습니다.",
+  "error.formatted.rateLimitSuggestion": "나중에 다시 시도해 주세요. (보통 1시간 후 초기화됩니다)",
+  "error.formatted.auth": "인증 오류",
+  "error.formatted.authMessage": "GitHub 인증에 실패했습니다.",
+  "error.formatted.authSuggestion": "설정에서 GitHub 토큰을 확인해 주세요.",
+  "error.formatted.notFound": "저장소를 찾을 수 없음",
+  "error.formatted.notFoundMessage": "지정된 GitHub 저장소를 찾을 수 없습니다.",
+  "error.formatted.notFoundSuggestion": "저장소 설정을 확인해 주세요.",
+  "error.formatted.default": "오류가 발생했습니다",
+  "error.formatted.defaultSuggestion": "문제가 계속되면 플러그인을 다시 로드해 주세요.",
+  "error.formatted.retry": "다시 시도",
 
-	// Upgrade
-	"upgrade.title": "Quartz 버전",
-	"upgrade.checkPrompt": "업데이트 확인 및 Quartz 코어 파일 업그레이드",
-	"upgrade.checkButton": "업데이트 확인",
-	"upgrade.checking": "업데이트 확인 중...",
-	"upgrade.versionInfo": "버전 정보",
-	"upgrade.current": "현재",
-	"upgrade.latest": "최신",
-	"upgrade.upToDate": "최신 버전을 사용 중입니다",
-	"upgrade.updateAvailable": "업데이트 가능: {{current}} → {{latest}}",
-	"upgrade.updateBadge": "업데이트",
-	"upgrade.upToDateBadge": "최신 버전",
-	"upgrade.upgradeButton": "업그레이드",
-	"upgrade.checkAgain": "다시 확인",
-	"upgrade.starting": "업그레이드 시작 중...",
-	"upgrade.downloading": "파일 다운로드 중...",
-	"upgrade.applying": "변경 사항 적용 중...",
-	"upgrade.completed": "업그레이드 완료!",
-	"upgrade.failed": "업그레이드 실패",
-	"upgrade.cancel": "취소",
-	"upgrade.cancelling": "취소 중...",
-	"upgrade.filesUpdated": "{{count}}개 파일 업데이트됨",
-	"upgrade.successMessage": "{{version}}으로 업그레이드되었습니다",
-	"upgrade.failedMessage": "업그레이드 실패: {{error}}",
-	"upgrade.notInitialized": "업그레이드 서비스가 초기화되지 않았습니다",
-	"upgrade.checkFailed": "업데이트 확인 실패: {{message}}",
+  // Upgrade
+  "upgrade.title": "Quartz 버전",
+  "upgrade.checkPrompt": "업데이트 확인 및 Quartz 코어 파일 업그레이드",
+  "upgrade.checkButton": "업데이트 확인",
+  "upgrade.checking": "업데이트 확인 중...",
+  "upgrade.versionInfo": "버전 정보",
+  "upgrade.current": "현재",
+  "upgrade.latest": "최신",
+  "upgrade.upToDate": "최신 버전을 사용 중입니다",
+  "upgrade.updateAvailable": "업데이트 가능: {{current}} → {{latest}}",
+  "upgrade.updateBadge": "업데이트",
+  "upgrade.upToDateBadge": "최신 버전",
+  "upgrade.upgradeButton": "업그레이드",
+  "upgrade.checkAgain": "다시 확인",
+  "upgrade.starting": "업그레이드 시작 중...",
+  "upgrade.downloading": "파일 다운로드 중...",
+  "upgrade.applying": "변경 사항 적용 중...",
+  "upgrade.completed": "업그레이드 완료!",
+  "upgrade.failed": "업그레이드 실패",
+  "upgrade.cancel": "취소",
+  "upgrade.cancelling": "취소 중...",
+  "upgrade.filesUpdated": "{{count}}개 파일 업데이트됨",
+  "upgrade.successMessage": "{{version}}으로 업그레이드되었습니다",
+  "upgrade.failedMessage": "업그레이드 실패: {{error}}",
+  "upgrade.notInitialized": "업그레이드 서비스가 초기화되지 않았습니다",
+  "upgrade.checkFailed": "업데이트 확인 실패: {{message}}",
 
-	// Connection Status
-	"connection.connected": "{{owner}}/{{name}}에 연결됨 (브랜치: {{branch}})",
-	"connection.connecting": "연결 테스트 중...",
-	"connection.branch": "브랜치: {{branch}}",
+  // Connection Status
+  "connection.connected": "{{owner}}/{{name}}에 연결됨 (브랜치: {{branch}})",
+  "connection.connecting": "연결 테스트 중...",
+  "connection.branch": "브랜치: {{branch}}",
 
-	// Settings - Remote File Management
-	"settings.github.manageFiles": "발행된 파일 관리",
-	"settings.github.manageFilesDesc":
-		"원격 저장소의 파일을 조회하고 삭제합니다",
+  // Settings - Remote File Management
+  "settings.github.manageFiles": "발행된 파일 관리",
+  "settings.github.manageFilesDesc": "원격 저장소의 파일을 조회하고 삭제합니다",
 
-	// Modal - Remote Files
-	"modal.remoteFiles.title": "발행된 파일 관리",
-	"modal.remoteFiles.empty": "발행된 파일이 없습니다",
-	"modal.remoteFiles.loading": "파일 목록 로딩 중...",
-	"modal.remoteFiles.refresh": "새로고침",
-	"modal.remoteFiles.delete": "선택 삭제",
-	"modal.remoteFiles.search": "파일 검색...",
-	"modal.remoteFiles.selected": "{{count}}개 파일 선택됨",
-	"modal.remoteFiles.selectAll": "전체 선택",
-	"modal.remoteFiles.deselectAll": "선택 해제",
-	"modal.remoteFiles.fileCount": "{{count}}개 파일",
-	"modal.remoteFiles.deleteConfirm.title": "삭제 확인",
-	"modal.remoteFiles.deleteConfirm.message":
-		"{{count}}개 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-	"modal.remoteFiles.deleteProgress":
-		"파일 삭제 중... ({{current}}/{{total}})",
-	"modal.remoteFiles.deleteSuccess": "{{count}}개 파일이 삭제되었습니다",
-	"modal.remoteFiles.deleteFailed": "일부 파일 삭제에 실패했습니다",
-	"modal.remoteFiles.deletePartial":
-		"{{succeeded}}개 삭제됨, {{failed}}개 실패",
-	"modal.remoteFiles.duplicates": "중복 파일 감지됨",
-	"modal.remoteFiles.duplicateCount": "{{count}}개 중복 그룹",
-	"modal.remoteFiles.duplicateBadge": "중복",
-	"modal.remoteFiles.fileListLabel": "발행된 파일 목록",
-	"modal.remoteFiles.selectFile": "{{name}} 선택",
+  // Modal - Remote Files
+  "modal.remoteFiles.title": "발행된 파일 관리",
+  "modal.remoteFiles.empty": "발행된 파일이 없습니다",
+  "modal.remoteFiles.loading": "파일 목록 로딩 중...",
+  "modal.remoteFiles.refresh": "새로고침",
+  "modal.remoteFiles.delete": "선택 삭제",
+  "modal.remoteFiles.search": "파일 검색...",
+  "modal.remoteFiles.selected": "{{count}}개 파일 선택됨",
+  "modal.remoteFiles.selectAll": "전체 선택",
+  "modal.remoteFiles.deselectAll": "선택 해제",
+  "modal.remoteFiles.fileCount": "{{count}}개 파일",
+  "modal.remoteFiles.deleteConfirm.title": "삭제 확인",
+  "modal.remoteFiles.deleteConfirm.message":
+    "{{count}}개 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+  "modal.remoteFiles.deleteProgress": "파일 삭제 중... ({{current}}/{{total}})",
+  "modal.remoteFiles.deleteSuccess": "{{count}}개 파일이 삭제되었습니다",
+  "modal.remoteFiles.deleteFailed": "일부 파일 삭제에 실패했습니다",
+  "modal.remoteFiles.deletePartial": "{{succeeded}}개 삭제됨, {{failed}}개 실패",
+  "modal.remoteFiles.duplicates": "중복 파일 감지됨",
+  "modal.remoteFiles.duplicateCount": "{{count}}개 중복 그룹",
+  "modal.remoteFiles.duplicateBadge": "중복",
+  "modal.remoteFiles.fileListLabel": "발행된 파일 목록",
+  "modal.remoteFiles.selectFile": "{{name}} 선택",
 
-	// Errors - Remote Files
-	"error.remoteFiles.loadFailed": "파일 목록을 불러오는데 실패했습니다",
-	"error.remoteFiles.maxFiles":
-		"한 번에 최대 {{max}}개 파일만 삭제할 수 있습니다",
-	"error.remoteFiles.noSelection": "선택된 파일이 없습니다",
-	"error.remoteFiles.deleteFailed": "파일 삭제 실패: {{path}}",
+  // Errors - Remote Files
+  "error.remoteFiles.loadFailed": "파일 목록을 불러오는데 실패했습니다",
+  "error.remoteFiles.maxFiles": "한 번에 최대 {{max}}개 파일만 삭제할 수 있습니다",
+  "error.remoteFiles.noSelection": "선택된 파일이 없습니다",
+  "error.remoteFiles.deleteFailed": "파일 삭제 실패: {{path}}",
 
-	// GitHub Guide
-	"guide.title": "GitHub 설정 가이드",
-	"guide.button": "GitHub 설정 가이드",
-	"guide.buttonDesc": "Quartz 리포지토리 설정 방법 안내",
-	"guide.stepOf": "{{current}} / {{total}} 단계",
-	"guide.back": "이전",
-	"guide.next": "다음",
-	"guide.done": "완료",
-	"guide.close": "닫기",
-	"guide.complete": "완료됨",
-	"guide.incomplete": "미완료",
-	"guide.troubleshooting": "문제 해결",
-	"guide.goToStep": "{{step}}단계로 이동",
+  // GitHub Guide
+  "guide.title": "GitHub 설정 가이드",
+  "guide.button": "GitHub 설정 가이드",
+  "guide.buttonDesc": "Quartz 리포지토리 설정 방법 안내",
+  "guide.stepOf": "{{current}} / {{total}} 단계",
+  "guide.back": "이전",
+  "guide.next": "다음",
+  "guide.done": "완료",
+  "guide.close": "닫기",
+  "guide.complete": "완료됨",
+  "guide.incomplete": "미완료",
+  "guide.troubleshooting": "문제 해결",
+  "guide.goToStep": "{{step}}단계로 이동",
 
-	// Guide Steps
-	"guide.step1.title": "GitHub 계정 확인",
-	"guide.step1.description":
-		"Quartz를 사용하려면 GitHub 계정이 필요합니다. 아직 계정이 없다면 먼저 가입해 주세요.",
-	"guide.step1.action": "GitHub 가입하기",
-	"guide.step1.tip1": "이미 GitHub 계정이 있다면 이 단계를 건너뛰세요",
-	"guide.step1.tip2": "이메일 인증을 완료해야 합니다",
+  // Guide Steps
+  "guide.step1.title": "GitHub 계정 확인",
+  "guide.step1.description":
+    "Quartz를 사용하려면 GitHub 계정이 필요합니다. 아직 계정이 없다면 먼저 가입해 주세요.",
+  "guide.step1.action": "GitHub 가입하기",
+  "guide.step1.tip1": "이미 GitHub 계정이 있다면 이 단계를 건너뛰세요",
+  "guide.step1.tip2": "이메일 인증을 완료해야 합니다",
 
-	"guide.step2.title": "Quartz 템플릿으로 저장소 생성",
-	"guide.step2.description":
-		'Quartz 공식 템플릿을 사용하여 새 저장소를 생성합니다. "Use this template" 버튼을 클릭하고 "Create a new repository"를 선택하세요.',
-	"guide.step2.action": "Quartz 템플릿 열기",
-	"guide.step2.tip1":
-		"Repository name은 원하는 이름으로 설정하세요 (예: quartz)",
-	"guide.step2.tip2": "Public/Private 설정을 확인하세요 (Public 추천)",
-	"guide.step2.tip3":
-		"저장소 생성이 완료되면 해당 저장소 URL을 복사해 두세요",
+  "guide.step2.title": "Quartz 템플릿으로 저장소 생성",
+  "guide.step2.description":
+    'Quartz 공식 템플릿을 사용하여 새 저장소를 생성합니다. "Use this template" 버튼을 클릭하고 "Create a new repository"를 선택하세요.',
+  "guide.step2.action": "Quartz 템플릿 열기",
+  "guide.step2.tip1": "Repository name은 원하는 이름으로 설정하세요 (예: quartz)",
+  "guide.step2.tip2": "Public/Private 설정을 확인하세요 (Public 추천)",
+  "guide.step2.tip3": "저장소 생성이 완료되면 해당 저장소 URL을 복사해 두세요",
 
-	"guide.step3.title": "Personal Access Token 생성",
-	"guide.step3.description":
-		'플러그인이 GitHub에 접근하려면 Personal Access Token(PAT)이 필요합니다. 토큰 생성 시 "repo" 권한을 반드시 선택하세요.',
-	"guide.step3.action": "토큰 생성 페이지 열기",
-	"guide.step3.tip1": 'Token name은 "Quartz Publish" 등으로 지정하세요',
-	"guide.step3.tip2": 'Expiration은 "No expiration" 또는 원하는 기간 선택',
-	"guide.step3.tip3": '"repo" 체크박스를 반드시 선택하세요',
-	"guide.step3.tip4": "생성된 토큰을 안전한 곳에 복사해 두세요",
+  "guide.step3.title": "Personal Access Token 생성",
+  "guide.step3.description":
+    '플러그인이 GitHub에 접근하려면 Personal Access Token(PAT)이 필요합니다. 토큰 생성 시 "repo" 권한을 반드시 선택하세요.',
+  "guide.step3.action": "토큰 생성 페이지 열기",
+  "guide.step3.tip1": 'Token name은 "Quartz Publish" 등으로 지정하세요',
+  "guide.step3.tip2": 'Expiration은 "No expiration" 또는 원하는 기간 선택',
+  "guide.step3.tip3": '"repo" 체크박스를 반드시 선택하세요',
+  "guide.step3.tip4": "생성된 토큰을 안전한 곳에 복사해 두세요",
 
-	"guide.step4.title": "플러그인 설정 연결",
-	"guide.step4.description":
-		"생성한 리포지토리 URL과 발급받은 토큰을 플러그인 설정에 입력하고 연결을 테스트합니다.",
-	"guide.step4.action": "설정으로 이동",
-	"guide.step4.tip1": "Repository URL: https://github.com/사용자명/저장소명",
-	"guide.step4.tip2": "연결 테스트 버튼으로 설정을 확인하세요",
+  "guide.step4.title": "플러그인 설정 연결",
+  "guide.step4.description":
+    "생성한 리포지토리 URL과 발급받은 토큰을 플러그인 설정에 입력하고 연결을 테스트합니다.",
+  "guide.step4.action": "설정으로 이동",
+  "guide.step4.tip1": "Repository URL: https://github.com/사용자명/저장소명",
+  "guide.step4.tip2": "연결 테스트 버튼으로 설정을 확인하세요",
 
-	// Troubleshooting
-	"guide.error.401.title": "401 Unauthorized",
-	"guide.error.401.cause": "토큰이 잘못되었거나 만료되었습니다",
-	"guide.error.401.solution": "새 토큰을 생성하고 다시 입력하세요",
+  // Troubleshooting
+  "guide.error.401.title": "401 Unauthorized",
+  "guide.error.401.cause": "토큰이 잘못되었거나 만료되었습니다",
+  "guide.error.401.solution": "새 토큰을 생성하고 다시 입력하세요",
 
-	"guide.error.404.title": "404 Not Found",
-	"guide.error.404.cause":
-		"리포지토리 URL이 잘못되었거나 비공개 저장소입니다",
-	"guide.error.404.solution":
-		"URL을 확인하고, 비공개인 경우 토큰 권한을 확인하세요",
+  "guide.error.404.title": "404 Not Found",
+  "guide.error.404.cause": "리포지토리 URL이 잘못되었거나 비공개 저장소입니다",
+  "guide.error.404.solution": "URL을 확인하고, 비공개인 경우 토큰 권한을 확인하세요",
 
-	"guide.error.403.title": "403 Forbidden",
-	"guide.error.403.cause": "토큰에 repo 권한이 없습니다",
-	"guide.error.403.solution": "repo 권한이 있는 새 토큰을 생성하세요",
+  "guide.error.403.title": "403 Forbidden",
+  "guide.error.403.cause": "토큰에 repo 권한이 없습니다",
+  "guide.error.403.solution": "repo 권한이 있는 새 토큰을 생성하세요",
 
-	"guide.error.network.title": "Network Error",
-	"guide.error.network.cause": "인터넷 연결에 문제가 있습니다",
-	"guide.error.network.solution": "네트워크 연결을 확인하고 다시 시도하세요",
+  "guide.error.network.title": "Network Error",
+  "guide.error.network.cause": "인터넷 연결에 문제가 있습니다",
+  "guide.error.network.solution": "네트워크 연결을 확인하고 다시 시도하세요",
 
-	// Common - Buttons
-	"common.apply": "적용",
-	"common.saving": "저장 중...",
-	"common.refresh": "새로고침",
-	"common.refreshDesc": "GitHub에서 설정 다시 불러오기",
+  // Common - Buttons
+  "common.apply": "적용",
+  "common.saving": "저장 중...",
+  "common.refresh": "새로고침",
+  "common.refreshDesc": "GitHub에서 설정 다시 불러오기",
 
-	// Common - Warnings
-	"common.unsavedChanges": "저장되지 않은 변경사항이 있습니다",
-	"common.discardChanges": "변경사항 취소",
+  // Common - Warnings
+  "common.unsavedChanges": "저장되지 않은 변경사항이 있습니다",
+  "common.discardChanges": "변경사항 취소",
 
-	// Site Info Section
-	"siteInfo.heading": "사이트 정보",
-	"siteInfo.pageTitle.name": "페이지 제목",
-	"siteInfo.pageTitle.desc":
-		"사이트 제목 (브라우저 탭, 헤더 등에 표시됩니다)",
-	"siteInfo.baseUrl.name": "기본 URL",
-	"siteInfo.baseUrl.desc":
-		"사이트 도메인 (프로토콜 없이 입력, 예: example.com 또는 username.github.io)",
-	"siteInfo.locale.name": "로케일",
-	"siteInfo.locale.desc": "사이트 기본 언어 및 지역 설정",
+  // Site Info Section
+  "siteInfo.heading": "사이트 정보",
+  "siteInfo.pageTitle.name": "페이지 제목",
+  "siteInfo.pageTitle.desc": "사이트 제목 (브라우저 탭, 헤더 등에 표시됩니다)",
+  "siteInfo.baseUrl.name": "기본 URL",
+  "siteInfo.baseUrl.desc":
+    "사이트 도메인 (프로토콜 없이 입력, 예: example.com 또는 username.github.io)",
+  "siteInfo.locale.name": "로케일",
+  "siteInfo.locale.desc": "사이트 기본 언어 및 지역 설정",
 
-	// Behavior Section
-	"behavior.heading": "동작",
-	"behavior.spa.name": "SPA (Single Page Application)",
-	"behavior.spa.desc":
-		"페이지 이동 시 전체 페이지 새로고침 없이 부드러운 전환을 제공합니다",
-	"behavior.popovers.name": "링크 팝오버",
-	"behavior.popovers.desc":
-		"내부 링크 위에 마우스를 올리면 링크된 페이지의 미리보기를 표시합니다",
-	"behavior.dateType.name": "기본 날짜 유형",
-	"behavior.dateType.desc": "노트에 표시할 기본 날짜 유형을 선택합니다",
-	"behavior.dateType.created": "생성일",
-	"behavior.dateType.created.desc": "노트가 처음 생성된 날짜",
-	"behavior.dateType.modified": "수정일",
-	"behavior.dateType.modified.desc": "노트가 마지막으로 수정된 날짜",
-	"behavior.dateType.published": "발행일",
-	"behavior.dateType.published.desc": "노트가 발행된 날짜",
+  // Behavior Section
+  "behavior.heading": "동작",
+  "behavior.spa.name": "SPA (Single Page Application)",
+  "behavior.spa.desc": "페이지 이동 시 전체 페이지 새로고침 없이 부드러운 전환을 제공합니다",
+  "behavior.popovers.name": "링크 팝오버",
+  "behavior.popovers.desc": "내부 링크 위에 마우스를 올리면 링크된 페이지의 미리보기를 표시합니다",
+  "behavior.dateType.name": "기본 날짜 유형",
+  "behavior.dateType.desc": "노트에 표시할 기본 날짜 유형을 선택합니다",
+  "behavior.dateType.created": "생성일",
+  "behavior.dateType.created.desc": "노트가 처음 생성된 날짜",
+  "behavior.dateType.modified": "수정일",
+  "behavior.dateType.modified.desc": "노트가 마지막으로 수정된 날짜",
+  "behavior.dateType.published": "발행일",
+  "behavior.dateType.published.desc": "노트가 발행된 날짜",
 
-	// Deploy Guide Modal
-	"deployGuide.title": "GitHub Pages 배포 가이드",
-	"deployGuide.stepOf": "단계 {{current}} / {{total}}",
-	"deployGuide.back": "이전",
-	"deployGuide.next": "다음",
-	"deployGuide.done": "완료",
-	"deployGuide.step1.title": "리포지토리 설정 열기",
-	"deployGuide.step1.desc":
-		"GitHub 리포지토리 설정 페이지로 이동하여 GitHub Pages를 구성하세요.",
-	"deployGuide.step1.action": "설정 열기",
-	"deployGuide.step2.title": "Pages 섹션으로 이동",
-	"deployGuide.step2.desc":
-		'왼쪽 사이드바에서 "Code and automation" 섹션 아래의 "Pages"를 클릭하세요.',
-	"deployGuide.step2.action": "Pages 설정 열기",
-	"deployGuide.step3.title": "빌드 소스 설정",
-	"deployGuide.step3.desc":
-		'"Build and deployment"에서 Source를 "GitHub Actions"로 설정하세요. 노트를 발행할 때 Quartz가 자동으로 배포됩니다.',
-	"deployGuide.step4.title": "워크플로우 권한 활성화",
-	"deployGuide.step4.desc":
-		'Settings > Actions > General로 이동하세요. "Workflow permissions"에서 "Read and write permissions"를 선택하여 배포 워크플로우가 GitHub Pages에 푸시할 수 있도록 합니다.',
-	"deployGuide.step4.action": "Actions 설정 열기",
-	"deployGuide.step5.title": "첫 배포 실행",
-	"deployGuide.step5.desc":
-		"첫 번째 노트를 발행하면 자동으로 배포가 시작됩니다. Actions 탭에서 수동으로 트리거할 수도 있습니다.",
-	"deployGuide.step5.action": "Actions 보기",
-	"deployGuide.step6.title": "사이트 방문",
-	"deployGuide.step6.desc":
-		"배포가 완료되면(보통 2-3분) Quartz 사이트가 라이브됩니다! 아래 버튼을 클릭하여 새로운 디지털 가든을 방문하세요.",
-	"deployGuide.step6.action": "내 사이트 열기",
+  // Deploy Guide Modal
+  "deployGuide.title": "GitHub Pages 배포 가이드",
+  "deployGuide.stepOf": "단계 {{current}} / {{total}}",
+  "deployGuide.back": "이전",
+  "deployGuide.next": "다음",
+  "deployGuide.done": "완료",
+  "deployGuide.step1.title": "리포지토리 설정 열기",
+  "deployGuide.step1.desc": "GitHub 리포지토리 설정 페이지로 이동하여 GitHub Pages를 구성하세요.",
+  "deployGuide.step1.action": "설정 열기",
+  "deployGuide.step2.title": "Pages 섹션으로 이동",
+  "deployGuide.step2.desc":
+    '왼쪽 사이드바에서 "Code and automation" 섹션 아래의 "Pages"를 클릭하세요.',
+  "deployGuide.step2.action": "Pages 설정 열기",
+  "deployGuide.step3.title": "빌드 소스 설정",
+  "deployGuide.step3.desc":
+    '"Build and deployment"에서 Source를 "GitHub Actions"로 설정하세요. 노트를 발행할 때 Quartz가 자동으로 배포됩니다.',
+  "deployGuide.step4.title": "워크플로우 권한 활성화",
+  "deployGuide.step4.desc":
+    'Settings > Actions > General로 이동하세요. "Workflow permissions"에서 "Read and write permissions"를 선택하여 배포 워크플로우가 GitHub Pages에 푸시할 수 있도록 합니다.',
+  "deployGuide.step4.action": "Actions 설정 열기",
+  "deployGuide.step5.title": "첫 배포 실행",
+  "deployGuide.step5.desc":
+    "첫 번째 노트를 발행하면 자동으로 배포가 시작됩니다. Actions 탭에서 수동으로 트리거할 수도 있습니다.",
+  "deployGuide.step5.action": "Actions 보기",
+  "deployGuide.step6.title": "사이트 방문",
+  "deployGuide.step6.desc":
+    "배포가 완료되면(보통 2-3분) Quartz 사이트가 라이브됩니다! 아래 버튼을 클릭하여 새로운 디지털 가든을 방문하세요.",
+  "deployGuide.step6.action": "내 사이트 열기",
 
-	// Publishing Section
-	"publishing.heading": "발행",
-	"publishing.explicitPublish.name": "선택적 발행",
-	"publishing.explicitPublish.desc":
-		'활성화하면 프론트매터에 "publish: true"가 있는 노트만 발행합니다. 비활성화하면 초안(draft)을 제외한 모든 노트가 발행됩니다.',
-	"publishing.ignorePatterns.name": "제외 패턴",
-	"publishing.ignorePatterns.desc":
-		"발행에서 제외할 파일/폴더 패턴 (glob 형식)",
-	"publishing.ignorePatterns.placeholder": "예: private/*, **/*.draft.md",
-	"publishing.ignorePatterns.add": "추가",
-	"publishing.ignorePatterns.empty": "설정된 패턴 없음",
-	"publishing.ignorePatterns.duplicate": "이미 존재하는 패턴입니다",
-	"publishing.ignorePatterns.invalid": "잘못된 패턴입니다",
-	"publishing.ignorePatterns.remove": "패턴 삭제",
+  // Publishing Section
+  "publishing.heading": "발행",
+  "publishing.explicitPublish.name": "선택적 발행",
+  "publishing.explicitPublish.desc":
+    '활성화하면 프론트매터에 "publish: true"가 있는 노트만 발행합니다. 비활성화하면 초안(draft)을 제외한 모든 노트가 발행됩니다.',
+  "publishing.ignorePatterns.name": "제외 패턴",
+  "publishing.ignorePatterns.desc": "발행에서 제외할 파일/폴더 패턴 (glob 형식)",
+  "publishing.ignorePatterns.placeholder": "예: private/*, **/*.draft.md",
+  "publishing.ignorePatterns.add": "추가",
+  "publishing.ignorePatterns.empty": "설정된 패턴 없음",
+  "publishing.ignorePatterns.duplicate": "이미 존재하는 패턴입니다",
+  "publishing.ignorePatterns.invalid": "잘못된 패턴입니다",
+  "publishing.ignorePatterns.remove": "패턴 삭제",
 
-	// Conflict Modal - Option descriptions
-	"modal.conflict.reload.title": "새로고침 후 재적용",
-	"modal.conflict.reload.desc":
-		"최신 설정을 불러온 후 변경사항을 다시 적용합니다. (권장)",
-	"modal.conflict.overwrite.title": "강제 덮어쓰기",
-	"modal.conflict.overwrite.desc":
-		"원격 변경사항을 무시하고 현재 설정으로 덮어씁니다.",
-	"modal.conflict.cancel.title": "취소",
-	"modal.conflict.cancel.desc": "저장을 취소하고 현재 상태를 유지합니다.",
+  // Conflict Modal - Option descriptions
+  "modal.conflict.reload.title": "새로고침 후 재적용",
+  "modal.conflict.reload.desc": "최신 설정을 불러온 후 변경사항을 다시 적용합니다. (권장)",
+  "modal.conflict.overwrite.title": "강제 덮어쓰기",
+  "modal.conflict.overwrite.desc": "원격 변경사항을 무시하고 현재 설정으로 덮어씁니다.",
+  "modal.conflict.cancel.title": "취소",
+  "modal.conflict.cancel.desc": "저장을 취소하고 현재 상태를 유지합니다.",
 
-	// Analytics Section
-	"analytics.heading": "애널리틱스",
-	"analytics.provider.name": "애널리틱스 제공자",
-	"analytics.provider.desc": "사용할 애널리틱스 서비스를 선택합니다",
-	"analytics.google.tagId.name": "태그 ID",
-	"analytics.google.tagId.desc":
-		"Google Analytics 4 측정 ID (예: G-XXXXXXXXXX)",
-	"analytics.plausible.host.name": "호스트 (선택)",
-	"analytics.plausible.host.desc":
-		"셀프 호스팅 Plausible 인스턴스 URL (기본값: Plausible Cloud)",
-	"analytics.umami.websiteId.name": "웹사이트 ID",
-	"analytics.umami.websiteId.desc":
-		"Umami 대시보드에서 확인할 수 있는 Website ID (UUID 형식)",
-	"analytics.umami.host.name": "호스트",
-	"analytics.umami.host.desc": "Umami 인스턴스 URL",
+  // Analytics Section
+  "analytics.heading": "애널리틱스",
+  "analytics.provider.name": "애널리틱스 제공자",
+  "analytics.provider.desc": "사용할 애널리틱스 서비스를 선택합니다",
+  "analytics.google.tagId.name": "태그 ID",
+  "analytics.google.tagId.desc": "Google Analytics 4 측정 ID (예: G-XXXXXXXXXX)",
+  "analytics.plausible.host.name": "호스트 (선택)",
+  "analytics.plausible.host.desc": "셀프 호스팅 Plausible 인스턴스 URL (기본값: Plausible Cloud)",
+  "analytics.umami.websiteId.name": "웹사이트 ID",
+  "analytics.umami.websiteId.desc": "Umami 대시보드에서 확인할 수 있는 Website ID (UUID 형식)",
+  "analytics.umami.host.name": "호스트",
+  "analytics.umami.host.desc": "Umami 인스턴스 URL",
 
-	// Diff View
-	"diff.title": "변경 사항: {{file}}",
-	"common.close": "닫기",
-	"dashboard.tooltip.diff": "변경 사항 보기",
-	"error.remoteFileNotFound": "원격 파일을 찾을 수 없습니다. 다시 발행해 주세요.",
-	"error.diffFailed": "변경 사항 로드 실패: {{message}}",
+  // Diff View
+  "diff.title": "변경 사항: {{file}}",
+  "common.close": "닫기",
+  "dashboard.tooltip.diff": "변경 사항 보기",
+  "error.remoteFileNotFound": "원격 파일을 찾을 수 없습니다. 다시 발행해 주세요.",
+  "error.diffFailed": "변경 사항 로드 실패: {{message}}",
 };
 
 export default ko;
