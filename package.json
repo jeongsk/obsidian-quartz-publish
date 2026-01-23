@@ -1,6 +1,6 @@
 {
 	"name": "quartz-publish",
-	"version": "0.8.3",
+	"version": "0.9.0",
 	"description": "Publish your Obsidian notes directly to Quartz blog",
 	"main": "main.js",
 	"scripts": {
