@@ -422,6 +422,17 @@ export default {
   "settings.github.manageFiles": "Manage Published Files",
   "settings.github.manageFilesDesc": "View and delete files from your remote repository",
 
+  // Settings - Publish Records
+  "settings.publishRecords.title": "Publish Records",
+  "settings.publishRecords.records": "Records",
+  "settings.publishRecords.recordsDesc": "Total published files tracked",
+  "settings.publishRecords.fileSize": "Storage Size",
+  "settings.publishRecords.fileSizeDesc": "Size of publish-records.json file",
+  "settings.publishRecords.cleanup": "Cleanup Records",
+  "settings.publishRecords.cleanupDesc": "Clean up publish records for files deleted from vault",
+  "settings.publishRecords.cleanupButton": "Run Cleanup",
+  "settings.publishRecords.cleanupSuccess": "Cleaned up {{count}} records.",
+
   // Modal - Remote Files
   "modal.remoteFiles.title": "Manage Published Files",
   "modal.remoteFiles.empty": "No published files found",

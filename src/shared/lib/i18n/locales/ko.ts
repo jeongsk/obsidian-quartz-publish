@@ -423,6 +423,17 @@ const ko: { [K in TranslationKeys]?: string } = {
   "settings.github.manageFiles": "발행된 파일 관리",
   "settings.github.manageFilesDesc": "원격 저장소의 파일을 조회하고 삭제합니다",
 
+  // Settings - Publish Records
+  "settings.publishRecords.title": "발행 기록",
+  "settings.publishRecords.records": "레코드 수",
+  "settings.publishRecords.recordsDesc": "추적 중인 발행 파일 수",
+  "settings.publishRecords.fileSize": "저장소 크기",
+  "settings.publishRecords.fileSizeDesc": "publish-records.json 파일 크기",
+  "settings.publishRecords.cleanup": "레코드 정리",
+  "settings.publishRecords.cleanupDesc": "볼트에서 삭제된 파일의 발행 기록을 정리합니다",
+  "settings.publishRecords.cleanupButton": "정리 실행",
+  "settings.publishRecords.cleanupSuccess": "{{count}}개의 레코드가 정리되었습니다.",
+
   // Modal - Remote Files
   "modal.remoteFiles.title": "발행된 파일 관리",
   "modal.remoteFiles.empty": "발행된 파일이 없습니다",
