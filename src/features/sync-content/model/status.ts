@@ -16,6 +16,8 @@ import type {
 import { DEFAULT_PUBLISH_FILTER_SETTINGS } from "../../../app/types";
 import { PublishFilterService } from "../../publish-note/model/filter";
 import { t } from "../../../shared/lib/i18n";
+import type { RemoteSyncService } from "./syncer";
+import type { RemoteSyncCache } from "../../../app/types";
 
 /**
  * 상태 계산 진행 콜백
@@ -33,9 +35,9 @@ export interface StatusServiceOptions {
   contentPath: string;
   staticPath: string;
   // JEO-18: 원격 동기화 추가
-  remoteSyncService?: import("./syncer").RemoteSyncService;
-  getRemoteSyncCache?: () => import("../../../app/types").RemoteSyncCache | undefined;
-  setRemoteSyncCache?: (cache: import("../../../app/types").RemoteSyncCache) => Promise<void>;
+  remoteSyncService?: RemoteSyncService;
+  getRemoteSyncCache?: () => RemoteSyncCache | undefined;
+  setRemoteSyncCache?: (cache: RemoteSyncCache) => Promise<void>;
 }
 
 /**
@@ -51,10 +53,10 @@ export class StatusService {
   private staticPath: string;
   private publishFilter: PublishFilterService;
   // JEO-18: 원격 동기화 서비스
-  private remoteSyncService?: import("./syncer").RemoteSyncService;
-  private getRemoteSyncCache?: () => import("../../../app/types").RemoteSyncCache | undefined;
+  private remoteSyncService?: RemoteSyncService;
+  private getRemoteSyncCache?: () => RemoteSyncCache | undefined;
   private setRemoteSyncCache?: (
-    cache: import("../../../app/types").RemoteSyncCache
+    cache: RemoteSyncCache
   ) => Promise<void>;
 
   private static readonly CHUNK_SIZE = 20;
@@ -81,7 +83,7 @@ export class StatusService {
    * 원격 동기화 서비스를 설정합니다.
    * (JEO-18)
    */
-  setRemoteSyncService(service: import("./syncer").RemoteSyncService): void {
+  setRemoteSyncService(service: RemoteSyncService): void {
     this.remoteSyncService = service;
   }
 
