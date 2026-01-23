@@ -46,9 +46,7 @@ export default class QuartzPublishPlugin extends Plugin {
   async onload(): Promise<void> {
     // ========== IMPORTANT: 플러그인 로드 확인 ==========
     // 이 메시지가 보이지 않으면 Obsidian을 완전히 재시작하세요
-    console.log("╔══════════════════════════════════════════════════════════════╗");
-    console.log("║     Quartz Publish Plugin v0.7.1 - LOADED                    ║");
-    console.log("╚══════════════════════════════════════════════════════════════╝");
+    console.log("loading quartz-publish plugin");
     // ========================================================
 
     if (typeof addIcon === "function") {
