@@ -124,6 +124,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
     // 발행 설정 섹션
     this.createPublishFilterSection(containerEl);
 
+    // 발행 기록 정보 섹션
+    this.createPublishRecordsInfoSection(containerEl);
+
     // Frontmatter 설정 섹션
     this.createFrontmatterSection(containerEl);
 
@@ -553,6 +556,45 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+  }
+
+  private createPublishRecordsInfoSection(containerEl: HTMLElement): void {
+    new Setting(containerEl).setName(t("settings.publishRecords.title")).setHeading();
+
+    const infoContainer = containerEl.createDiv({ cls: "publish-records-info" });
+
+    this.plugin.recordStorage.getSizeInfo().then((info) => {
+      infoContainer.innerHTML = `
+        <div class="setting-item">
+          <div class="setting-item-info">
+            <div class="setting-item-name">${t("settings.publishRecords.records")}</div>
+            <div class="setting-item-description">${t("settings.publishRecords.recordsDesc")}</div>
+          </div>
+          <div class="setting-item-control">${info.recordCount}</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-item-info">
+            <div class="setting-item-name">${t("settings.publishRecords.fileSize")}</div>
+            <div class="setting-item-description">${t("settings.publishRecords.fileSizeDesc")}</div>
+          </div>
+          <div class="setting-item-control">${info.formattedSize}</div>
+        </div>
+      `;
+
+      new Setting(containerEl)
+        .setName(t("settings.publishRecords.cleanup"))
+        .setDesc(t("settings.publishRecords.cleanupDesc"))
+        .addButton((button) =>
+          button
+            .setButtonText(t("settings.publishRecords.cleanupButton"))
+            .setClass("mod-warning")
+            .onClick(async () => {
+              const removed = await this.plugin.recordStorage.cleanup(true);
+              new Notice(t("settings.publishRecords.cleanupSuccess", { count: removed }));
+              this.display();
+            })
+        );
+    });
   }
 
   private createPublishFilterSection(containerEl: HTMLElement): void {
