@@ -130,6 +130,15 @@ export class DashboardModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
 
+    // 상태 초기화
+    this.state.activeTab = "new";
+    this.state.selectedPaths.clear();
+    this.state.statusOverview = null;
+    this.state.isLoading = false;
+    this.state.isOperating = false;
+    this.state.error = null;
+    this.isRemoteSyncing = false;
+
     // 네트워크 상태 리스너 정리
     if (this.networkStatusUnsubscribe) {
       this.networkStatusUnsubscribe();
