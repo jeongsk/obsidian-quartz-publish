@@ -37,7 +37,7 @@ import { ICON_QUARTZ_PUBLISH, ICON_QUARTZ_PUBLISH_SVG } from "../shared/config/c
  */
 export default class QuartzPublishPlugin extends Plugin {
   settings!: PluginSettings;
-  private recordStorage!: PublishRecordStorage;
+  recordStorage!: PublishRecordStorage;
   private statusService!: StatusService;
   private networkService!: NetworkService;
   // JEO-18: 원격 동기화 캐시 인메모리 복사
@@ -65,6 +65,17 @@ export default class QuartzPublishPlugin extends Plugin {
 
     // 마이그레이션: data.json의 레코드를 별도 파일로 이동
     await this.migratePublishRecords();
+
+    await this.recordStorage.cleanup();
+
+    this.registerInterval(
+      window.setInterval(
+        async () => {
+          await this.recordStorage.cleanup();
+        },
+        12 * 60 * 60 * 1000
+      )
+    );
 
     // NetworkService 초기화
     this.networkService = new NetworkService();
