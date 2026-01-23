@@ -177,6 +177,7 @@ export class GitHubService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${GITHUB_API_BASE_URL}${endpoint}`, {
       ...options,
+      cache: "no-store",
       headers: {
         Authorization: `Bearer ${this.token}`,
         Accept: "application/vnd.github.v3+json",
