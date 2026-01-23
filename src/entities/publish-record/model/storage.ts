@@ -225,4 +225,34 @@ export class PublishRecordStorage {
     // Obsidian 플러그인 데이터 디렉토리: .obsidian/plugins/quartz-publish/
     return `${this.plugin.manifest.dir}/${this.FILE_NAME}`;
   }
+
+  async getFileSize(): Promise<number> {
+    try {
+      const adapter = this.plugin.app.vault.adapter;
+      const path = this.getFilePath();
+      const stat = await adapter.stat(path);
+      return stat?.size ?? 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  async getSizeInfo(): Promise<{
+    recordCount: number;
+    fileSize: number;
+    formattedSize: string;
+  }> {
+    const recordCount = this.getRecordCount();
+    const fileSize = await this.getFileSize();
+    const formattedSize = this.formatBytes(fileSize);
+    return { recordCount, fileSize, formattedSize };
+  }
+
+  private formatBytes(bytes: number): string {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  }
 }
