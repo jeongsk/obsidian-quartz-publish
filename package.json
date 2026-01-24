@@ -1,64 +1,65 @@
 {
-	"name": "quartz-publish",
-	"version": "0.9.1",
-	"description": "Publish your Obsidian notes directly to Quartz blog",
-	"main": "main.js",
-	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"test:coverage": "vitest run --coverage",
-		"format": "prettier --write \"src/**/*.ts\"",
-		"format:check": "prettier --check \"src/**/*.ts\"",
-		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
-		"lint:watch": "npx chokidar 'src/**/*.ts' -c 'npm run lint:fix'",
-		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"prepare": "husky"
-	},
-	"lint-staged": {
-		"*.{ts,tsx}": [
-			"eslint --fix"
-		]
-	},
-	"keywords": [],
-	"author": "jeongsk",
-	"license": "MIT",
-	"engines": {
-		"node": ">=22.0.0"
-	},
-	"devDependencies": {
-		"@eslint/compat": "^2.0.1",
-		"@stylistic/eslint-plugin": "^5.7.0",
-		"@tailwindcss/postcss": "^4.1.18",
-		"@types/diff": "^7.0.2",
-		"@types/node": "^24.10.7",
-		"@typescript-eslint/eslint-plugin": "^8.53.0",
-		"@typescript-eslint/parser": "^8.53.0",
-		"@vitest/coverage-v8": "^4.0.17",
-		"builtin-modules": "^5.0.0",
-		"chokidar": "^5.0.0",
-		"dotenv": "^17.2.3",
-		"esbuild": "^0.27.2",
-		"eslint": "^9.39.2",
-		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-obsidianmd": "^0.1.9",
-		"happy-dom": "^20.3.1",
-		"husky": "^9.1.7",
-		"lint-staged": "^16.2.7",
-		"obsidian": "latest",
-		"postcss": "^8.5.6",
-		"prettier": "^3.8.1",
-		"tailwindcss": "^4.1.18",
-		"tslib": "^2.8.1",
-		"typescript": "^5.9.3",
-		"vitest": "^4.0.17"
-	},
-	"dependencies": {
-		"clsx": "^2.1.1",
-		"diff": "^8.0.3",
-		"i18next": "^25.8.0",
-		"tailwind-merge": "^3.4.0"
-	}
+  "name": "quartz-publish",
+  "version": "0.9.1",
+  "description": "Publish your Obsidian notes directly to Quartz blog",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:watch": "npx chokidar 'src/**/*.ts' -c 'npm run lint:fix'",
+    "version": "node version-bump.mjs && git add manifest.json versions.json",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "keywords": [],
+  "author": "jeongsk",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^2.0.1",
+    "@stylistic/eslint-plugin": "^5.7.0",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/diff": "^7.0.2",
+    "@types/node": "^24.10.7",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "@vitest/coverage-v8": "^4.0.17",
+    "builtin-modules": "^5.0.0",
+    "chokidar": "^5.0.0",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.27.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-obsidianmd": "^0.1.9",
+    "happy-dom": "^20.3.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "obsidian": "latest",
+    "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.1.18",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "diff": "^8.0.3",
+    "i18next": "^25.8.0",
+    "tailwind-merge": "^3.4.0"
+  }
 }
