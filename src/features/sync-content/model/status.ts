@@ -55,9 +55,7 @@ export class StatusService {
   // JEO-18: 원격 동기화 서비스
   private remoteSyncService?: RemoteSyncService;
   private getRemoteSyncCache?: () => RemoteSyncCache | undefined;
-  private setRemoteSyncCache?: (
-    cache: RemoteSyncCache
-  ) => Promise<void>;
+  private setRemoteSyncCache?: (cache: RemoteSyncCache) => Promise<void>;
 
   private static readonly CHUNK_SIZE = 20;
 
@@ -195,9 +193,12 @@ export class StatusService {
 
     // 신규 파일 (publish record 없음)
     if (!record) {
+      // 플러그인 재설치 시 발행 기록이 사라지는 문제 해결:
+      // 원격 캐시를 활용하여 로컬 파일과 비교
+      const status = await this.determineStatusWithoutRecord(file, cache?.frontmatter);
       return {
         file,
-        status: "new",
+        ...status,
       };
     }
 
@@ -466,5 +467,69 @@ export class StatusService {
     };
     // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- 삭제된 파일은 TFile 인스턴스가 없음
     return placeholder as unknown as TFile;
+  }
+
+  /**
+   * 발행 기록이 없는 경우, 원격 캐시를 활용하여 상태를 결정합니다.
+   * 플러그인 재설치 시 발행 기록이 사라지는 문제를 해결하기 위한 로직입니다.
+   *
+   * @param file - 상태를 확인할 파일
+   * @param frontmatter - 파일의 프론트매터
+   * @returns 파일의 상태 정보 (status는 'new', 'synced', 'modified' 중 하나)
+   */
+  private async determineStatusWithoutRecord(
+    file: TFile,
+    frontmatter: Record<string, unknown> | undefined
+  ): Promise<{ status: "new" | "synced" | "modified"; localHash?: string }> {
+    const remotePath = this.getRemotePath(file, frontmatter);
+    const remoteCache = this.getRemoteSyncCache?.();
+
+    if (!remoteCache || !this.remoteSyncService?.isCacheValid(remoteCache)) {
+      return { status: "new" };
+    }
+
+    const remoteFile = remoteCache.files.find(
+      (f) => f.path.normalize("NFC") === remotePath.normalize("NFC")
+    );
+
+    if (!remoteFile) {
+      return { status: "new" };
+    }
+
+    const content = await this.vault.cachedRead(file);
+    const localHash = await this.calculateHash(content);
+
+    if (localHash === remoteFile.sha) {
+      return { status: "synced", localHash };
+    }
+
+    console.log(`[StatusService] Hash mismatch (no record) for ${file.path}`);
+    console.log(`  Remote path: ${remotePath}`);
+    console.log(`  Local: ${localHash}`);
+    console.log(`  Remote: ${remoteFile.sha}`);
+    return { status: "modified", localHash };
+  }
+
+  /**
+   * 로컬 파일의 원격 경로를 계산합니다.
+   *
+   * @param file - 로컬 파일
+   * @param frontmatter - 파일의 프론트매터
+   * @returns 원격 경로 (contentPath 접두사 포함)
+   */
+  private getRemotePath(file: TFile, frontmatter: Record<string, unknown> | undefined): string {
+    let remotePath: string;
+
+    if (this.publishFilter.isHomePage(file)) {
+      remotePath = `${this.contentPath}/index.md`;
+    } else if (typeof frontmatter?.path === "string" && (frontmatter.path as string).trim()) {
+      const customPath = (frontmatter.path as string).trim();
+      remotePath = `${this.contentPath}/${customPath}`;
+    } else {
+      const filteredPath = this.publishFilter.getPublishPath(file);
+      remotePath = `${this.contentPath}/${filteredPath}`;
+    }
+
+    return remotePath.normalize("NFC");
   }
 }

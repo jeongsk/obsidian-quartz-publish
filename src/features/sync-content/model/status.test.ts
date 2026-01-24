@@ -136,3 +136,156 @@ describe("StatusService - findDeletedNotes with remote sync", () => {
     expect(deleted).toHaveLength(2);
   });
 });
+
+describe("StatusService - calculateFileStatus with no publish record", () => {
+  let mockVault: any;
+  let mockMetadataCache: any;
+  let mockRemoteSyncService: any;
+  let testFile: any;
+
+  beforeEach(() => {
+    mockVault = {
+      getAbstractFileByPath: vi.fn(),
+      getMarkdownFiles: vi.fn(() => []),
+      cachedRead: vi.fn(),
+    };
+    mockMetadataCache = {
+      getFileCache: vi.fn(),
+    };
+    mockRemoteSyncService = {
+      isCacheValid: vi.fn(() => true),
+    };
+
+    testFile = {
+      path: "posts/test-post.md",
+      name: "test-post.md",
+      basename: "test-post",
+      extension: "md",
+    };
+  });
+
+  // SHA256 해시 계산을 위한 헬퍼 함수
+  async function calculateTestHash(content: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(content);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  it("should return 'new' when remote cache is invalid", async () => {
+    const remoteSyncCache = {
+      files: [],
+      fetchedAt: Date.now(),
+      validUntil: Date.now() + 300000,
+    };
+
+    mockRemoteSyncService.isCacheValid = vi.fn(() => false);
+
+    const service = new StatusService({
+      vault: mockVault,
+      metadataCache: mockMetadataCache,
+      getPublishRecords: () => ({}), // 빈 레코드 (발행 기록 없음)
+      getRemoteSyncCache: () => remoteSyncCache,
+      remoteSyncService: mockRemoteSyncService,
+      contentPath: "content",
+      staticPath: "static",
+    });
+
+    mockMetadataCache.getFileCache = vi.fn(() => ({
+      frontmatter: { publish: true },
+    }));
+
+    const status = await service.calculateFileStatus(testFile);
+    expect(status.status).toBe("new");
+  });
+
+  it("should return 'new' when file does not exist in remote", async () => {
+    const remoteSyncCache = {
+      files: [{ path: "content/other-post.md", sha: "abc123", size: 1000, type: "blob" as const }],
+      fetchedAt: Date.now(),
+      validUntil: Date.now() + 300000,
+    };
+
+    const service = new StatusService({
+      vault: mockVault,
+      metadataCache: mockMetadataCache,
+      getPublishRecords: () => ({}), // 빈 레코드
+      getRemoteSyncCache: () => remoteSyncCache,
+      remoteSyncService: mockRemoteSyncService,
+      contentPath: "content",
+      staticPath: "static",
+    });
+
+    mockMetadataCache.getFileCache = vi.fn(() => ({
+      frontmatter: { publish: true },
+    }));
+
+    const status = await service.calculateFileStatus(testFile);
+    expect(status.status).toBe("new");
+  });
+
+  it("should return 'synced' when local hash matches remote SHA", async () => {
+    const content = "test content for synced file";
+    const remoteHash = await calculateTestHash(content);
+    const remoteSyncCache = {
+      files: [
+        { path: "content/posts/test-post.md", sha: remoteHash, size: 1000, type: "blob" as const },
+      ],
+      fetchedAt: Date.now(),
+      validUntil: Date.now() + 300000,
+    };
+
+    const service = new StatusService({
+      vault: mockVault,
+      metadataCache: mockMetadataCache,
+      getPublishRecords: () => ({}), // 빈 레코드
+      getRemoteSyncCache: () => remoteSyncCache,
+      remoteSyncService: mockRemoteSyncService,
+      contentPath: "content",
+      staticPath: "static",
+    });
+
+    mockMetadataCache.getFileCache = vi.fn(() => ({
+      frontmatter: { publish: true },
+    }));
+    mockVault.cachedRead = vi.fn(() => content);
+
+    const status = await service.calculateFileStatus(testFile);
+    expect(status.status).toBe("synced");
+    expect(status.localHash).toBe(remoteHash);
+  });
+
+  it("should return 'modified' when local hash differs from remote SHA", async () => {
+    const remoteContent = "original remote content";
+    const localContent = "modified local content";
+    const remoteHash = await calculateTestHash(remoteContent);
+    const localHash = await calculateTestHash(localContent);
+    const remoteSyncCache = {
+      files: [
+        { path: "content/posts/test-post.md", sha: remoteHash, size: 1000, type: "blob" as const },
+      ],
+      fetchedAt: Date.now(),
+      validUntil: Date.now() + 300000,
+    };
+
+    const service = new StatusService({
+      vault: mockVault,
+      metadataCache: mockMetadataCache,
+      getPublishRecords: () => ({}), // 빈 레코드
+      getRemoteSyncCache: () => remoteSyncCache,
+      remoteSyncService: mockRemoteSyncService,
+      contentPath: "content",
+      staticPath: "static",
+    });
+
+    mockMetadataCache.getFileCache = vi.fn(() => ({
+      frontmatter: { publish: true },
+    }));
+    mockVault.cachedRead = vi.fn(() => localContent);
+
+    const status = await service.calculateFileStatus(testFile);
+    expect(status.status).toBe("modified");
+    expect(status.localHash).toBe(localHash);
+  });
+});
