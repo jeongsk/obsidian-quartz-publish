@@ -1,17 +1,17 @@
-import { describe, it, expect } from 'vitest';
-import { QuartzConfigService } from '../../../src/services/quartz-config';
-import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../../src/types';
+import { describe, it, expect } from "vitest";
+import { QuartzConfigService } from "../../../src/entities/quartz/model/config";
+import { DEFAULT_TYPOGRAPHY_CONFIG } from "../../../src/app/types";
 
 // Mock GitHubService
 const mockGitHubService = {
-	getFile: async () => null,
-	createOrUpdateFile: async () => ({ success: true }),
+  getFile: async () => null,
+  createOrUpdateFile: async () => ({ success: true }),
 } as any;
 
-describe('QuartzConfigService - Typography', () => {
-	const service = new QuartzConfigService(mockGitHubService);
+describe("QuartzConfigService - Typography", () => {
+  const service = new QuartzConfigService(mockGitHubService);
 
-	const validConfig = `
+  const validConfig = `
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "🪴 Quartz 4.0",
@@ -96,45 +96,45 @@ const config: QuartzConfig = {
 }
   `;
 
-	it('should parse typography correctly', () => {
-		const parsed = service.parseExtendedConfig(validConfig);
-		expect(parsed?.typography).toEqual({
-			header: 'Schibsted Grotesk',
-			body: 'Source Sans Pro',
-			code: 'IBM Plex Mono',
-		});
-	});
+  it("should parse typography correctly", () => {
+    const parsed = service.parseExtendedConfig(validConfig);
+    expect(parsed?.typography).toEqual({
+      header: "Schibsted Grotesk",
+      body: "Source Sans Pro",
+      code: "IBM Plex Mono",
+    });
+  });
 
-	it('should use default typography if missing', () => {
-		const configWithoutTypography = validConfig.replace(/typography: \{[^}]+\},/, '');
-		const parsed = service.parseExtendedConfig(configWithoutTypography);
-		expect(parsed?.typography).toEqual(DEFAULT_TYPOGRAPHY_CONFIG);
-	});
+  it("should use default typography if missing", () => {
+    const configWithoutTypography = validConfig.replace(/typography: \{[^}]+\},/, "");
+    const parsed = service.parseExtendedConfig(configWithoutTypography);
+    expect(parsed?.typography).toEqual(DEFAULT_TYPOGRAPHY_CONFIG);
+  });
 
-	it('should update typography correctly', () => {
-		const newTypography = {
-			header: 'Roboto',
-			body: 'Open Sans',
-			code: 'Fira Code',
-		};
+  it("should update typography correctly", () => {
+    const newTypography = {
+      header: "Roboto",
+      body: "Open Sans",
+      code: "Fira Code",
+    };
 
-		const updatedContent = service['updateTypography'](validConfig, newTypography);
+    const updatedContent = service["updateTypography"](validConfig, newTypography);
 
-		expect(updatedContent).toContain('header: "Roboto"');
-		expect(updatedContent).toContain('body: "Open Sans"');
-		expect(updatedContent).toContain('code: "Fira Code"');
-		expect(updatedContent).not.toContain('header: "Schibsted Grotesk"');
-	});
+    expect(updatedContent).toContain('header: "Roboto"');
+    expect(updatedContent).toContain('body: "Open Sans"');
+    expect(updatedContent).toContain('code: "Fira Code"');
+    expect(updatedContent).not.toContain('header: "Schibsted Grotesk"');
+  });
 
-	it('should not break if typography block is missing when updating', () => {
-		const configWithoutTypography = validConfig.replace(/typography: \{[^}]+\},/, '');
-		const updatedContent = service['updateTypography'](configWithoutTypography, {
-			header: 'Roboto',
-			body: 'Open Sans',
-			code: 'Fira Code',
-		});
+  it("should not break if typography block is missing when updating", () => {
+    const configWithoutTypography = validConfig.replace(/typography: \{[^}]+\},/, "");
+    const updatedContent = service["updateTypography"](configWithoutTypography, {
+      header: "Roboto",
+      body: "Open Sans",
+      code: "Fira Code",
+    });
 
-		// Should remain unchanged as regex won't match
-		expect(updatedContent).toBe(configWithoutTypography);
-	});
+    // Should remain unchanged as regex won't match
+    expect(updatedContent).toBe(configWithoutTypography);
+  });
 });
