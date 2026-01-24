@@ -35,3 +35,135 @@ CLAUDE.local.md
 # Environment
 .env
 .env.local
+.VolumeIcon.icns
+.fseventsd
+.LSOverride
+.vercel/
+.Trashes
+*_secret.*
+.claude/skills/*/.env*
+build/
+*.pyd
+# Linux
+*.dbm
+ehthumbs.db
+*.bak
+*.njsproj
+.#*
+# Certificate files
+Thumbs.db
+.tscache/
+api-key-*
+# Virtual Environments
+.claude/skills/*/*/*secret*
+# ===========================================
+*.sublime-project
+*.egg
+logs/
+.aws/config
+*.sqlite
+*.egg-info/
+*_key.*
+.nuxt/
+# Node.js (for docs/Nextra)
+*.secret.*
+*-key.*
+# Secrets and Credentials (CRITICAL)
+.claude/skills/*/*/*key*
+.aws/credentials
+.claude/settings.local.json
+.claude/skills/*/secrets/
+.netlify/
+.vscode/
+*.p12
+# Purpose: Essential patterns for user projects
+*_token=*
+# Environment files
+*.swo
+.mypy_cache/
+.TemporaryItems
+*.backup/
+.uv_cache/
+.claude/local/
+*.sln
+dist-ssr/
+# Credential patterns in environment files
+.DocumentRevisions-V100
+# FIXED: Issue #237 - Replaced overly broad *key* and *secret* patterns
+secret-key-*
+# Build Artifacts & Distribution
+# Deployment & CI/CD
+[Dd]esktop.ini
+# OS Files
+*.temp
+# Python Cache & Bytecode
+.directory
+*.sqlite3
+.claude/settings.local.*.json
+*.key.*
+!.env.example
+# MoAI-ADK Package Distribution .gitignore
+*.backup
+venv/
+.env.*
+*.tsbuildinfo
+# Claude Code Configuration
+*.sw?
+# Updated: 2026-01-10
+.moai-backups/
+*_backup_*/
+secret-*.*
+.cursor/
+.ruff_cache/
+# Private keys (specific patterns to avoid false positives)
+__pycache__/
+# Skill-specific credentials
+# Version: 0.33.0
+.AppleDouble
+*.rdb
+out/
+*.pyo
+env/
+node_modules/
+*.tmp
+*.pem
+.firebase/
+.turbo/
+# Logs & Temporary Files
+private-key*
+*~
+.uv-cache/
+.claude/plans/
+# Windows
+.Spotlight-V100
+*.pfx
+.claude/skills/*/*/*token*
+# Backups
+# Mac
+# ============================================
+.idea/
+*.db
+# Test Coverage
+.coverage
+*.pyc
+*-api-key.*
+*.suo
+coverage.json
+.claude/.env.local*
+*.jks
+*.sublime-workspace
+dist/
+*-secret-key.*
+*.log
+.venv/
+# Build Tools & Frameworks
+*_secret=*
+htmlcov/
+# Cloud provider credentials
+# IDE & Editors
+.pytest_cache/
+*-backup/
+.env/
+*-secret.*
+.next/
+*.swp

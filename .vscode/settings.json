@@ -7,5 +7,9 @@
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[typescript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+	},
+	"i18n-ally.localesPaths": [
+		"src/shared/lib/i18n",
+		"src/shared/lib/i18n/locales"
+	]
 }

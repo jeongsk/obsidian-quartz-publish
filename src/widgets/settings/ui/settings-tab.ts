@@ -589,7 +589,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
             .setButtonText(t("settings.publishRecords.cleanupButton"))
             .setClass("mod-warning")
             .onClick(async () => {
-              const removed = await this.plugin.recordStorage.cleanup(true);
+              const removed = await this.plugin.recordStorage.cleanup(false);
               new Notice(t("settings.publishRecords.cleanupSuccess", { count: removed }));
               this.display();
             })
