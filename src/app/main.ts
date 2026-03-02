@@ -12,6 +12,8 @@ import {
   DEFAULT_SETTINGS,
   DEFAULT_PUBLISH_FILTER_SETTINGS,
   DEFAULT_VALIDATION_SETTINGS,
+  RATE_LIMIT_DELAY_MS,
+  CLEANUP_INTERVAL_MS,
 } from "./types";
 import { QuartzPublishSettingTab } from "../widgets/settings/ui/settings-tab";
 import { PublishService } from "../features/publish-note/model/publisher";
@@ -23,6 +25,7 @@ import { PublishRecordStorage } from "../entities/publish-record/model/storage";
 import { RemoteSyncService } from "../features/sync-content/model/syncer";
 import { DashboardModal } from "../widgets/dashboard/ui/dashboard-modal";
 import { FrontmatterEditorModal } from "../features/publish-note/ui/frontmatter-editor-modal";
+import { CommitHistoryModal } from "../features/commit-history/ui/commit-history-modal";
 import { initI18n, t } from "../shared/lib/i18n";
 import { isValidGitHubUrl, normalizeBaseUrl } from "../shared/lib/url";
 import { ICON_QUARTZ_PUBLISH, ICON_QUARTZ_PUBLISH_SVG } from "../shared/config/constants/icons";
@@ -69,12 +72,9 @@ export default class QuartzPublishPlugin extends Plugin {
     await this.recordStorage.cleanup();
 
     this.registerInterval(
-      window.setInterval(
-        async () => {
-          await this.recordStorage.cleanup();
-        },
-        12 * 60 * 60 * 1000
-      )
+      window.setInterval(async () => {
+        await this.recordStorage.cleanup();
+      }, CLEANUP_INTERVAL_MS)
     );
 
     // NetworkService 초기화
@@ -146,6 +146,15 @@ export default class QuartzPublishPlugin extends Plugin {
         } else {
           new Notice(t("notice.noBaseUrl"));
         }
+      },
+    });
+
+    // 커맨드 등록: 커밋 히스토리 열기
+    this.addCommand({
+      id: "open-commit-history",
+      name: t("command.openCommitHistory"),
+      callback: () => {
+        this.openCommitHistory();
       },
     });
 
@@ -438,20 +447,14 @@ export default class QuartzPublishPlugin extends Plugin {
       onLoadStatus: async (onProgress) => this.statusService.calculateStatusOverview(onProgress),
       networkService: this.networkService,
       onGetRemoteContent: async (file) => {
-        console.log("=== [onGetRemoteContent] START ===");
-        console.log("[onGetRemoteContent] file:", file.name, "path:", file.path);
-
         const { githubToken, repoUrl } = this.settings;
         if (!githubToken || !repoUrl) {
-          console.warn("[onGetRemoteContent] No githubToken or repoUrl");
           return null;
         }
 
         const github = new GitHubService(githubToken, repoUrl, this.settings.defaultBranch);
         const records = this.recordStorage.getAllRecords();
         const record = records[file.path];
-
-        console.log("[onGetRemoteContent] record:", record);
 
         // 여러 경로를 순차적으로 시도
         const pathsToTry: string[] = [];
@@ -464,28 +467,34 @@ export default class QuartzPublishPlugin extends Plugin {
         // 2. 로컬 파일 경로 (content/ 접두사 포함)
         pathsToTry.push(`content/${file.path}`.normalize("NFC"));
 
-        console.log("[onGetRemoteContent] paths to try:", pathsToTry);
-
         // 각 경로를 순차적으로 시도
-        for (let i = 0; i < pathsToTry.length; i++) {
-          const path = pathsToTry[i];
-          console.log(`[onGetRemoteContent] [${i + 1}/${pathsToTry.length}] trying:`, path);
-
+        for (const path of pathsToTry) {
           const content = await github.getFile(path);
           if (content !== null) {
-            console.log("[onGetRemoteContent] ✓ Found file at:", path);
             return content.content;
           }
         }
 
-        console.warn("[onGetRemoteContent] ✗ File not found after all attempts");
-        console.warn(
-          "[onGetRemoteContent] The file may not exist on GitHub or was published with a different path."
-        );
-        console.warn("[onGetRemoteContent] Please re-publish this file to fix the issue.");
         return null;
       },
       onCleanUpStaleRecords: async () => this.cleanUpStaleRecords(),
+    }).open();
+  }
+
+  /**
+   * 커밋 히스토리 모달 열기
+   */
+  openCommitHistory(): void {
+    const { githubToken, repoUrl, defaultBranch } = this.settings;
+
+    if (!githubToken || !repoUrl) {
+      new Notice(t("notice.configureFirst"));
+      return;
+    }
+
+    const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+    new CommitHistoryModal(this.app, {
+      gitHubService: github,
     }).open();
   }
 
@@ -566,8 +575,8 @@ export default class QuartzPublishPlugin extends Plugin {
         const result = await publishService.unpublishNote(file);
         results.push(result);
 
-        // Rate limiting (500ms delay)
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Rate limiting
+        await new Promise((resolve) => setTimeout(resolve, RATE_LIMIT_DELAY_MS));
       } catch (error) {
         results.push({
           success: false,

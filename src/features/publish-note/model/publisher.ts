@@ -20,12 +20,14 @@ import {
   MAX_FILE_SIZE,
   DEFAULT_AUTO_DATE_SETTINGS,
   DEFAULT_PUBLISH_FILTER_SETTINGS,
+  RATE_LIMIT_DELAY_MS,
 } from "../../../app/types";
 import type { LargeFileInfo, FileValidationResult } from "../../../app/types";
 import { GitHubService } from "../../../entities/github/model/service";
 import { ContentTransformer } from "../../../entities/note/lib/transformer";
 import { FileValidatorService } from "../../../shared/lib/file-validator";
 import { PublishFilterService } from "./filter";
+import { t } from "../../../shared/lib/i18n";
 
 /**
  * 발행 서비스 클래스
@@ -299,7 +301,7 @@ export class PublishService {
 
       // Rate limit 방지를 위한 딜레이
       if (i < files.length - 1) {
-        await this.delay(500);
+        await this.delay(RATE_LIMIT_DELAY_MS);
       }
     }
 
@@ -372,7 +374,7 @@ export class PublishService {
         success: false,
         file,
         error: isNetworkError
-          ? "네트워크 연결을 확인하고 다시 시도해주세요."
+          ? t("error.formatted.networkSuggestion")
           : error instanceof Error
             ? error.message
             : "Unknown error",

@@ -260,6 +260,7 @@ const ko: { [K in TranslationKeys]?: string } = {
   "command.openDashboard": "발행 대시보드 열기",
   "command.openGitHubRepo": "GitHub 저장소 열기",
   "command.openDeployedSite": "배포 사이트 열기",
+  "command.openCommitHistory": "커밋 히스토리 열기",
 
   // Menus
   "menu.publishToQuartz": "Quartz에 발행",
@@ -268,6 +269,7 @@ const ko: { [K in TranslationKeys]?: string } = {
   "modal.confirm.title": "확인",
   "modal.confirm.ok": "확인",
   "modal.confirm.cancel": "취소",
+  "modal.confirm.close": "닫기",
   "modal.fileNotFound.title": "파일을 찾을 수 없음",
   "modal.fileNotFound.message":
     "원격 저장소에서 '{{fileName}}' 파일을 찾을 수 없습니다. 다시 발행하시겠습니까?",
@@ -422,6 +424,10 @@ const ko: { [K in TranslationKeys]?: string } = {
   // Settings - Remote File Management
   "settings.github.manageFiles": "발행된 파일 관리",
   "settings.github.manageFilesDesc": "원격 저장소의 파일을 조회하고 삭제합니다",
+
+  // Settings - Commit History
+  "settings.github.commitHistory": "커밋 히스토리",
+  "settings.github.commitHistoryDesc": "저장소의 커밋을 조회하고 되돌립니다",
 
   // Settings - Publish Records
   "settings.publishRecords.title": "발행 기록",
@@ -632,6 +638,59 @@ const ko: { [K in TranslationKeys]?: string } = {
   "dashboard.tooltip.diff": "변경 사항 보기",
   "error.remoteFileNotFound": "원격 파일을 찾을 수 없습니다. 다시 발행해 주세요.",
   "error.diffFailed": "변경 사항 로드 실패: {{message}}",
+
+  // Commit History Modal
+  "modal.commitHistory.title": "커밋 히스토리",
+  "modal.commitHistory.loading": "커밋을 불러오는 중...",
+  "modal.commitHistory.empty": "커밋이 없습니다",
+  "modal.commitHistory.refresh": "새로고침",
+  "modal.commitHistory.search": "커밋 검색...",
+  "modal.commitHistory.commitListLabel": "커밋 목록",
+  "modal.commitHistory.commitCount": "{{count}}개의 커밋",
+  "modal.commitHistory.time.justNow": "방금 전",
+  "modal.commitHistory.time.minutesAgo": "{{count}}분 전",
+  "modal.commitHistory.time.hoursAgo": "{{count}}시간 전",
+  "modal.commitHistory.time.daysAgo": "{{count}}일 전",
+
+  // Commit Detail Modal
+  "modal.commitDetail.title": "커밋 상세",
+  "modal.commitDetail.loading": "커밋 상세를 불러오는 중...",
+  "modal.commitDetail.sha": "SHA",
+  "modal.commitDetail.author": "작성자",
+  "modal.commitDetail.date": "날짜",
+  "modal.commitDetail.viewOnGitHub": "GitHub에서 보기",
+  "modal.commitDetail.changedFiles": "{{count}}개 파일 변경됨",
+  "modal.commitDetail.noFiles": "변경된 파일이 없습니다",
+  "modal.commitDetail.selectAll": "전체 선택",
+  "modal.commitDetail.deselectAll": "전체 해제",
+  "modal.commitDetail.selectFile": "{{name}} 선택",
+  "modal.commitDetail.viewDiff": "Diff 보기",
+  "modal.commitDetail.selectedCount": "{{count}}개 파일 선택됨",
+  "modal.commitDetail.selectToRevert": "되돌릴 파일을 선택하세요",
+  "modal.commitDetail.revertSelected": "선택 항목 되돌리기",
+
+  // Revert Modal
+  "modal.revert.title": "파일 되돌리기",
+  "modal.revert.warning": "경고: 새 커밋이 생성됩니다",
+  "modal.revert.confirmMessage":
+    "정말 {{count}}개 파일을 선택한 커밋 시점으로 되돌리시겠습니까? 되돌린 내용으로 새 커밋이 생성됩니다.",
+  "modal.revert.revertTo": "되돌릴 커밋:",
+  "modal.revert.revert": "되돌리기",
+  "modal.revert.reverting": "파일을 되돌리는 중...",
+  "modal.revert.progress": "{{current}} / {{total}}개 파일",
+  "modal.revert.success": "되돌리기 완료",
+  "modal.revert.allSucceeded": "{{count}}개 파일을 성공적으로 되돌렸습니다",
+  "modal.revert.partialSuccess": "{{succeeded}}개 성공, {{failed}}개 실패",
+  "modal.revert.newCommitSha": "새 커밋 SHA:",
+  "modal.revert.failedFiles": "실패한 파일:",
+  "modal.revert.error": "되돌리기 실패",
+  "modal.revert.noticeSuccess": "{{count}}개 파일을 성공적으로 되돌렸습니다",
+  "modal.revert.noticePartial": "되돌리기 완료: {{succeeded}}개 성공, {{failed}}개 실패",
+
+  // Commit History Errors
+  "error.commitHistory.loadFailed": "커밋 히스토리를 불러오지 못했습니다",
+  "error.commitHistory.revertFailed": "파일 되돌리기에 실패했습니다",
+  "error.commitHistory.allRevertFailed": "모든 파일 되돌리기 실패",
 };
 
 export default ko;

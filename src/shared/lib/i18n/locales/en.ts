@@ -258,6 +258,7 @@ export default {
   "command.openDashboard": "Open Publish Dashboard",
   "command.openGitHubRepo": "Open GitHub Repository",
   "command.openDeployedSite": "Open Deployed Site",
+  "command.openCommitHistory": "Open Commit History",
 
   // Menus
   "menu.publishToQuartz": "Publish to Quartz",
@@ -266,6 +267,7 @@ export default {
   "modal.confirm.title": "Confirm",
   "modal.confirm.ok": "OK",
   "modal.confirm.cancel": "Cancel",
+  "modal.confirm.close": "Close",
   "modal.fileNotFound.title": "File Not Found",
   "modal.fileNotFound.message":
     "Could not find '{{fileName}}' in the remote repository. Would you like to publish it?",
@@ -421,6 +423,10 @@ export default {
   // Settings - Remote File Management
   "settings.github.manageFiles": "Manage Published Files",
   "settings.github.manageFilesDesc": "View and delete files from your remote repository",
+
+  // Settings - Commit History
+  "settings.github.commitHistory": "Commit History",
+  "settings.github.commitHistoryDesc": "View and revert commits in your repository",
 
   // Settings - Publish Records
   "settings.publishRecords.title": "Publish Records",
@@ -634,4 +640,57 @@ export default {
   "dashboard.tooltip.diff": "View changes",
   "error.remoteFileNotFound": "Remote file not found. Please re-publish the file.",
   "error.diffFailed": "Failed to load diff: {{message}}",
+
+  // Commit History Modal
+  "modal.commitHistory.title": "Commit History",
+  "modal.commitHistory.loading": "Loading commits...",
+  "modal.commitHistory.empty": "No commits found",
+  "modal.commitHistory.refresh": "Refresh",
+  "modal.commitHistory.search": "Search commits...",
+  "modal.commitHistory.commitListLabel": "Commit list",
+  "modal.commitHistory.commitCount": "{{count}} commit(s)",
+  "modal.commitHistory.time.justNow": "Just now",
+  "modal.commitHistory.time.minutesAgo": "{{count}}m ago",
+  "modal.commitHistory.time.hoursAgo": "{{count}}h ago",
+  "modal.commitHistory.time.daysAgo": "{{count}}d ago",
+
+  // Commit Detail Modal
+  "modal.commitDetail.title": "Commit Detail",
+  "modal.commitDetail.loading": "Loading commit details...",
+  "modal.commitDetail.sha": "SHA",
+  "modal.commitDetail.author": "Author",
+  "modal.commitDetail.date": "Date",
+  "modal.commitDetail.viewOnGitHub": "View on GitHub",
+  "modal.commitDetail.changedFiles": "{{count}} changed file(s)",
+  "modal.commitDetail.noFiles": "No files changed",
+  "modal.commitDetail.selectAll": "Select All",
+  "modal.commitDetail.deselectAll": "Deselect All",
+  "modal.commitDetail.selectFile": "Select {{name}}",
+  "modal.commitDetail.viewDiff": "View Diff",
+  "modal.commitDetail.selectedCount": "{{count}} file(s) selected",
+  "modal.commitDetail.selectToRevert": "Select files to revert",
+  "modal.commitDetail.revertSelected": "Revert Selected",
+
+  // Revert Modal
+  "modal.revert.title": "Revert Files",
+  "modal.revert.warning": "Warning: This action will create a new commit",
+  "modal.revert.confirmMessage":
+    "Are you sure you want to revert {{count}} file(s) to the selected commit? This will create a new commit with the reverted content.",
+  "modal.revert.revertTo": "Revert to commit:",
+  "modal.revert.revert": "Revert",
+  "modal.revert.reverting": "Reverting files...",
+  "modal.revert.progress": "{{current}} / {{total}} files",
+  "modal.revert.success": "Revert completed",
+  "modal.revert.allSucceeded": "Successfully reverted {{count}} file(s)",
+  "modal.revert.partialSuccess": "Reverted {{succeeded}} file(s), {{failed}} failed",
+  "modal.revert.newCommitSha": "New commit SHA:",
+  "modal.revert.failedFiles": "Failed files:",
+  "modal.revert.error": "Revert failed",
+  "modal.revert.noticeSuccess": "Successfully reverted {{count}} file(s)",
+  "modal.revert.noticePartial": "Reverted: {{succeeded}} succeeded, {{failed}} failed",
+
+  // Commit History Errors
+  "error.commitHistory.loadFailed": "Failed to load commit history",
+  "error.commitHistory.revertFailed": "Failed to revert files",
+  "error.commitHistory.allRevertFailed": "All files failed to revert",
 } as const;

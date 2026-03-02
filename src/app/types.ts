@@ -984,6 +984,12 @@ export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 /** GitHub API 기본 URL */
 export const GITHUB_API_BASE_URL = "https://api.github.com";
 
+/** GitHub API Rate limit 방지 딜레이 (ms) */
+export const RATE_LIMIT_DELAY_MS = 500;
+
+/** 발행 기록 정리 주기 (12시간) */
+export const CLEANUP_INTERVAL_MS = 12 * 60 * 60 * 1000;
+
 // ============================================================================
 // Repository Creation Types (Phase 4 - Beginner Support)
 // ============================================================================
@@ -1277,5 +1283,162 @@ export const INITIAL_FILE_LIST_STATE: FileListState = {
   duplicateGroups: [],
   isLoading: true,
   isDeleting: false,
+  error: null,
+};
+
+// ============================================================================
+// Commit History Types (Commit History & Revert Feature)
+// ============================================================================
+
+/**
+ * 커밋 목록 항목
+ */
+export interface CommitListItem {
+  /** 커밋 SHA (전체) */
+  sha: string;
+  /** 커밋 SHA (짧은 형식, 앞 7자) */
+  shortSha: string;
+  /** 커밋 메시지 */
+  message: string;
+  /** 커밋 작성자 이름 */
+  authorName: string;
+  /** 커밋 작성자 이메일 */
+  authorEmail: string;
+  /** 커밋 작성일 (ISO 8601) */
+  authorDate: string;
+  /** 커밋터 이름 */
+  committerName: string;
+  /** 커밋터 이메일 */
+  committerEmail: string;
+  /** 커밋일 (ISO 8601) */
+  committerDate: string;
+  /** GitHub 웹 URL */
+  htmlUrl: string;
+}
+
+/**
+ * 파일 변경 상태
+ */
+export type FileChangeStatus = "added" | "modified" | "deleted" | "renamed";
+
+/**
+ * 커밋 파일 변경 정보
+ */
+export interface CommitFileChange {
+  /** 파일 경로 */
+  filename: string;
+  /** 변경 상태 */
+  status: FileChangeStatus;
+  /** 파일 SHA (추가/수정된 경우) */
+  sha?: string;
+  /** 이전 파일 SHA (수정/삭제된 경우) */
+  previousSha?: string;
+  /** 변경 라인 수 (추가 - 삭제) */
+  changes?: { additions: number; deletions: number };
+  /** 패치 (diff) */
+  patch?: string;
+}
+
+/**
+ * 커밋 상세 정보
+ */
+export interface CommitDetail {
+  /** 커밋 SHA (전체) */
+  sha: string;
+  /** 커밋 SHA (짧은 형식) */
+  shortSha: string;
+  /** 커밋 메시지 (제목) */
+  message: string;
+  /** 커밋 메시지 (본문) */
+  body: string | null;
+  /** 작성자 정보 */
+  author: {
+    name: string;
+    email: string;
+    date: string;
+  };
+  /** 커밋터 정보 */
+  committer: {
+    name: string;
+    email: string;
+    date: string;
+  };
+  /** 부모 커밋 SHA 목록 */
+  parents: string[];
+  /** GitHub 웹 URL */
+  htmlUrl: string;
+  /** 변경된 파일 목록 */
+  files: CommitFileChange[];
+  /** 총 변경 통계 */
+  stats: {
+    additions: number;
+    deletions: number;
+    total: number;
+  };
+}
+
+/**
+ * 단일 파일 되돌리기 결과
+ */
+export interface RevertFileResult {
+  /** 파일 경로 */
+  path: string;
+  /** 성공 여부 */
+  success: boolean;
+  /** 오류 메시지 (실패 시) */
+  error?: string;
+  /** 새로운 커밋 SHA (성공 시) */
+  commitSha?: string;
+}
+
+/**
+ * 다중 파일 되돌리기 결과
+ */
+export interface RevertResult {
+  /** 성공한 파일 목록 */
+  succeeded: RevertFileResult[];
+  /** 실패한 파일 목록 */
+  failed: RevertFileResult[];
+  /** 전체 성공 여부 */
+  allSucceeded: boolean;
+  /** 새로운 커밋 SHA (전체 성공 시) */
+  commitSha?: string;
+}
+
+/**
+ * 되돌리기 진행 콜백
+ */
+export type RevertProgressCallback = (current: number, total: number) => void;
+
+/**
+ * 커밋 목록 상태 (UI 상태 관리용)
+ */
+export interface CommitListState {
+  /** 커밋 목록 */
+  commits: CommitListItem[];
+  /** 필터링된 커밋 목록 */
+  filteredCommits: CommitListItem[];
+  /** 현재 페이지 */
+  currentPage: number;
+  /** 전체 페이지 수 */
+  totalPages: number;
+  /** 로딩 상태 */
+  isLoading: boolean;
+  /** 검색어 */
+  searchQuery: string;
+  /** 오류 메시지 */
+  error: string | null;
+}
+
+/**
+ * 커밋 목록 초기 상태
+ */
+export const INITIAL_COMMIT_LIST_STATE: CommitListState = {
+  commits: [],
+  filteredCommits: [],
+  currentPage: 1,
+  totalPages: 1,
+  isLoading: true,
+  searchQuery: "",
   error: null,
 };

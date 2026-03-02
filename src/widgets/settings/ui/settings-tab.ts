@@ -38,6 +38,7 @@ import { CreateRepoModal } from "../../../features/create-repo/ui/modal";
 import { DeployGuideModal } from "../../../features/create-repo/ui/deploy-guide-modal";
 import { GitHubGuideModal } from "../../../shared/ui/github-guide-modal";
 import { RemoteFileManagerModal } from "../../../features/sync-content/ui/remote-file-manager-modal";
+import { CommitHistoryModal } from "../../../features/commit-history/ui/commit-history-modal";
 import { t } from "../../../shared/lib/i18n";
 import { isValidGitHubUrl, normalizeBaseUrl } from "../../../shared/lib/url";
 import { cn } from "../../../shared/lib/cn";
@@ -246,6 +247,16 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
         });
       });
 
+    // 커밋 히스토리 버튼
+    new Setting(containerEl)
+      .setName(t("settings.github.commitHistory"))
+      .setDesc(t("settings.github.commitHistoryDesc"))
+      .addButton((button) => {
+        button.setButtonText(t("settings.github.commitHistory")).onClick(() => {
+          this.openCommitHistoryModal();
+        });
+      });
+
     // GitHub 설정 가이드 버튼
     new Setting(containerEl)
       .setName(t("guide.button"))
@@ -275,6 +286,24 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
     const modal = new RemoteFileManagerModal(this.app, {
       gitHubService: github,
       contentPath: contentPath || "content",
+    });
+    modal.open();
+  }
+
+  /**
+   * 커밋 히스토리 모달 열기
+   */
+  private openCommitHistoryModal(): void {
+    const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+
+    if (!githubToken || !repoUrl) {
+      new Notice(t("notice.configureFirst"));
+      return;
+    }
+
+    const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+    const modal = new CommitHistoryModal(this.app, {
+      gitHubService: github,
     });
     modal.open();
   }

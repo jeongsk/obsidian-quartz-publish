@@ -11,8 +11,65 @@ import type {
   GitHubCommitResult,
   RateLimitInfo,
   PublishedFile,
+  CommitListItem,
+  CommitDetail,
+  CommitFileChange,
+  RevertResult,
+  RevertProgressCallback,
 } from "../../../app/types";
 import { GITHUB_API_BASE_URL } from "../../../app/types";
+
+// GitHub API 내부 응답 타입 (모듈 전용)
+interface GitHubCommitItemResponse {
+  sha: string;
+  commit: {
+    message: string;
+    author: {
+      name: string;
+      email: string;
+      date: string;
+    };
+    committer: {
+      name: string;
+      email: string;
+      date: string;
+    };
+  };
+  html_url: string;
+}
+
+interface GitHubCommitDetailResponse {
+  sha: string;
+  commit: {
+    message: string;
+    author: {
+      name: string;
+      email: string;
+      date: string;
+    };
+    committer: {
+      name: string;
+      email: string;
+      date: string;
+    };
+  };
+  html_url: string;
+  parents: Array<{ sha: string }>;
+  files: Array<{
+    filename: string;
+    status: "added" | "modified" | "deleted" | "renamed";
+    sha: string;
+    previous_filename?: string;
+    additions: number;
+    deletions: number;
+    patch?: string;
+  }>;
+  stats: {
+    additions: number;
+    deletions: number;
+    total: number;
+  };
+}
 
 /**
  * GitHub API 오류 클래스
@@ -977,6 +1034,319 @@ export class GitHubService {
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
+
+  // ============================================================================
+  // Commit History Methods (Commit History & Revert Feature)
+  // ============================================================================
+
+  /**
+   * 커밋 목록 조회
+   *
+   * @param perPage 페이지당 커밋 수 (기본값: 30, 최대: 100)
+   * @param page 페이지 번호 (기본값: 1)
+   * @returns 커밋 목록
+   */
+  async getCommits(perPage: number = 30, page: number = 1): Promise<CommitListItem[]> {
+    const response = await this.request<GitHubCommitItemResponse[]>(
+      `/repos/${this.owner}/${this.repo}/commits?sha=${this.branch}&per_page=${Math.min(perPage, 100)}&page=${page}`
+    );
+
+    return response.map((item) => ({
+      sha: item.sha,
+      shortSha: item.sha.substring(0, 7),
+      message: item.commit.message.split("\n")[0], // 제목만 사용
+      authorName: item.commit.author.name,
+      authorEmail: item.commit.author.email,
+      authorDate: item.commit.author.date,
+      committerName: item.commit.committer.name,
+      committerEmail: item.commit.committer.email,
+      committerDate: item.commit.committer.date,
+      htmlUrl: item.html_url,
+    }));
+  }
+
+  /**
+   * 커밋 상세 조회
+   *
+   * @param sha 커밋 SHA
+   * @returns 커밋 상세 정보
+   */
+  async getCommitDetail(sha: string): Promise<CommitDetail> {
+    const response = await this.request<GitHubCommitDetailResponse>(
+      `/repos/${this.owner}/${this.repo}/commits/${sha}`
+    );
+
+    const messageLines = response.commit.message.split("\n");
+    const title = messageLines[0];
+    const body = messageLines.length > 1 ? messageLines.slice(1).join("\n").trim() : null;
+
+    const files: CommitFileChange[] = (response.files ?? []).map((file) => ({
+      filename: file.filename,
+      status: file.status,
+      sha: file.sha,
+      previousSha: file.previous_filename ? undefined : file.sha, // 이전 SHA는 별도 처리 필요
+      changes: {
+        additions: file.additions,
+        deletions: file.deletions,
+      },
+      patch: file.patch,
+    }));
+
+    return {
+      sha: response.sha,
+      shortSha: response.sha.substring(0, 7),
+      message: title,
+      body,
+      author: {
+        name: response.commit.author.name,
+        email: response.commit.author.email,
+        date: response.commit.author.date,
+      },
+      committer: {
+        name: response.commit.committer.name,
+        email: response.commit.committer.email,
+        date: response.commit.committer.date,
+      },
+      parents: response.parents.map((p) => p.sha),
+      htmlUrl: response.html_url,
+      files,
+      stats: response.stats,
+    };
+  }
+
+  /**
+   * 특정 커밋 시점의 파일 내용 조회
+   *
+   * @param filePath 파일 경로
+   * @param commitSha 커밋 SHA
+   * @returns 파일 내용 또는 null
+   */
+  async getFileAtCommit(filePath: string, commitSha: string): Promise<string | null> {
+    try {
+      const encodedPath = this.encodePath(filePath);
+      const response = await this.request<GitHubContentsResponse>(
+        `/repos/${this.owner}/${this.repo}/contents/${encodedPath}?ref=${commitSha}`
+      );
+
+      if (response.type !== "file" || !response.content) {
+        return null;
+      }
+
+      // Base64 디코딩
+      const base64Content = response.content.replace(/\n/g, "");
+      const binaryString = atob(base64Content);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const decoder = new TextDecoder("utf-8");
+      return decoder.decode(bytes);
+    } catch (error) {
+      if (error instanceof GitHubError && error.statusCode === 404) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * 단일 파일을 특정 커밋 시점으로 되돌리기
+   *
+   * @param filePath 파일 경로
+   * @param commitSha 되돌릴 커밋 SHA
+   * @returns 커밋 결과
+   */
+  async revertFileToCommit(
+    filePath: string,
+    commitSha: string
+  ): Promise<{ success: boolean; commitSha?: string; error?: string }> {
+    try {
+      // 1. 해당 커밋 시점의 파일 내용 조회
+      const content = await this.getFileAtCommit(filePath, commitSha);
+      if (content === null) {
+        return {
+          success: false,
+          error: `File not found at commit ${commitSha.substring(0, 7)}`,
+        };
+      }
+
+      // 2. 현재 파일 정보 조회 (SHA 가져오기 위해)
+      const currentFile = await this.getFile(filePath);
+      const existingSha = currentFile?.sha;
+
+      // 3. 파일 되돌리기 커밋 메시지 생성
+      const message = `Revert ${filePath} to ${commitSha.substring(0, 7)}`;
+
+      // 4. 파일 업데이트
+      return await this.createOrUpdateFile(filePath, content, message, existingSha);
+    } catch (error) {
+      if (error instanceof GitHubError) {
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
+
+  /**
+   * 여러 파일을 특정 커밋 시점으로 일괄 되돌리기
+   *
+   * Git Data API를 사용하여 여러 파일을 atomic하게 되돌립니다.
+   *
+   * @param files 되돌릴 파일 경로 목록
+   * @param commitSha 되돌릴 커밋 SHA
+   * @param onProgress 진행 콜백 (선택)
+   * @returns 되돌리기 결과
+   */
+  async revertMultipleFilesToCommit(
+    files: string[],
+    commitSha: string,
+    onProgress?: RevertProgressCallback
+  ): Promise<RevertResult> {
+    const succeeded: Array<{ path: string; success: true; commitSha: string }> = [];
+    const failed: Array<{ path: string; success: false; error: string }> = [];
+
+    try {
+      // 1. 해당 커밋 시점의 모든 파일 내용 조회
+      const fileContents: Array<{ path: string; content: string }> = [];
+      for (let i = 0; i < files.length; i++) {
+        const filePath = files[i];
+        onProgress?.(i + 1, files.length);
+
+        const content = await this.getFileAtCommit(filePath, commitSha);
+        if (content === null) {
+          failed.push({ path: filePath, success: false, error: "File not found at commit" });
+        } else {
+          fileContents.push({ path: filePath, content });
+        }
+      }
+
+      if (fileContents.length === 0) {
+        return {
+          succeeded: [],
+          failed,
+          allSucceeded: false,
+        };
+      }
+
+      // 2. 현재 브랜치의 HEAD 참조 가져오기
+      const refResponse = await this.request<{ object: { sha: string } }>(
+        `/repos/${this.owner}/${this.repo}/git/ref/heads/${this.branch}`
+      );
+      const headSha = refResponse.object.sha;
+
+      // 3. HEAD 커밋의 tree SHA 가져오기
+      const commitResponse = await this.request<{
+        tree: { sha: string };
+      }>(`/repos/${this.owner}/${this.repo}/git/commits/${headSha}`);
+      const baseTreeSha = commitResponse.tree.sha;
+
+      // 4. 각 파일에 대해 blob 생성
+      const treeItems: Array<{
+        path: string;
+        mode: string;
+        type: string;
+        sha: string;
+      }> = [];
+
+      for (const file of fileContents) {
+        const blobResponse = await this.request<{ sha: string }>(
+          `/repos/${this.owner}/${this.repo}/git/blobs`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              content: file.content,
+              encoding: "utf-8",
+            }),
+          }
+        );
+
+        treeItems.push({
+          path: file.path,
+          mode: "100644",
+          type: "blob",
+          sha: blobResponse.sha,
+        });
+      }
+
+      // 5. 새 tree 생성
+      const newTreeResponse = await this.request<{ sha: string }>(
+        `/repos/${this.owner}/${this.repo}/git/trees`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            base_tree: baseTreeSha,
+            tree: treeItems,
+          }),
+        }
+      );
+
+      // 6. 새 commit 생성
+      const fileCount = fileContents.length;
+      const fileNames = fileContents.map((f) => f.path.split("/").pop()).join(", ");
+      const message = `Revert ${fileCount} file${fileCount > 1 ? "s" : ""} (${fileNames}) to ${commitSha.substring(0, 7)}`;
+
+      const newCommitResponse = await this.request<{ sha: string }>(
+        `/repos/${this.owner}/${this.repo}/git/commits`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            message,
+            tree: newTreeResponse.sha,
+            parents: [headSha],
+          }),
+        }
+      );
+
+      // 7. 브랜치 참조 업데이트
+      await this.request(`/repos/${this.owner}/${this.repo}/git/refs/heads/${this.branch}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          sha: newCommitResponse.sha,
+        }),
+      });
+
+      // 성공 결과 추가
+      for (const file of fileContents) {
+        succeeded.push({ path: file.path, success: true, commitSha: newCommitResponse.sha });
+      }
+
+      return {
+        succeeded,
+        failed,
+        allSucceeded: failed.length === 0,
+        commitSha: newCommitResponse.sha,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof GitHubError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : "Unknown error";
+
+      // 진행 중이던 모든 파일을 실패로 처리
+      for (const filePath of files) {
+        if (
+          !succeeded.some((s) => s.path === filePath) &&
+          !failed.some((f) => f.path === filePath)
+        ) {
+          failed.push({ path: filePath, success: false, error: errorMessage });
+        }
+      }
+
+      return {
+        succeeded,
+        failed,
+        allSucceeded: false,
       };
     }
   }
