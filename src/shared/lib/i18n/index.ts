@@ -58,6 +58,6 @@ export function getSupportedLocales(): LocaleCode[] {
 export function resetI18n(): void {
   initialized = false;
   if (i18next.services?.resourceStore) {
-    (i18next.services.resourceStore as any).data = undefined;
+    (i18next.services.resourceStore as { data?: unknown }).data = undefined;
   }
 }
