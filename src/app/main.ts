@@ -49,11 +49,6 @@ export default class QuartzPublishPlugin extends Plugin {
   private remoteSyncCacheMemory: RemoteSyncCache | undefined;
 
   async onload(): Promise<void> {
-    // ========== IMPORTANT: 플러그인 로드 확인 ==========
-    // 이 메시지가 보이지 않으면 Obsidian을 완전히 재시작하세요
-    console.log("loading quartz-publish plugin");
-    // ========================================================
-
     if (typeof addIcon === "function") {
       addIcon(ICON_QUARTZ_PUBLISH, ICON_QUARTZ_PUBLISH_SVG);
     }
@@ -272,12 +267,10 @@ export default class QuartzPublishPlugin extends Plugin {
     const oldRecords = (data as { publishRecords?: Record<string, PublishRecord> })?.publishRecords;
 
     if (oldRecords && Object.keys(oldRecords).length > 0) {
-      console.log("[QuartzPublish] Migrating publish records to separate file...");
       await this.recordStorage.migrateFromOldData(oldRecords);
 
       // 마이그레이션 플래그 설정
       await this.saveSettings();
-      console.log("[QuartzPublish] Migration complete.");
     }
   }
 
@@ -532,14 +525,7 @@ export default class QuartzPublishPlugin extends Plugin {
     if (!this.recordStorage || !this.remoteSyncCacheMemory) return;
 
     const records = this.recordStorage.getAllRecords();
-    const { removedCount } = await this.recordStorage.cleanUpDeletedRecords(
-      records,
-      this.remoteSyncCacheMemory.files
-    );
-
-    if (removedCount > 0) {
-      console.log(`[QuartzPublish] Cleaned up ${removedCount} stale publish records`);
-    }
+    await this.recordStorage.cleanUpDeletedRecords(records, this.remoteSyncCacheMemory.files);
   }
 
   /**
