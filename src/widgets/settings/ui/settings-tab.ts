@@ -43,6 +43,7 @@ import { t } from "../../../shared/lib/i18n";
 import { isValidGitHubUrl, normalizeBaseUrl } from "../../../shared/lib/url";
 import { cn } from "../../../shared/lib/cn";
 import { ICON_QUARTZ_PUBLISH } from "../../../shared/config/constants/icons";
+import { createTokenStorageService } from "../../../shared/services/token-storage/service";
 
 /**
  * 플러그인 설정 탭
@@ -82,6 +83,9 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
   // Quick Links 버튼 참조
   private quickLinksContainerEl: HTMLElement | null = null;
 
+  // Token Storage Service (Task 1.2)
+  private tokenStorage = createTokenStorageService(this.plugin);
+
   constructor(app: App, plugin: QuartzPublishPlugin) {
     super(app, plugin);
     this.plugin = plugin;
@@ -115,9 +119,39 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
     this.unsavedWarning = null;
   }
 
+  /**
+   * Migrate existing token from settings to secure storage (Task 1.2)
+   */
+  private async migrateExistingToken(): Promise<void> {
+    const existingToken = this.plugin.settings.githubToken;
+    if (existingToken && !(await this.tokenStorage.getToken())) {
+      await this.tokenStorage.saveToken(existingToken);
+      this.plugin.settings.githubToken = "";
+      await this.plugin.saveSettings();
+    }
+  }
+
+  /**
+   * Get GitHub token from secure storage (Task 1.2)
+   */
+  private async getGitHubToken(): Promise<string> {
+    const token = await this.tokenStorage.getToken();
+    return token ?? "";
+  }
+
+  /**
+   * Check if GitHub token is configured (Task 1.2)
+   */
+  private async hasGitHubToken(): Promise<boolean> {
+    return !!(await this.tokenStorage.getToken());
+  }
+
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
+
+    // Migrate existing token from settings to secure storage (Task 1.2)
+    void this.migrateExistingToken();
 
     // GitHub 연동 섹션
     this.createGitHubSection(containerEl);
@@ -158,15 +192,22 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
           });
         })
       )
-      .addText((text) =>
+      .addText(async (text) => {
+        const token = await this.tokenStorage.getToken();
         text
           .setPlaceholder("ghp_xxxxxxxxxxxx")
-          .setValue(this.plugin.settings.githubToken)
+          .setValue(token ?? "")
           .onChange(async (value) => {
-            this.plugin.settings.githubToken = value;
+            if (value) {
+              await this.tokenStorage.saveToken(value);
+            } else {
+              await this.tokenStorage.clearToken();
+            }
+            // Keep settings for backward compatibility but clear it
+            this.plugin.settings.githubToken = "";
             await this.plugin.saveSettings();
-          })
-      );
+          });
+      });
 
     // 토큰 입력 필드를 패스워드 타입으로 변경
     const tokenInputEl = tokenSetting.controlEl.querySelector("input");
@@ -190,19 +231,23 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
           })
       );
 
-    if (!this.plugin.settings.repoUrl && this.plugin.settings.githubToken) {
-      new Setting(containerEl)
-        .setName(t("settings.github.newToQuartz"))
-        .setDesc(t("settings.github.newToQuartzDesc"))
-        .addButton((button) =>
-          button
-            .setButtonText(t("settings.github.createRepo"))
-            .setCta()
-            .onClick(() => {
-              this.openCreateRepoModal();
-            })
-        );
-    }
+    // Show "New to Quartz" section if repo URL is not set but token exists
+    void (async () => {
+      const hasToken = !!(await this.tokenStorage.getToken());
+      if (!this.plugin.settings.repoUrl && hasToken) {
+        new Setting(containerEl)
+          .setName(t("settings.github.newToQuartz"))
+          .setDesc(t("settings.github.newToQuartzDesc"))
+          .addButton((button) =>
+            button
+              .setButtonText(t("settings.github.createRepo"))
+              .setCta()
+              .onClick(() => {
+                this.openCreateRepoModal();
+              })
+          );
+      }
+    })();
 
     // 브랜치 설정
     new Setting(containerEl)
@@ -275,37 +320,43 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
    * 원격 파일 관리 모달 열기
    */
   private openRemoteFileManagerModal(): void {
-    const { githubToken, repoUrl, defaultBranch, contentPath } = this.plugin.settings;
+    void (async () => {
+      const githubToken = await this.getGitHubToken();
+      const { repoUrl, defaultBranch, contentPath } = this.plugin.settings;
 
-    if (!githubToken || !repoUrl) {
-      new Notice(t("notice.configureFirst"));
-      return;
-    }
+      if (!githubToken || !repoUrl) {
+        new Notice(t("notice.configureFirst"));
+        return;
+      }
 
-    const github = new GitHubService(githubToken, repoUrl, defaultBranch);
-    const modal = new RemoteFileManagerModal(this.app, {
-      gitHubService: github,
-      contentPath: contentPath || "content",
-    });
-    modal.open();
+      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const modal = new RemoteFileManagerModal(this.app, {
+        gitHubService: github,
+        contentPath: contentPath || "content",
+      });
+      modal.open();
+    })();
   }
 
   /**
    * 커밋 히스토리 모달 열기
    */
   private openCommitHistoryModal(): void {
-    const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+    void (async () => {
+      const githubToken = await this.getGitHubToken();
+      const { repoUrl, defaultBranch } = this.plugin.settings;
 
-    if (!githubToken || !repoUrl) {
-      new Notice(t("notice.configureFirst"));
-      return;
-    }
+      if (!githubToken || !repoUrl) {
+        new Notice(t("notice.configureFirst"));
+        return;
+      }
 
-    const github = new GitHubService(githubToken, repoUrl, defaultBranch);
-    const modal = new CommitHistoryModal(this.app, {
-      gitHubService: github,
-    });
-    modal.open();
+      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const modal = new CommitHistoryModal(this.app, {
+        gitHubService: github,
+      });
+      modal.open();
+    })();
   }
 
   /**
@@ -686,7 +737,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
 
     // GitHub에서 custom.scss 로드
     const loadCustomCss = async () => {
-      const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+      const githubToken = await this.getGitHubToken();
+      const { repoUrl, defaultBranch } = this.plugin.settings;
       if (!githubToken || !repoUrl) {
         statusEl.setText(t("notice.configureFirst"));
         textarea.disabled = true;
@@ -740,7 +792,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
           }
 
           // GitHubService 초기화
-          const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+          const githubToken = await this.getGitHubToken();
+          const { repoUrl, defaultBranch } = this.plugin.settings;
           if (!githubToken || !repoUrl) {
             new Notice(t("notice.configureFirst"));
             return;
@@ -779,7 +832,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
   private async testConnection(): Promise<void> {
     if (!this.connectionStatusEl) return;
 
-    const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+    const githubToken = await this.getGitHubToken();
+    const { repoUrl, defaultBranch } = this.plugin.settings;
 
     // 입력값 검증
     if (!githubToken) {
@@ -844,18 +898,21 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
   }
 
   private openCreateRepoModal(): void {
-    const modal = new CreateRepoModal(this.app, {
-      token: this.plugin.settings.githubToken,
-      onSuccess: async (repository) => {
-        this.plugin.settings.repoUrl = repository.htmlUrl;
-        await this.plugin.saveSettings();
-        this.display();
-      },
-      onShowDeployGuide: (repository) => {
-        new DeployGuideModal(this.app, { repository }).open();
-      },
-    });
-    modal.open();
+    void (async () => {
+      const token = await this.tokenStorage.getToken();
+      const modal = new CreateRepoModal(this.app, {
+        token: token ?? "",
+        onSuccess: async (repository) => {
+          this.plugin.settings.repoUrl = repository.htmlUrl;
+          await this.plugin.saveSettings();
+          this.display();
+        },
+        onShowDeployGuide: (repository) => {
+          new DeployGuideModal(this.app, { repository }).open();
+        },
+      });
+      modal.open();
+    })();
   }
 
   /**
@@ -876,17 +933,20 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
    * 설정이 미완료인 경우 자동으로 가이드 모달 표시 (T014)
    */
   private checkAndShowGuideIfNeeded(): void {
-    // 토큰과 리포지토리 URL 모두 비어있는 경우에만 자동 표시
-    // (완전 신규 사용자를 위함)
-    const settings = this.plugin.settings;
-    const isNewUser = !settings.githubToken && !settings.repoUrl;
+    void (async () => {
+      // 토큰과 리포지토리 URL 모두 비어있는 경우에만 자동 표시
+      // (완전 신규 사용자를 위함)
+      const hasToken = await this.hasGitHubToken();
+      const settings = this.plugin.settings;
+      const isNewUser = !hasToken && !settings.repoUrl;
 
-    if (isNewUser) {
-      // 약간의 지연 후 모달 표시 (설정 탭 렌더링 완료 대기)
-      setTimeout(() => {
-        this.openGitHubGuideModal();
-      }, 500);
-    }
+      if (isNewUser) {
+        // 약간의 지연 후 모달 표시 (설정 탭 렌더링 완료 대기)
+        setTimeout(() => {
+          this.openGitHubGuideModal();
+        }, 500);
+      }
+    })();
   }
 
   private connectionStatusTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -1042,28 +1102,31 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
    * Quartz 설정 섹션 플레이스홀더 표시
    */
   private showQuartzSettingsPlaceholder(): void {
-    if (!this.quartzSettingsContainerEl) return;
+    void (async () => {
+      if (!this.quartzSettingsContainerEl) return;
 
-    this.quartzSettingsContainerEl.empty();
+      this.quartzSettingsContainerEl.empty();
 
-    const { githubToken, repoUrl } = this.plugin.settings;
-    if (!githubToken || !repoUrl) {
-      this.quartzSettingsContainerEl.createEl("p", {
-        text: t("settings.quartz.connectFirst"),
-        cls: "text-obs-text-muted text-sm",
-      });
-      return;
-    }
+      const githubToken = await this.getGitHubToken();
+      const { repoUrl } = this.plugin.settings;
+      if (!githubToken || !repoUrl) {
+        this.quartzSettingsContainerEl.createEl("p", {
+          text: t("settings.quartz.connectFirst"),
+          cls: "text-obs-text-muted text-sm",
+        });
+        return;
+      }
 
-    // 설정 로드 버튼
-    new Setting(this.quartzSettingsContainerEl)
-      .setName(t("settings.quartz.load"))
-      .setDesc(t("settings.quartz.loadDesc"))
-      .addButton((button) =>
-        button.setButtonText(t("settings.quartz.load")).onClick(async () => {
-          await this.loadQuartzSettings();
-        })
-      );
+      // 설정 로드 버튼
+      new Setting(this.quartzSettingsContainerEl)
+        .setName(t("settings.quartz.load"))
+        .setDesc(t("settings.quartz.loadDesc"))
+        .addButton((button) =>
+          button.setButtonText(t("settings.quartz.load")).onClick(async () => {
+            await this.loadQuartzSettings();
+          })
+        );
+    })();
   }
 
   /**
@@ -1072,7 +1135,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
   private async loadQuartzSettings(): Promise<void> {
     if (!this.quartzSettingsContainerEl || this.isQuartzSettingsLoading) return;
 
-    const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+    const githubToken = await this.getGitHubToken();
+    const { repoUrl, defaultBranch } = this.plugin.settings;
     if (!githubToken || !repoUrl) {
       new Notice(t("settings.quartz.connectFirst"));
       return;
@@ -1508,7 +1572,8 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
   private async checkForUpdates(): Promise<void> {
     if (!this.upgradeContainerEl) return;
 
-    const { githubToken, repoUrl, defaultBranch } = this.plugin.settings;
+    const githubToken = await this.getGitHubToken();
+    const { repoUrl, defaultBranch } = this.plugin.settings;
     if (!githubToken || !repoUrl) {
       new Notice(t("settings.quartz.connectFirst"));
       return;
