@@ -9,6 +9,8 @@ import type { Plugin } from "obsidian";
 import { TFile } from "obsidian";
 import type { PublishRecord, PublishRecordsStorage } from "../../../app/types";
 import { PUBLISH_RECORDS_VERSION, DEFAULT_PUBLISH_RECORDS_STORAGE } from "../../../app/types";
+import { FileValidatorService } from "../../../shared/lib/file-validator";
+import { DAY_MS } from "../../../shared/config/constants/time";
 
 /**
  * 발행 기록 저장소 서비스
@@ -17,7 +19,7 @@ export class PublishRecordStorage {
   private plugin: Plugin;
   private data: PublishRecordsStorage;
   private readonly FILE_NAME = "publish-records.json";
-  private readonly CLEANUP_INTERVAL = 24 * 60 * 60 * 1000; // 24시간
+  private readonly CLEANUP_INTERVAL = DAY_MS; // 24시간
 
   constructor(plugin: Plugin) {
     this.plugin = plugin;
@@ -244,15 +246,7 @@ export class PublishRecordStorage {
   }> {
     const recordCount = this.getRecordCount();
     const fileSize = await this.getFileSize();
-    const formattedSize = this.formatBytes(fileSize);
+    const formattedSize = FileValidatorService.formatFileSize(fileSize);
     return { recordCount, fileSize, formattedSize };
-  }
-
-  private formatBytes(bytes: number): string {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   }
 }

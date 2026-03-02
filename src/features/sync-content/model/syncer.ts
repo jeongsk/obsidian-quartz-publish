@@ -7,6 +7,7 @@
 
 import type { GitHubService } from "../../../entities/github/model/service";
 import type { RemoteFileInfo, RemoteSyncResult } from "../../../app/types";
+import { MINUTE_MS } from "../../../shared/config/constants/time";
 
 /**
  * 원격 동기화 서비스 옵션
@@ -38,7 +39,7 @@ export class RemoteSyncService {
   constructor(options: RemoteSyncServiceOptions) {
     this.github = options.github;
     this.contentPath = options.contentPath ?? "content";
-    this.cacheValidityMs = options.cacheValidityMs ?? 5 * 60 * 1000; // 5분
+    this.cacheValidityMs = options.cacheValidityMs ?? 5 * MINUTE_MS; // 5분
   }
 
   /**

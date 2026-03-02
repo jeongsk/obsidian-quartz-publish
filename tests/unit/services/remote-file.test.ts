@@ -244,17 +244,17 @@ describe("RemoteFileService", () => {
     });
 
     it("KB 단위를 표시한다", () => {
-      expect(service.formatFileSize(1024)).toBe("1 KB");
-      expect(service.formatFileSize(1536)).toBe("1.5 KB");
+      expect(service.formatFileSize(1024)).toBe("1.00 KB");
+      expect(service.formatFileSize(1536)).toBe("1.50 KB");
     });
 
     it("MB 단위를 표시한다", () => {
-      expect(service.formatFileSize(1024 * 1024)).toBe("1 MB");
-      expect(service.formatFileSize(1.5 * 1024 * 1024)).toBe("1.5 MB");
+      expect(service.formatFileSize(1024 * 1024)).toBe("1.00 MB");
+      expect(service.formatFileSize(1.5 * 1024 * 1024)).toBe("1.50 MB");
     });
 
     it("GB 단위를 표시한다", () => {
-      expect(service.formatFileSize(1024 * 1024 * 1024)).toBe("1 GB");
+      expect(service.formatFileSize(1024 * 1024 * 1024)).toBe("1.00 GB");
     });
   });
 });

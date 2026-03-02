@@ -13,6 +13,7 @@ import type {
 } from "../../../app/types";
 import { DEFAULT_REMOTE_FILE_MANAGER_CONFIG } from "../../../app/types";
 import { t } from "../../../shared/lib/i18n";
+import { FileValidatorService } from "../../../shared/lib/file-validator";
 
 /**
  * 원격 파일 관리 서비스
@@ -166,10 +167,6 @@ export class RemoteFileService {
    * 파일 크기를 사람이 읽기 쉬운 형식으로 변환합니다.
    */
   formatFileSize(bytes: number): string {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+    return FileValidatorService.formatFileSize(bytes);
   }
 }
