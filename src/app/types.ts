@@ -978,17 +978,25 @@ export interface FrontmatterResult {
 // Constants
 // ============================================================================
 
-/** 최대 파일 크기 (10MB) */
-export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+// Legacy constants for backward compatibility
+// These are being migrated to src/shared/config/constants/
 
-/** GitHub API 기본 URL */
+// Time constants (mirrored from shared/config/constants/time.ts)
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+const HOUR_MS = 60 * MINUTE_MS;
+
+/** 최대 파일 크기 (50MB) - @deprecated Use MAX_FILE_SIZE_BYTES from shared/config/constants/github instead */
+export const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+/** GitHub API 기본 URL - @deprecated Use GITHUB_API_BASE_URL from shared/config/constants/github instead */
 export const GITHUB_API_BASE_URL = "https://api.github.com";
 
-/** GitHub API Rate limit 방지 딜레이 (ms) */
+/** GitHub API Rate limit 방지 딜레이 (ms) - @deprecated Use GITHUB_API_DELAY_MS from shared/config/constants/github instead */
 export const RATE_LIMIT_DELAY_MS = 500;
 
-/** 발행 기록 정리 주기 (12시간) */
-export const CLEANUP_INTERVAL_MS = 12 * 60 * 60 * 1000;
+/** 발행 기록 정리 주기 (12시간) - @deprecated Use CACHE_CLEANUP_INTERVAL_MS from shared/config/constants/time instead */
+export const CLEANUP_INTERVAL_MS = 12 * HOUR_MS;
 
 // ============================================================================
 // Repository Creation Types (Phase 4 - Beginner Support)

@@ -74,9 +74,9 @@ function createPublishService(
 // ============================================================================
 
 describe("PublishService - 파일 크기 검증", () => {
-  it("getMaxFileSize는 10MB를 반환한다", () => {
+  it("getMaxFileSize는 50MB를 반환한다", () => {
     const { service } = createPublishService();
-    expect(service.getMaxFileSize()).toBe(10 * 1024 * 1024);
+    expect(service.getMaxFileSize()).toBe(50 * 1024 * 1024);
   });
 
   it("소용량 파일은 유효하다", () => {
@@ -88,7 +88,7 @@ describe("PublishService - 파일 크기 검증", () => {
 
   it("대용량 파일은 유효하지 않다", () => {
     const { service } = createPublishService();
-    const files = [createMockFile("large.md", 15 * 1024 * 1024)];
+    const files = [createMockFile("large.md", 60 * 1024 * 1024)];
     const result = service.validateFileSizes(files as unknown as import("obsidian").TFile[]);
     expect(result.isValid).toBe(false);
     expect(result.count).toBe(1);
@@ -96,7 +96,7 @@ describe("PublishService - 파일 크기 검증", () => {
 
   it("findLargeFiles는 초과 파일만 반환한다", () => {
     const { service } = createPublishService();
-    const files = [createMockFile("small.md", 1024), createMockFile("large.md", 15 * 1024 * 1024)];
+    const files = [createMockFile("small.md", 1024), createMockFile("large.md", 60 * 1024 * 1024)];
     const large = service.findLargeFiles(files as unknown as import("obsidian").TFile[]);
     expect(large).toHaveLength(1);
     expect(large[0].file.name).toBe("large.md");

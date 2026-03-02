@@ -33,7 +33,7 @@ describe("FileValidatorService", () => {
 
     it("should format megabytes correctly", () => {
       expect(FileValidatorService.formatFileSize(1024 * 1024)).toBe("1.00 MB");
-      expect(FileValidatorService.formatFileSize(10 * 1024 * 1024)).toBe("10.00 MB");
+      expect(FileValidatorService.formatFileSize(50 * 1024 * 1024)).toBe("50.00 MB");
       expect(FileValidatorService.formatFileSize(15.5 * 1024 * 1024)).toBe("15.50 MB");
     });
 
@@ -54,7 +54,7 @@ describe("FileValidatorService", () => {
       const files = [
         createMockFile("small.png", 1024 * 1024), // 1MB
         createMockFile("medium.jpg", 5 * 1024 * 1024), // 5MB
-        createMockFile("just-under.pdf", 10 * 1024 * 1024 - 1), // Just under 10MB
+        createMockFile("just-under.pdf", 50 * 1024 * 1024 - 1), // Just under 50MB
       ];
 
       const result = service.findLargeFiles(files);
@@ -62,7 +62,7 @@ describe("FileValidatorService", () => {
     });
 
     it("should return files that exceed the limit", () => {
-      const largeFile = createMockFile("large.mp4", 15 * 1024 * 1024); // 15MB
+      const largeFile = createMockFile("large.mp4", 60 * 1024 * 1024); // 60MB
       const files = [
         createMockFile("small.png", 1024 * 1024), // 1MB
         largeFile,
@@ -71,15 +71,15 @@ describe("FileValidatorService", () => {
       const result = service.findLargeFiles(files);
       expect(result).toHaveLength(1);
       expect(result[0].file).toBe(largeFile);
-      expect(result[0].size).toBe(15 * 1024 * 1024);
-      expect(result[0].formattedSize).toBe("15.00 MB");
+      expect(result[0].size).toBe(60 * 1024 * 1024);
+      expect(result[0].formattedSize).toBe("60.00 MB");
     });
 
     it("should return multiple large files", () => {
       const files = [
-        createMockFile("large1.mp4", 12 * 1024 * 1024), // 12MB
+        createMockFile("large1.mp4", 55 * 1024 * 1024), // 55MB
         createMockFile("small.png", 1024 * 1024), // 1MB
-        createMockFile("large2.zip", 20 * 1024 * 1024), // 20MB
+        createMockFile("large2.zip", 70 * 1024 * 1024), // 70MB
       ];
 
       const result = service.findLargeFiles(files);
@@ -90,17 +90,17 @@ describe("FileValidatorService", () => {
 
     it("should include file exactly at limit", () => {
       const files = [
-        createMockFile("exact.bin", 10 * 1024 * 1024), // Exactly 10MB
+        createMockFile("exact.bin", 50 * 1024 * 1024), // Exactly 50MB
       ];
 
-      // At exactly 10MB, it's not over the limit
+      // At exactly 50MB, it's not over the limit
       const result = service.findLargeFiles(files);
       expect(result).toHaveLength(0);
     });
 
     it("should include file just over limit", () => {
       const files = [
-        createMockFile("just-over.bin", 10 * 1024 * 1024 + 1), // 10MB + 1 byte
+        createMockFile("just-over.bin", 50 * 1024 * 1024 + 1), // 50MB + 1 byte
       ];
 
       const result = service.findLargeFiles(files);
@@ -124,7 +124,7 @@ describe("FileValidatorService", () => {
 
     it("should return invalid result when large files exist", () => {
       const files = [
-        createMockFile("large.mp4", 15 * 1024 * 1024), // 15MB
+        createMockFile("large.mp4", 60 * 1024 * 1024), // 60MB
       ];
 
       const result = service.validateFiles(files);
