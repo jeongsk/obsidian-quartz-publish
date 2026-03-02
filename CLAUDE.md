@@ -42,6 +42,32 @@ npm run lint:fix     # 린트 자동 수정
 - Obsidian 기본 디자인 가이드라인을 반드시 준수합니다.
 - Obsidian CSS 변수를 활용하여 테마 호환성을 유지합니다.
 
+## 테스트
+
+### 커버리지 범위
+
+테스트 커버리지는 **비즈니스 로직**을 기준으로 측정됩니다:
+
+- **포함**: 서비스 계층, 유틸리티, 모델, 변환기
+- **제외**: UI 레이어 (Modal, Setting), 상수 파일, 로케일 파일
+
+UI 컴포넌트는 Obsidian Modal/DOM 의존성으로 인해 단위 테스트가 어렵습니다.
+이는 E2E 테스트 또는 수동 테스트로 검증됩니다.
+
+### Mock 사용법
+
+```ts
+import { App, TFile, Vault, MetadataCache } from '../../mocks/obsidian';
+
+const app = new App();
+app.vault._addFile('test.md', '# content');
+app.metadataCache._setMetadata('test.md', {
+  frontmatter: { title: 'Test' }
+});
+```
+
+자세한 내용은 `tests/mocks/obsidian.ts`를 참조하세요.
+
 ## Active Technologies
 - TypeScript 5.9+ + Obsidian API, fetch (built-in) (001-quartz-publish)
 - Obsidian Plugin Data (`data.json`) (001-quartz-publish)

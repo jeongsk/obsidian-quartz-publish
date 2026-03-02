@@ -1,10 +1,90 @@
 /**
- * Obsidian API Mock
+ * Obsidian API Mock for Vitest
  *
- * Vitest에서 사용할 Obsidian API 모의 구현입니다.
+ * 이 파일은 Obsidian 플러그인 단위 테스트를 위한 모의 API 구현을 제공합니다.
+ * 실제 Obsidian 앱 없이 테스트를 실행할 수 있습니다.
+ *
+ * ## 사용법
+ *
+ * ```ts
+ * import { App, TFile, Vault, MetadataCache } from '../../mocks/obsidian';
+ *
+ * // 기본 사용
+ * const app = new App();
+ * const file = new TFile('test.md');
+ * app.vault._addFile('test.md', '# content');
+ *
+ * // 메타데이터 설정
+ * app.metadataCache._setMetadata('test.md', {
+ *   frontmatter: { title: 'Test' }
+ * });
+ * ```
+ *
+ * ## Mock 기능
+ *
+ * ### 파일 시스템 (Vault)
+ * - `getMarkdownFiles()`: 마크다운 파일 목록 반환
+ * - `read()`, `cachedRead()`: 파일 내용 읽기
+ * - `modify()`, `create()`, `delete()`: 파일 조작
+ * - `_addFile()`, `_setContent()`: 테스트 헬퍼
+ *
+ * ### 메타데이터 (MetadataCache)
+ * - `getFileCache()`: 파일의 캐시된 메타데이터 반환
+ * - `_setMetadata()`: 테스트용 메타데이터 설정
+ *
+ * ### UI 컴포넌트
+ * - `Modal`, `Setting`, `Notice`
+ * - `TextComponent`, `ToggleComponent`, `ButtonComponent`, `DropdownComponent`
+ *
+ * ### HTMLElement 확장
+ * - `empty()`, `addClass()`, `removeClass()`, `toggleClass()`
+ * - `createEl()`, `createDiv()`, `createSpan()`
+ *
+ * ## 제한사항
+ *
+ * 1. **비동기 처리**: 실제 Obsidian의 파일 연산은 비동기이지만,
+ *    이 mock은 동기적으로 동작하여 테스트 속도를 높입니다.
+ *
+ * 2. **이벤트 시스템**: Obsidian의 이벤트 버스/트리거는 시뮬레이션되지 않습니다.
+ *
+ * 3. **HTMLElement 확장**: Obsidian 전용 확장 메서드는 근사적으로 구현되었으며,
+ *    실제 Obsidian의 DOM 동작과 완전히 동일하지 않을 수 있습니다.
+ *
+ * 4. **Workspace**: `getActiveFile()`는 항상 `null`을 반환합니다.
+ *
+ * 5. **파일 탐색**: 폴더 구조 탐색은 완전히 구현되지 않았습니다.
+ *
+ * 6. **컴포넌트 상호작용**: UI 컴포넌트의 `onChange`, `onClick` 등의
+ *    콜백은 호출되지 않습니다.
  */
 
 import { vi } from "vitest";
+
+// ============================================================================
+// Type Safety Notes
+// ============================================================================
+//
+// ## 타입 단언 사용 이유
+//
+// 테스트에서 `vault as unknown as import("obsidian").Vault`와 같은
+// 타입 단언을 사용하는 이유:
+//
+// 1. **프로덕션 코드 타입**: PublishService 등의 프로덕션 코드는
+//    `import("obsidian").Vault` 타입을 기대합니다.
+//
+// 2. **Mock 타입 불일치**: 우리의 Mock 클래스는 실제 Obsidian 타입을
+//    상속받지 않습니다 (순환 참조 방지).
+//
+// 3. **런타임 호환성**: 런타임에서는 Mock이 동일한 메서드를 가지고 있어
+//    정상 동작합니다. 타입 단언은 컴파일타임 검사를 우회할 뿐입니다.
+//
+// ## 개선 방안
+//
+// 타입 안전성을 높이려면:
+// - 프로덕션 코드에서 인터페이스 추출 및 Mock과 공유
+// - 또는 `--ts-no-check`를 사용하여 타입 검사 건너뛰기
+//
+// 현재는 실용성을 위해 타입 단언을 사용합니다.
 
 // ============================================================================
 // TFile Mock
