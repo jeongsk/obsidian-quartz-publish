@@ -28,6 +28,7 @@ import { ContentTransformer } from "../../../entities/note/lib/transformer";
 import { FileValidatorService } from "../../../shared/lib/file-validator";
 import { PublishFilterService } from "./filter";
 import { t } from "../../../shared/lib/i18n";
+import type { TokenStorageService } from "../../../shared/services/token-storage/types";
 
 /**
  * 발행 서비스 클래스
@@ -51,7 +52,8 @@ export class PublishService {
     settings: PluginSettings,
     getPublishRecords: () => Record<string, PublishRecord>,
     onRecordUpdate: (localPath: string, record: PublishRecord) => Promise<void>,
-    onRecordRemove: (localPath: string) => Promise<void>
+    onRecordRemove: (localPath: string) => Promise<void>,
+    tokenStorage?: TokenStorageService
   ) {
     this.vault = vault;
     this.metadataCache = metadataCache;
@@ -60,7 +62,16 @@ export class PublishService {
     this.onRecordUpdate = onRecordUpdate;
     this.onRecordRemove = onRecordRemove;
 
-    this.github = new GitHubService(settings.githubToken, settings.repoUrl, settings.defaultBranch);
+    // TokenStorageService가 있으면 사용하고, 없으면 settings에서 토큰을 사용
+    if (tokenStorage) {
+      this.github = new GitHubService(tokenStorage, settings.repoUrl, settings.defaultBranch);
+    } else {
+      this.github = new GitHubService(
+        settings.githubToken,
+        settings.repoUrl,
+        settings.defaultBranch
+      );
+    }
 
     this.transformer = new ContentTransformer(
       vault,

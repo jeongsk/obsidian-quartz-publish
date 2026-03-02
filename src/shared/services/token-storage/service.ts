@@ -1,5 +1,14 @@
-import type Plugin from "obsidian";
 import type { TokenStorageService } from "./types";
+
+/**
+ * Obsidian Plugin interface with loadData/saveData methods
+ * We define this locally to avoid importing the full Plugin type from obsidian
+ * which has strict typing requirements
+ */
+interface PluginDataStore {
+  loadData(): Promise<unknown>;
+  saveData(data: unknown): Promise<void>;
+}
 
 /**
  * 토큰을 저장하는 서비스
@@ -11,17 +20,17 @@ import type { TokenStorageService } from "./types";
 export class TokenStorageServiceImpl implements TokenStorageService {
   private readonly STORAGE_KEY = "githubToken";
 
-  constructor(private plugin: Plugin) {}
+  constructor(private plugin: PluginDataStore) {}
 
   async saveToken(token: string): Promise<void> {
-    const data = (await this.plugin.loadData()) || {};
+    const data = ((await this.plugin.loadData()) as Record<string, unknown>) || {};
     data[this.STORAGE_KEY] = btoa(token);
     await this.plugin.saveData(data);
   }
 
   async getToken(): Promise<string | null> {
-    const data = (await this.plugin.loadData()) || {};
-    const encrypted = data[this.STORAGE_KEY];
+    const data = ((await this.plugin.loadData()) as Record<string, unknown>) || {};
+    const encrypted = data[this.STORAGE_KEY] as string | undefined;
     if (!encrypted) return null;
     try {
       return atob(encrypted);
@@ -31,13 +40,13 @@ export class TokenStorageServiceImpl implements TokenStorageService {
   }
 
   async clearToken(): Promise<void> {
-    const data = (await this.plugin.loadData()) || {};
+    const data = ((await this.plugin.loadData()) as Record<string, unknown>) || {};
     delete data[this.STORAGE_KEY];
     await this.plugin.saveData(data);
   }
 }
 
 // Factory function for dependency injection
-export function createTokenStorageService(plugin: Plugin): TokenStorageService {
+export function createTokenStorageService(plugin: PluginDataStore): TokenStorageService {
   return new TokenStorageServiceImpl(plugin);
 }

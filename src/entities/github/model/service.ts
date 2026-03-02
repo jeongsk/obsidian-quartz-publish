@@ -18,6 +18,7 @@ import type {
   RevertProgressCallback,
 } from "../../../app/types";
 import { GITHUB_API_BASE_URL } from "../../../app/types";
+import type { TokenStorageService } from "../../../shared/services/token-storage/types";
 
 // GitHub API 내부 응답 타입 (모듈 전용)
 interface GitHubCommitItemResponse {
@@ -141,20 +142,44 @@ interface GitHubRateLimitResponse {
  * GitHub API 서비스 클래스
  */
 export class GitHubService {
-  private token: string;
+  private token: string | null;
   private owner: string;
   private repo: string;
   private branch: string;
+  private tokenStorage?: TokenStorageService;
 
-  constructor(token: string, repoUrl: string, branch: string = "main") {
-    this.token = token;
+  constructor(token: string, repoUrl: string, branch?: string);
+  constructor(tokenStorage: TokenStorageService, repoUrl: string, branch?: string);
+  constructor(tokenOrStorage: string | TokenStorageService, repoUrl: string, branch?: string) {
+    // Token을 나중에 가져오기 위한 처리
+    if (typeof tokenOrStorage === "string") {
+      this.token = tokenOrStorage;
+      this.tokenStorage = undefined;
+    } else {
+      this.token = null;
+      this.tokenStorage = tokenOrStorage;
+    }
+
     const parsed = this.parseRepoUrl(repoUrl);
     if (!parsed) {
       throw new Error("Invalid repository URL");
     }
     this.owner = parsed.owner;
     this.repo = parsed.repo;
-    this.branch = branch;
+    this.branch = branch ?? "main";
+  }
+
+  /**
+   * 토큰을 가져옵니다.
+   *
+   * TokenStorageService가 있는 경우 저장소에서 토큰을 가져오고,
+   * 없는 경우 생성자에서 받은 토큰을 반환합니다.
+   */
+  private async getToken(): Promise<string | null> {
+    if (this.tokenStorage) {
+      return await this.tokenStorage.getToken();
+    }
+    return this.token;
   }
 
   /**
@@ -232,11 +257,20 @@ export class GitHubService {
    * GitHub API 요청 헬퍼
    */
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const token = await this.getToken();
+    if (!token) {
+      throw new GitHubError(
+        401,
+        "No token available. Please configure your GitHub token.",
+        "invalid_token"
+      );
+    }
+
     const response = await fetch(`${GITHUB_API_BASE_URL}${endpoint}`, {
       ...options,
       cache: "no-store",
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github.v3+json",
         "Content-Type": "application/json",
         "X-GitHub-Api-Version": "2022-11-28",

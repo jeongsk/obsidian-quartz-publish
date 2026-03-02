@@ -84,11 +84,12 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
   private quickLinksContainerEl: HTMLElement | null = null;
 
   // Token Storage Service (Task 1.2)
-  private tokenStorage = createTokenStorageService(this.plugin);
+  private tokenStorage: ReturnType<typeof createTokenStorageService>;
 
   constructor(app: App, plugin: QuartzPublishPlugin) {
     super(app, plugin);
     this.plugin = plugin;
+    this.tokenStorage = createTokenStorageService(plugin);
   }
 
   /**
@@ -329,7 +330,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
         return;
       }
 
-      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
       const modal = new RemoteFileManagerModal(this.app, {
         gitHubService: github,
         contentPath: contentPath || "content",
@@ -351,7 +352,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
         return;
       }
 
-      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
       const modal = new CommitHistoryModal(this.app, {
         gitHubService: github,
       });
@@ -746,7 +747,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
       }
 
       try {
-        const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+        const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
         const file = await github.getFile(CUSTOM_CSS_PATH);
         if (file) {
           textarea.value = file.content;
@@ -800,7 +801,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
           }
 
           try {
-            const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+            const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
             const result = await github.createOrUpdateFile(
               CUSTOM_CSS_PATH,
               finalContent,
@@ -849,7 +850,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
     this.showConnectionStatus("connecting", t("connection.connecting"));
 
     try {
-      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
       const result = await github.testConnection();
 
       if (result.success && result.repository) {
@@ -1173,7 +1174,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
     });
 
     try {
-      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
       this.quartzConfigService = new QuartzConfigService(github);
 
       // 먼저 연결 상태 확인
@@ -1600,7 +1601,7 @@ export class QuartzPublishSettingTab extends PluginSettingTab {
     });
 
     try {
-      const github = new GitHubService(githubToken, repoUrl, defaultBranch);
+      const github = new GitHubService(this.tokenStorage, repoUrl, defaultBranch);
       this.quartzUpgradeService = new QuartzUpgradeService(github);
 
       const versionInfo = await this.quartzUpgradeService.checkVersion();

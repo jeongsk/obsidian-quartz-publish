@@ -29,6 +29,7 @@ import { CommitHistoryModal } from "../features/commit-history/ui/commit-history
 import { initI18n, t } from "../shared/lib/i18n";
 import { isValidGitHubUrl, normalizeBaseUrl } from "../shared/lib/url";
 import { ICON_QUARTZ_PUBLISH, ICON_QUARTZ_PUBLISH_SVG } from "../shared/config/constants/icons";
+import { createTokenStorageService } from "../shared/services/token-storage/service";
 
 /**
  * Quartz Publish Plugin
@@ -43,6 +44,7 @@ export default class QuartzPublishPlugin extends Plugin {
   recordStorage!: PublishRecordStorage;
   private statusService!: StatusService;
   private networkService!: NetworkService;
+  private tokenStorage = createTokenStorageService(this);
   // JEO-18: 원격 동기화 캐시 인메모리 복사
   private remoteSyncCacheMemory: RemoteSyncCache | undefined;
 
@@ -58,6 +60,9 @@ export default class QuartzPublishPlugin extends Plugin {
 
     initI18n();
     await this.loadSettings();
+
+    // Token migration: Move token from settings to secure storage
+    await this.migrateGitHubToken();
 
     // JEO-18: 원격 동기화 캐시 로드
     await this.loadRemoteSyncCache();
@@ -234,6 +239,25 @@ export default class QuartzPublishPlugin extends Plugin {
   }
 
   /**
+   * GitHub 토큰을 settings에서 TokenStorageService로 마이그레이션
+   *
+   * 기존에 settings.githubToken에 저장된 토큰을 안전한 저장소로 이동합니다.
+   * (Task 1.3)
+   */
+  private async migrateGitHubToken(): Promise<void> {
+    const existingToken = this.settings.githubToken;
+    const storedToken = await this.tokenStorage.getToken();
+
+    // settings에 토큰이 있고, secure storage에 없는 경우에만 마이그레이션
+    if (existingToken && !storedToken) {
+      await this.tokenStorage.saveToken(existingToken);
+      this.settings.githubToken = "";
+      await this.saveSettings();
+      console.log("[QuartzPublish] GitHub token migrated to secure storage.");
+    }
+  }
+
+  /**
    * 발행 기록을 data.json에서 별도 파일로 마이그레이션
    */
   private async migratePublishRecords(): Promise<void> {
@@ -379,7 +403,8 @@ export default class QuartzPublishPlugin extends Plugin {
         this.settings,
         () => this.recordStorage.getAllRecords(),
         this.updatePublishRecord.bind(this),
-        this.removePublishRecord.bind(this)
+        this.removePublishRecord.bind(this),
+        this.tokenStorage
       );
 
       const result = await publishService.publishNote(file);
@@ -427,9 +452,10 @@ export default class QuartzPublishPlugin extends Plugin {
   /**
    * 대시보드 모달 열기
    */
-  openDashboard(): void {
+  async openDashboard(): Promise<void> {
     // 원격 동기화 서비스 생성 (JEO-18)
-    const { githubToken, repoUrl } = this.settings;
+    const { repoUrl } = this.settings;
+    const githubToken = await this.tokenStorage.getToken();
     let remoteSyncService: RemoteSyncService | undefined;
     if (githubToken && repoUrl) {
       const github = new GitHubService(githubToken, repoUrl, this.settings.defaultBranch);
@@ -447,7 +473,7 @@ export default class QuartzPublishPlugin extends Plugin {
       onLoadStatus: async (onProgress) => this.statusService.calculateStatusOverview(onProgress),
       networkService: this.networkService,
       onGetRemoteContent: async (file) => {
-        const { githubToken, repoUrl } = this.settings;
+        const githubToken = await this.tokenStorage.getToken();
         if (!githubToken || !repoUrl) {
           return null;
         }
@@ -484,8 +510,9 @@ export default class QuartzPublishPlugin extends Plugin {
   /**
    * 커밋 히스토리 모달 열기
    */
-  openCommitHistory(): void {
-    const { githubToken, repoUrl, defaultBranch } = this.settings;
+  async openCommitHistory(): Promise<void> {
+    const { repoUrl, defaultBranch } = this.settings;
+    const githubToken = await this.tokenStorage.getToken();
 
     if (!githubToken || !repoUrl) {
       new Notice(t("notice.configureFirst"));
